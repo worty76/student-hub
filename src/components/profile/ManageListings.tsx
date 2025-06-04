@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -210,10 +211,12 @@ export function ManageListings() {
           <Card key={listing.id} className="hover:shadow-md transition-shadow">
             <CardContent className="pt-6">
               <div className="flex space-x-4">
-                <img
+                <Image
                   src={listing.images[0]}
                   alt={listing.title}
-                  className="w-24 h-24 object-cover rounded-lg"
+                  width={96}
+                  height={96}
+                  className="object-cover rounded-lg"
                 />
                 <div className="flex-1">
                   <div className="flex items-start justify-between mb-2">

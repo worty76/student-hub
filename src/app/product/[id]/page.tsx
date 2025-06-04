@@ -1,7 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useState, use } from 'react';
+import { notFound } from 'next/navigation';
+import Image from 'next/image';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -9,151 +11,229 @@ import {
   Heart, 
   Share2, 
   MapPin, 
-  Star, 
   MessageCircle, 
   Phone, 
   ShoppingCart,
   Eye,
   Shield,
   Truck,
-  Clock,
-  ThumbsUp,
-  Flag,
   ChevronLeft,
   ChevronRight,
   Verified,
   DollarSign,
-  Send
+  ArrowLeft
 } from 'lucide-react';
-import { ProductDetail } from '@/types/product';
-import { ProductImageGallery } from '@/components/product/ProductImageGallery';
-import { SellerProfile } from '@/components/product/SellerProfile';
-import { BargainModal } from '@/components/product/BargainModal';
+import { Product } from '@/types/marketplace';
+import { mockProducts, formatPrice, getStatusColor, getStatusLabel } from '@/constants/marketplace-data';
 
-// Mock product data
-const mockProduct: ProductDetail = {
-  id: 'P001',
-  title: 'Advanced Calculus Textbook - 10th Edition',
-  description: `Comprehensive advanced calculus textbook in excellent condition. This book covers all major topics including:
+// Extended product details that would come from API
+interface ExtendedProduct extends Product {
+  images?: string[];
+  views?: number;
+  likes?: number;
+  isAvailable?: boolean;
+  specifications?: Record<string, string>;
+  shipping?: {
+    methods: string[];
+    cost: number;
+    estimatedDays: number;
+  };
+  bargaining?: {
+    enabled: boolean;
+    minPrice?: number;
+    acceptsOffers: boolean;
+  };
+}
 
-  • Limits and Continuity
-  • Derivatives and Applications
-  • Integrals and Integration Techniques
-  • Infinite Series and Sequences
-  • Multivariable Calculus
-  • Vector Analysis
+// Function to get extended product data (simulating API call)
+const getExtendedProductData = (product: Product): ExtendedProduct => {
+  return {
+    ...product,
+    images: product.image ? [product.image, product.image, product.image] : [],
+    views: Math.floor(Math.random() * 500) + 50,
+    likes: Math.floor(Math.random() * 50) + 5,
+    isAvailable: true,
+    specifications: getSpecificationsForCategory(product.category),
+    shipping: {
+      methods: ['Standard Delivery', 'Express Delivery', 'Pickup'],
+      cost: 15000,
+      estimatedDays: 3
+    },
+    bargaining: {
+      enabled: product.status === 'urgent' || product.status === 'good-price',
+      minPrice: Math.floor(product.price * 0.8),
+      acceptsOffers: true
+    }
+  };
+};
 
-  Perfect for undergraduate mathematics students. All pages are intact with minimal highlighting. Originally purchased for $180, selling due to graduation.
-
-  Book includes:
-  - Original access code (unused)
-  - Student solutions manual
-  - Quick reference card
-
-  Smoke-free home. Serious inquiries only.`,
-  price: 89.99,
-  images: [
-    '/api/placeholder/600/600',
-    '/api/placeholder/600/600',
-    '/api/placeholder/600/600',
-    '/api/placeholder/600/600'
-  ],
-  category: 'textbooks',
-  condition: 'like-new',
-  location: 'Ho Chi Minh City, Vietnam',
-  createdAt: new Date('2024-01-15'),
-  updatedAt: new Date('2024-01-20'),
-  views: 245,
-  likes: 18,
-  isAvailable: true,
-  specifications: {
-    'Author': 'James Stewart',
-    'Edition': '10th Edition',
-    'Publisher': 'Cengage Learning',
-    'ISBN': '978-1337275347',
-    'Pages': '1368',
-    'Language': 'English',
-    'Publication Year': '2020'
-  },
-  seller: {
-    id: 'S001',
-    name: 'Nguyen Van Minh',
-    avatar: '/api/placeholder/100/100',
-    rating: 4.8,
-    totalReviews: 127,
-    responseRate: 95,
-    memberSince: new Date('2022-03-15'),
-    isVerified: true,
-    isOnline: true
-  },
-  shipping: {
-    methods: ['Standard Delivery', 'Express Delivery', 'Pickup'],
-    cost: 15000,
-    estimatedDays: 3
-  },
-  bargaining: {
-    enabled: true,
-    minPrice: 70,
-    acceptsOffers: true
+// Helper function to generate specifications based on category
+const getSpecificationsForCategory = (category: string): Record<string, string> => {
+  switch (category) {
+    case 'study':
+      return {
+        'Condition': 'Good',
+        'Type': 'Educational',
+        'Academic Level': 'University',
+        'Language': 'Vietnamese/English'
+      };
+    case 'household':
+      return {
+        'Material': 'Various',
+        'Condition': 'Used',
+        'Age': '1-2 years',
+        'Warranty': 'No warranty'
+      };
+    case 'moving':
+      return {
+        'Bundle Type': 'Complete Set',
+        'Items Included': 'Multiple items',
+        'Condition': 'Mixed',
+        'Urgency': 'High'
+      };
+    default:
+      return {
+        'Condition': 'Good',
+        'Type': 'General'
+      };
   }
 };
 
-export default function ProductPage({ params }: { params: { id: string } }) {
+export default function ProductPage({ params }: { params: Promise<{ id: string }> }) {
+  // Unwrap params Promise using React.use()
+  const { id } = use(params);
+  
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showBargainModal, setShowBargainModal] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [quantity, setQuantity] = useState(1);
 
-  const product = mockProduct; // In real app, fetch by params.id
+  // Find product by ID from mock data
+  const baseProduct = mockProducts.find(p => p.id === id);
+  
+  if (!baseProduct) {
+    notFound();
+  }
+
+  const product = getExtendedProductData(baseProduct);
 
   const handlePrevImage = () => {
     setCurrentImageIndex(prev => 
-      prev === 0 ? product.images.length - 1 : prev - 1
+      prev === 0 ? (product.images?.length || 1) - 1 : prev - 1
     );
   };
 
   const handleNextImage = () => {
     setCurrentImageIndex(prev => 
-      prev === product.images.length - 1 ? 0 : prev + 1
+      prev === (product.images?.length || 1) - 1 ? 0 : prev + 1
     );
   };
 
   const getConditionColor = (condition: string) => {
-    switch (condition) {
-      case 'like-new': return 'bg-emerald-100 text-emerald-800';
-      case 'good': return 'bg-blue-100 text-blue-800';
-      case 'fair': return 'bg-orange-100 text-orange-800';
-      case 'poor': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
+    return getStatusColor(condition as Product['status']);
   };
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND'
-    }).format(price * 1000);
+  const getConditionLabel = (condition: string) => {
+    return condition.replace('-', ' ').toUpperCase();
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-6">
-        {/* Breadcrumb */}
+        {/* Back Button */}
         <div className="mb-6">
+          <Button variant="ghost" onClick={() => window.history.back()} className="mb-4">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Products
+          </Button>
+          
+          {/* Breadcrumb */}
           <nav className="text-sm text-gray-600">
-            <span>Home</span> / <span>Textbooks</span> / <span className="font-medium">{product.title}</span>
+            <span>Home</span> / <span>Products</span> / <span className="font-medium">{product.title}</span>
           </nav>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Left Column - Images */}
           <div className="lg:col-span-7">
-            <ProductImageGallery 
-              images={product.images}
-              title={product.title}
-              currentIndex={currentImageIndex}
-              onIndexChange={setCurrentImageIndex}
-            />
+            <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
+              <div className="aspect-square bg-gray-100 relative">
+                {product.images && product.images.length > 0 ? (
+                  <>
+                    <Image 
+                      src={product.images[currentImageIndex]} 
+                      alt={product.title}
+                      fill
+                      className="object-cover"
+                    />
+                    
+                    {/* Navigation buttons */}
+                    {product.images.length > 1 && (
+                      <>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white"
+                          onClick={handlePrevImage}
+                        >
+                          <ChevronLeft className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white"
+                          onClick={handleNextImage}
+                        >
+                          <ChevronRight className="w-4 h-4" />
+                        </Button>
+                      </>
+                    )}
+                    
+                    {/* Image indicators */}
+                    {product.images.length > 1 && (
+                      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                        {product.images.map((_, index) => (
+                          <button
+                            key={index}
+                            className={`w-2 h-2 rounded-full ${
+                              index === currentImageIndex ? 'bg-white' : 'bg-white/50'
+                            }`}
+                            onClick={() => setCurrentImageIndex(index)}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
+                    <span className="text-gray-500 text-lg">No Image Available</span>
+                  </div>
+                )}
+              </div>
+              
+              {/* Thumbnail strip */}
+              {product.images && product.images.length > 1 && (
+                <div className="p-4 flex space-x-2 overflow-x-auto">
+                  {product.images.map((image, index) => (
+                    <button
+                      key={index}
+                      className={`flex-shrink-0 w-16 h-16 bg-gray-100 rounded-lg overflow-hidden border-2 ${
+                        index === currentImageIndex ? 'border-blue-500' : 'border-transparent'
+                      }`}
+                      onClick={() => setCurrentImageIndex(index)}
+                    >
+                      <Image 
+                        src={image} 
+                        alt={`${product.title} ${index + 1}`}
+                        className="w-full h-full object-cover"
+                        width={64}
+                        height={64}
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Right Column - Product Info */}
@@ -196,7 +276,10 @@ export default function ProductPage({ params }: { params: { id: string } }) {
 
               <div className="flex items-center space-x-2 mb-4">
                 <Badge className={getConditionColor(product.condition)}>
-                  {product.condition.replace('-', ' ').toUpperCase()}
+                  {getConditionLabel(product.condition)}
+                </Badge>
+                <Badge className={getStatusColor(product.status)}>
+                  {getStatusLabel(product.status)}
                 </Badge>
                 {product.isAvailable && (
                   <Badge className="bg-green-100 text-green-800">Available</Badge>
@@ -212,7 +295,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                     <div className="text-3xl font-bold text-blue-600 mb-2">
                       {formatPrice(product.price)}
                     </div>
-                    {product.bargaining.enabled && (
+                    {product.bargaining?.enabled && (
                       <div className="flex items-center space-x-2 text-sm text-gray-600">
                         <DollarSign className="w-4 h-4" />
                         <span>Open to offers (Min: {formatPrice(product.bargaining.minPrice || 0)})</span>
@@ -244,11 +327,11 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                   <div className="grid grid-cols-1 gap-3">
                     <Button size="lg" className="w-full">
                       <ShoppingCart className="w-4 h-4 mr-2" />
-                      Buy Now - {formatPrice(product.price * quantity)}
+                      Contact Seller
                     </Button>
                     
                     <div className="grid grid-cols-2 gap-3">
-                      {product.bargaining.enabled && (
+                      {product.bargaining?.enabled && (
                         <Button 
                           variant="outline" 
                           onClick={() => setShowBargainModal(true)}
@@ -266,7 +349,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
 
                     <Button variant="outline" size="lg" className="w-full">
                       <Phone className="w-4 h-4 mr-2" />
-                      Call Seller
+                      Call {product.seller.name}
                     </Button>
                   </div>
                 </div>
@@ -274,30 +357,61 @@ export default function ProductPage({ params }: { params: { id: string } }) {
             </Card>
 
             {/* Seller Profile */}
-            <SellerProfile seller={product.seller} />
-
-            {/* Shipping Info */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
-                  <Truck className="w-5 h-5" />
-                  <span>Shipping & Delivery</span>
+                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                    <span className="font-semibold text-blue-600">
+                      {product.seller.name.charAt(0)}
+                    </span>
+                  </div>
+                  <div>
+                    <span>{product.seller.name}</span>
+                    <div className="flex items-center space-x-2 text-sm text-gray-500">
+                      <Verified className="w-4 h-4 text-green-500" />
+                      <span>Verified Seller</span>
+                    </div>
+                  </div>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex justify-between">
-                  <span>Shipping Cost:</span>
-                  <span className="font-medium">{formatPrice(product.shipping.cost / 1000)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Estimated Delivery:</span>
-                  <span className="font-medium">{product.shipping.estimatedDays} days</span>
-                </div>
-                <div className="text-sm text-gray-600">
-                  Available methods: {product.shipping.methods.join(', ')}
+              <CardContent>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span>Response Rate:</span>
+                    <span className="font-medium">95%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Member Since:</span>
+                    <span className="font-medium">January 2023</span>
+                  </div>
                 </div>
               </CardContent>
             </Card>
+
+            {/* Shipping Info */}
+            {product.shipping && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Truck className="w-5 h-5" />
+                    <span>Shipping & Delivery</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex justify-between">
+                    <span>Shipping Cost:</span>
+                    <span className="font-medium">{formatPrice(product.shipping.cost)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Estimated Delivery:</span>
+                    <span className="font-medium">{product.shipping.estimatedDays} days</span>
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    Available methods: {product.shipping.methods.join(', ')}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
 
@@ -311,11 +425,35 @@ export default function ProductPage({ params }: { params: { id: string } }) {
               </CardHeader>
               <CardContent>
                 <div className="prose max-w-none">
-                  {product.description.split('\n').map((paragraph, index) => (
-                    <p key={index} className="mb-3 text-gray-700 leading-relaxed">
-                      {paragraph}
-                    </p>
-                  ))}
+                  {product.description ? (
+                    product.description.split('\n').map((paragraph, index) => (
+                      <p key={index} className="mb-3 text-gray-700 leading-relaxed">
+                        {paragraph}
+                      </p>
+                    ))
+                  ) : (
+                    <p className="text-gray-600">No description available.</p>
+                  )}
+                </div>
+                
+                {/* Product Details */}
+                <div className="mt-6 grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="text-gray-600">Posted:</span>
+                    <span className="ml-2 font-medium">{new Date(product.createdAt).toLocaleDateString()}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Category:</span>
+                    <span className="ml-2 font-medium capitalize">{product.category}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Condition:</span>
+                    <span className="ml-2 font-medium capitalize">{product.condition.replace('-', ' ')}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Location:</span>
+                    <span className="ml-2 font-medium">{product.location}</span>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -359,16 +497,36 @@ export default function ProductPage({ params }: { params: { id: string } }) {
           </div>
         </div>
 
-        {/* Bargain Modal */}
+        {/* Bargain Modal Placeholder */}
         {showBargainModal && (
-          <BargainModal
-            product={product}
-            onClose={() => setShowBargainModal(false)}
-            onSubmit={(offer) => {
-              console.log('Bargain offer:', offer);
-              setShowBargainModal(false);
-            }}
-          />
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <Card className="w-96 max-w-lg">
+              <CardHeader>
+                <CardTitle>Make an Offer</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Your Offer</label>
+                    <Input 
+                      type="number" 
+                      placeholder={`Min: ${formatPrice(product.bargaining?.minPrice || 0)}`}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Message (Optional)</label>
+                    <Input placeholder="Add a message to your offer..." />
+                  </div>
+                  <div className="flex space-x-3">
+                    <Button className="flex-1">Submit Offer</Button>
+                    <Button variant="outline" onClick={() => setShowBargainModal(false)}>
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         )}
       </div>
     </div>

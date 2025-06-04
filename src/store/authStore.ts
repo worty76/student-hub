@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { User, AuthState, LoginCredentials, RegisterCredentials } from '@/types/auth';
+import { AuthState, LoginCredentials, RegisterCredentials } from '@/types/auth';
 import { AuthService } from '@/services/auth.service';
 
 interface AuthStore extends AuthState {
@@ -80,7 +80,7 @@ export const useAuthStore = create<AuthStore>()(
         try {
           await AuthService.refreshToken();
           // If successful, the user is still authenticated
-        } catch (error) {
+        } catch {
           // If refresh fails, log the user out
           set({ user: null, isAuthenticated: false, error: 'Session expired' });
         }

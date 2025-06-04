@@ -46,14 +46,14 @@ export default function UnauthorizedPage() {
             Access Denied
           </CardTitle>
           <CardDescription>
-            You don't have permission to access this page
+            You don&apos;t have permission to access this page
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="text-center text-sm text-gray-600">
             {user ? (
               <p>
-                Your current role <span className="font-medium capitalize">({user.role})</span> doesn't have access to this resource.
+                Your current role <span className="font-medium capitalize">({user.role})</span> doesn&apos;t have access to this resource.
               </p>
             ) : (
               <p>Please log in to access this page.</p>
@@ -76,7 +76,7 @@ export default function UnauthorizedPage() {
               variant="outline"
             >
               <LogOut className="h-4 w-4 mr-2" />
-              Logout & Login as Different User
+              Logout &amp; Login as Different User
             </Button>
           </div>
           

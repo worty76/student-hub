@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
 import { useClickOutside } from '@/hooks/useClickOutside';
-import { USER_ROLE_DASHBOARD_MAP, ROUTES } from '@/constants/navigation';
+import { ROUTES } from '@/constants/navigation';
 import {
   User,
   LogOut,
