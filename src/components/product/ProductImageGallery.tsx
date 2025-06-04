@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { ChevronLeft, ChevronRight, Expand } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -38,10 +39,11 @@ export function ProductImageGallery({
       {/* Main Image */}
       <div className="relative bg-white rounded-lg overflow-hidden shadow-lg group">
         <div className="aspect-square">
-          <img
+          <Image
             src={images[currentIndex]}
             alt={`${title} - Image ${currentIndex + 1}`}
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
           />
         </div>
 
@@ -96,10 +98,12 @@ export function ProductImageGallery({
               }`}
               onClick={() => handleThumbnailClick(index)}
             >
-              <img
+              <Image
                 src={image}
                 alt={`${title} thumbnail ${index + 1}`}
-                className="w-full h-full object-cover"
+                width={64}
+                height={64}
+                className="object-cover"
               />
             </button>
           ))}
@@ -110,9 +114,11 @@ export function ProductImageGallery({
       {showFullscreen && (
         <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center">
           <div className="relative max-w-4xl max-h-full p-4">
-            <img
+            <Image
               src={images[currentIndex]}
               alt={`${title} - Fullscreen`}
+              width={800}
+              height={600}
               className="max-w-full max-h-full object-contain"
             />
             

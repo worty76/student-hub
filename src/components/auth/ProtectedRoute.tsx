@@ -54,7 +54,7 @@ export function ProtectedRoute({
           <div className="text-red-500 text-6xl mb-4">🚫</div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h1>
           <p className="text-gray-600 mb-6">
-            You don't have permission to access this page. Your role ({user.role}) is not authorized for this content.
+            You don&apos;t have permission to access this page. Your role ({user.role}) is not authorized for this content.
           </p>
           <button
             onClick={() => router.push('/dashboard')}

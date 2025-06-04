@@ -14,6 +14,7 @@ import {
   MoreHorizontal,
 } from 'lucide-react';
 import { Review } from '@/types/profile';
+import Image from 'next/image';
 
 const mockReviews: Review[] = [
   {
@@ -282,10 +283,12 @@ export function ManageReviews() {
           <Card key={review.id} className="hover:shadow-md transition-shadow">
             <CardContent className="pt-6">
               <div className="flex items-start space-x-4">
-                <img
-                  src={review.type === 'received' ? review.reviewer.avatar : review.reviewee.avatar}
+                <Image
+                  src={(review.type === 'received' ? review.reviewer.avatar : review.reviewee.avatar) || '/default-avatar.png'}
                   alt="Avatar"
-                  className="w-12 h-12 rounded-full object-cover"
+                  width={48}
+                  height={48}
+                  className="rounded-full object-cover"
                 />
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-2">

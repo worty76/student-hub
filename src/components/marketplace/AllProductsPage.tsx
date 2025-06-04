@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,7 +14,6 @@ import {
   List,
   MapPin,
   Heart,
-  Eye,
   SlidersHorizontal,
   X
 } from 'lucide-react';
@@ -43,6 +44,7 @@ interface FilterState {
 }
 
 export function AllProductsPage() {
+  const router = useRouter();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState<FilterState>({
@@ -127,6 +129,10 @@ export function AllProductsPage() {
                           (filters.condition && filters.condition !== 'any') || 
                           filters.priceRange[0] > 0 || 
                           filters.priceRange[1] < 100000000;
+
+  const handleProductClick = (productId: string) => {
+    router.push(`/product/${productId}`);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -380,13 +386,15 @@ export function AllProductsPage() {
             {filteredProducts.map((product) => (
               <Card key={product.id} className="group hover:shadow-lg transition-shadow duration-200">
                 {viewMode === 'grid' ? (
-                  <div className="cursor-pointer">
+                  <div className="cursor-pointer" onClick={() => handleProductClick(product.id)}>
                     <div className="aspect-square bg-gray-100 rounded-t-lg overflow-hidden relative">
                       {product.image ? (
-                        <img 
+                        <Image 
                           src={product.image} 
                           alt={product.title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                          width={200}
+                          height={200}
                         />
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
@@ -394,7 +402,15 @@ export function AllProductsPage() {
                         </div>
                       )}
                       <div className="absolute top-2 right-2">
-                        <Button size="sm" variant="ghost" className="w-8 h-8 p-0 bg-white/80 hover:bg-white">
+                        <Button 
+                          size="sm" 
+                          variant="ghost" 
+                          className="w-8 h-8 p-0 bg-white/80 hover:bg-white"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            // Handle favorite toggle
+                          }}
+                        >
                           <Heart className="w-4 h-4" />
                         </Button>
                       </div>
@@ -402,84 +418,121 @@ export function AllProductsPage() {
                         {getStatusBadge(product.status)}
                       </div>
                     </div>
+                    
                     <CardContent className="p-4">
-                      <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2 group-hover:text-blue-600">
+                      <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-blue-600 line-clamp-2">
                         {product.title}
                       </h3>
-                      <p className="text-lg font-bold text-blue-600 mb-2">
-                        {formatPrice(product.price)}
+                      <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                        {product.description}
                       </p>
-                      <div className="flex items-center text-sm text-gray-600 mb-2">
-                        <MapPin className="w-4 h-4 mr-1" />
-                        {product.location}
-                      </div>
-                      <div className="flex items-center justify-between text-sm text-gray-500">
+                      <div className="flex items-center space-x-2 text-sm text-gray-500 mb-3">
+                        <MapPin className="w-4 h-4" />
+                        <span>{product.location}</span>
+                        <span>•</span>
                         <span className="capitalize">{product.condition}</span>
-                        <div className="flex items-center space-x-3">
-                          <span className="flex items-center">
-                            <Eye className="w-4 h-4 mr-1" />
-                            125
-                          </span>
-                          <span className="flex items-center">
-                            <Heart className="w-4 h-4 mr-1" />
-                            12
-                          </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <p className="text-lg font-bold text-blue-600">
+                          {formatPrice(product.price)}
+                        </p>
+                        <div className="flex items-center space-x-1">
+                          <Button 
+                            size="sm" 
+                            variant="ghost" 
+                            className="w-8 h-8 p-0"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              // Handle favorite toggle
+                            }}
+                          >
+                            <Heart className="w-4 h-4" />
+                          </Button>
+                          <Button 
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              // Handle contact
+                            }}
+                          >
+                            Contact
+                          </Button>
                         </div>
                       </div>
                     </CardContent>
                   </div>
                 ) : (
-                  <CardContent className="p-4">
-                    <div className="flex space-x-4">
-                      <div className="w-24 h-24 bg-gray-100 rounded-lg flex-shrink-0 relative">
-                        {product.image ? (
-                          <img 
-                            src={product.image} 
-                            alt={product.title}
-                            className="w-full h-full object-cover rounded-lg"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center rounded-lg">
-                            <span className="text-gray-500 text-xs">No Image</span>
-                          </div>
-                        )}
-                        <div className="absolute -top-1 -right-1">
-                          {getStatusBadge(product.status)}
-                        </div>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-blue-600">
-                              {product.title}
-                            </h3>
-                            <p className="text-gray-600 text-sm line-clamp-2 mb-2">
-                              {product.description}
-                            </p>
-                            <div className="flex items-center space-x-4 text-sm text-gray-500">
-                              <span className="flex items-center">
-                                <MapPin className="w-4 h-4 mr-1" />
-                                {product.location}
-                              </span>
-                              <span className="capitalize">{product.condition}</span>
-                              <span>{new Date(product.createdAt).toLocaleDateString()}</span>
+                  <div className="cursor-pointer" onClick={() => handleProductClick(product.id)}>
+                    <CardContent className="p-4">
+                      <div className="flex space-x-4">
+                        <div className="w-24 h-24 bg-gray-100 rounded-lg flex-shrink-0 relative">
+                          {product.image ? (
+                            <Image 
+                              src={product.image} 
+                              alt={product.title}
+                              className="w-full h-full object-cover rounded-lg"
+                              width={96}
+                              height={96}
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center rounded-lg">
+                              <span className="text-gray-500 text-xs">No Image</span>
                             </div>
-                          </div>
-                          <div className="text-right ml-4">
-                            <p className="text-lg font-bold text-blue-600 mb-2">
-                              {formatPrice(product.price)}
-                            </p>
-                            <div className="flex items-center space-x-2">
-                              <Button size="sm" variant="ghost" className="w-8 h-8 p-0">
-                                <Heart className="w-4 h-4" />
-                              </Button>
-                              <Button size="sm">Contact</Button>
-                            </div>
+                          )}
+                          <div className="absolute -top-1 -right-1">
+                            {getStatusBadge(product.status)}
                           </div>
                         </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-blue-600">
+                                {product.title}
+                              </h3>
+                              <p className="text-gray-600 text-sm line-clamp-2 mb-2">
+                                {product.description}
+                              </p>
+                              <div className="flex items-center space-x-4 text-sm text-gray-500">
+                                <span className="flex items-center">
+                                  <MapPin className="w-4 h-4 mr-1" />
+                                  {product.location}
+                                </span>
+                                <span className="capitalize">{product.condition}</span>
+                                <span>{new Date(product.createdAt).toLocaleDateString()}</span>
+                              </div>
+                            </div>
+                            <div className="text-right ml-4">
+                              <p className="text-lg font-bold text-blue-600 mb-2">
+                                {formatPrice(product.price)}
+                              </p>
+                              <div className="flex items-center space-x-2">
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost" 
+                                  className="w-8 h-8 p-0"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    // Handle favorite toggle
+                                  }}
+                                >
+                                  <Heart className="w-4 h-4" />
+                                </Button>
+                                <Button 
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    // Handle contact
+                                  }}
+                                >
+                                  Contact
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
+                    </CardContent>
+                  </div>
                 )}
               </Card>
             ))}

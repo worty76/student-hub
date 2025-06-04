@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -7,7 +8,6 @@ import {
   Star, 
   Verified, 
   MessageCircle, 
-  Phone,
   Calendar,
   TrendingUp,
   User,
@@ -82,10 +82,12 @@ export function SellerProfile({ seller }: SellerProfileProps) {
           <div className="relative">
             <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-200">
               {seller.avatar ? (
-                <img
+                <Image
                   src={seller.avatar}
                   alt={seller.name}
-                  className="w-full h-full object-cover"
+                  width={64}
+                  height={64}
+                  className="object-cover"
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">

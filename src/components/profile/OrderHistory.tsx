@@ -17,6 +17,7 @@ import {
   Clock,
 } from 'lucide-react';
 import { Order } from '@/types/profile';
+import Image from 'next/image';
 
 const mockOrders: Order[] = [
   {
@@ -180,10 +181,12 @@ export function OrderHistory() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
-                  <img
+                  <Image
                     src={order.product.image}
                     alt={order.product.title}
-                    className="w-16 h-16 object-cover rounded-lg"
+                    width={64}
+                    height={64}
+                    className="object-cover rounded-lg"
                   />
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-1">

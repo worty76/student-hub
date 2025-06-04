@@ -6,6 +6,7 @@ import { MapPin, Clock, User } from 'lucide-react';
 import { Product } from '@/types/marketplace';
 import { formatPrice, getStatusColor, getStatusLabel } from '@/constants/marketplace-data';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface ProductCardProps {
   product: Product;
@@ -42,10 +43,11 @@ export function ProductCard({ product }: ProductCardProps) {
       <div className="relative">
         {/* Product Image */}
         <div className="relative h-48 overflow-hidden bg-gray-100">
-          <img
+          <Image
             src={product.image}
             alt={product.title}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+            fill
+            className="object-cover transition-transform duration-300 group-hover:scale-110"
           />
           
           {/* Status Badge */}

@@ -12,6 +12,7 @@ import {
   Send,
 } from 'lucide-react';
 import { ProductDetail } from '@/types/product';
+import Image from 'next/image';
 
 interface BargainModalProps {
   product: ProductDetail;
@@ -109,10 +110,12 @@ export function BargainModal({ product, onClose, onSubmit }: BargainModalProps) 
           {/* Product Summary */}
           <div className="bg-gray-50 rounded-lg p-4">
             <div className="flex items-start space-x-3">
-              <img
+              <Image
                 src={product.images[0]}
                 alt={product.title}
-                className="w-16 h-16 object-cover rounded-lg"
+                width={64}
+                height={64}
+                className="object-cover rounded-lg"
               />
               <div className="flex-1">
                 <h3 className="font-medium text-sm line-clamp-2 mb-1">{product.title}</h3>

@@ -166,7 +166,7 @@ export default function ProfilePage() {
                     <div className="flex items-center space-x-3">
                       <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
                       <div className="flex-1">
-                        <p className="text-sm">Listing "Physics Books" updated</p>
+                        <p className="text-sm">Listing &quot;Physics Books&quot; updated</p>
                         <p className="text-xs text-gray-500">1 day ago</p>
                       </div>
                     </div>
