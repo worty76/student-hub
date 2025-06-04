@@ -1,0 +1,35 @@
+export const NAVIGATION_LINKS = [
+  { href: '/product', label: 'Products' },
+  { href: '/categories', label: 'Categories' },
+  { href: '/about', label: 'About' },
+] as const;
+
+export const USER_ROLE_DASHBOARD_MAP = {
+  admin: '/admin/dashboard',
+  seller: '/seller/dashboard',
+  user: '/user/dashboard',
+} as const;
+
+export const APP_CONFIG = {
+  name: 'StudentHub',
+  description: 'Second-Hand Marketplace for Students',
+  search: {
+    placeholder: 'Search for items...',
+    minQueryLength: 2,
+  },
+  auth: {
+    minPasswordLength: 6,
+  },
+} as const;
+
+export const ROUTES = {
+  home: '/',
+  login: '/auth/login',
+  register: '/auth/register',
+  profile: '/profile',
+  favorites: '/favorites',
+  messages: '/messages',
+  sell: '/sell',
+  search: '/search',
+  unauthorized: '/unauthorized',
+} as const; 
