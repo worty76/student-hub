@@ -21,10 +21,15 @@ import {
   ChevronRight,
   Verified,
   DollarSign,
-  ArrowLeft
+  ArrowLeft,
+  MessageSquare,
+  Star
 } from 'lucide-react';
 import { Product } from '@/types/marketplace';
 import { mockProducts, formatPrice, getStatusColor, getStatusLabel } from '@/constants/marketplace-data';
+import ReviewForm from '@/components/product/ReviewForm';
+import StarRating from '@/components/product/StarRating';
+import { useReviewForm } from '@/hooks/useReviewForm';
 
 // Extended product details that would come from API
 interface ExtendedProduct extends Product {
@@ -107,6 +112,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
   const [showBargainModal, setShowBargainModal] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const [showReviewForm, setShowReviewForm] = useState(false);
 
   // Find product by ID from mock data
   const baseProduct = mockProducts.find(p => p.id === id);
@@ -116,6 +122,15 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
   }
 
   const product = getExtendedProductData(baseProduct);
+
+  const { submitReview, isSubmitting, clearError } = useReviewForm({
+    productId: id,
+    onSuccess: () => {
+      setShowReviewForm(false);
+      // You could show a success toast here
+      alert('Review submitted successfully!');
+    }
+  });
 
   const handlePrevImage = () => {
     setCurrentImageIndex(prev => 
@@ -135,6 +150,11 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
 
   const getConditionLabel = (condition: string) => {
     return condition.replace('-', ' ').toUpperCase();
+  };
+
+  const handleWriteReview = () => {
+    setShowReviewForm(true);
+    clearError();
   };
 
   return (
@@ -528,6 +548,76 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
             </Card>
           </div>
         )}
+
+        {/* Reviews Section */}
+        <div className="mt-12 space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-bold">Customer Reviews</h2>
+            <Button onClick={handleWriteReview} disabled={showReviewForm}>
+              <MessageSquare className="w-4 h-4 mr-2" />
+              Write Review
+            </Button>
+          </div>
+
+          {/* Review Form */}
+          {showReviewForm && (
+            <div className="max-w-2xl">
+              <ReviewForm
+                productTitle={product.title}
+                onSubmit={submitReview}
+                onCancel={() => setShowReviewForm(false)}
+                isSubmitting={isSubmitting}
+              />
+            </div>
+          )}
+
+          {/* Reviews Summary */}
+          <Card>
+            <CardContent className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="text-center">
+                  <div className="text-4xl font-bold mb-2">4.7</div>
+                  <StarRating rating={4.7} size="lg" />
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Based on 23 reviews
+                  </p>
+                </div>
+                
+                <div className="md:col-span-2 space-y-3">
+                  {[5, 4, 3, 2, 1].map((stars) => {
+                    const count = Math.floor(Math.random() * 10) + 1;
+                    const percentage = (count / 23) * 100;
+                    
+                    return (
+                      <div key={stars} className="flex items-center gap-3">
+                        <div className="flex items-center gap-1 w-16">
+                          <span className="text-sm">{stars}</span>
+                          <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                        </div>
+                        <div className="flex-1 bg-muted rounded-full h-2">
+                          <div
+                            className="h-full bg-yellow-400 rounded-full transition-all duration-300"
+                            style={{ width: `${percentage}%` }}
+                          />
+                        </div>
+                        <span className="text-sm text-muted-foreground w-8">
+                          {count}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Individual Reviews would go here */}
+          <div className="text-center py-8">
+            <p className="text-muted-foreground">
+              Individual reviews would be displayed here...
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

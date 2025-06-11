@@ -90,7 +90,7 @@ export function BannerSlider({ slides, autoPlayInterval = 5000 }: BannerSliderPr
 
       <button
         onClick={goToPrevious}
-        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-20 hover:bg-opacity-30 text-black p-2 rounded-full transition-all duration-300 hover:scale-110"
+        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-20 hover:bg-opacity-30 text-black p-2 rounded-full transition-all duration-300 hover:scale-110 cursor-pointer"
         aria-label="Previous slide"
       >
         <ChevronLeft className="h-6 w-6" />
@@ -98,7 +98,7 @@ export function BannerSlider({ slides, autoPlayInterval = 5000 }: BannerSliderPr
       
       <button
         onClick={goToNext}
-        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-20 hover:bg-opacity-30 text-black p-2 rounded-full transition-all duration-300 hover:scale-110"
+        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-20 hover:bg-opacity-30 text-black p-2 rounded-full transition-all duration-300 hover:scale-110 cursor-pointer"
         aria-label="Next slide"
       >
         <ChevronRight className="h-6 w-6" />
