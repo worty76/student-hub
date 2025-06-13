@@ -1,12 +1,18 @@
 export type UserRole = 'user' | 'admin' | 'seller';
 
 export interface User {
-  id: string;
+  _id: string;
   email: string;
+  name: string;
+  avatar: string;
+  bio: string;
+  location: string;
+  rating: number;
+  ratingCount: number;
+  favorites: string[];
   role: UserRole;
-  name?: string;
-  phone?: string;
-  address?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface AuthState {
@@ -34,4 +40,16 @@ export interface RegisterCredentials {
 export interface AuthError {
   message: string;
   field?: string;
+}
+
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  name: string;
+  role: 'user' | 'admin';
+}
+
+export interface RegisterResponse {
+  token: string;
+  user: User;
 }

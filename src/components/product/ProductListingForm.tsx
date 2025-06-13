@@ -287,9 +287,12 @@ export function ProductListingForm({
                 placeholder="What are you selling?"
                 value={formData.title}
                 onChange={(e) => handleInputChange('title', e.target.value)}
-                error={errors.title}
                 maxLength={100}
+                className={cn(errors.title && "border-red-500")}
               />
+              {errors.title && (
+                <p className="text-sm text-red-500 mt-1">{errors.title}</p>
+              )}
               <p className="text-xs text-muted-foreground mt-1">
                 {formData.title.length}/100 characters
               </p>
@@ -325,12 +328,14 @@ export function ProductListingForm({
                     placeholder="0"
                     value={formData.price}
                     onChange={(e) => handleInputChange('price', e.target.value)}
-                    error={errors.price}
-                    className="pl-10"
+                    className={cn("pl-10", errors.price && "border-red-500")}
                     min="0"
                     step="1000"
                   />
                 </div>
+                {errors.price && (
+                  <p className="text-sm text-red-500 mt-1">{errors.price}</p>
+                )}
               </div>
 
               <div>
@@ -622,9 +627,12 @@ export function ProductListingForm({
                       placeholder="Lowest price you'll accept"
                       value={formData.bargaining.minPrice}
                       onChange={(e) => handleNestedChange('bargaining', 'minPrice', e.target.value)}
-                      error={errors.minPrice}
+                      className={cn(errors.minPrice && "border-red-500")}
                       min="0"
                     />
+                    {errors.minPrice && (
+                      <p className="text-sm text-red-500 mt-1">{errors.minPrice}</p>
+                    )}
                   </div>
                   <div className="flex items-center space-x-2">
                     <input

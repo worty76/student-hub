@@ -9,9 +9,51 @@ export class AuthService {
     
     // Mock validation - replace with actual API call
     const mockUsers = [
-      { id: '1', email: 'admin@example.com', password: 'admin123', role: 'admin' as const, name: 'Admin User' },
-      { id: '2', email: 'seller@example.com', password: 'seller123', role: 'seller' as const, name: 'Seller User' },
-      { id: '3', email: 'user@example.com', password: 'user123', role: 'user' as const, name: 'Regular User' },
+      { 
+        _id: '1', 
+        email: 'admin@example.com', 
+        password: 'admin123', 
+        role: 'admin' as const, 
+        name: 'Admin User',
+        avatar: '',
+        bio: '',
+        location: '',
+        rating: 0,
+        ratingCount: 0,
+        favorites: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      },
+      { 
+        _id: '2', 
+        email: 'seller@example.com', 
+        password: 'seller123', 
+        role: 'seller' as const, 
+        name: 'Seller User',
+        avatar: '',
+        bio: '',
+        location: '',
+        rating: 0,
+        ratingCount: 0,
+        favorites: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      },
+      { 
+        _id: '3', 
+        email: 'user@example.com', 
+        password: 'user123', 
+        role: 'user' as const, 
+        name: 'Regular User',
+        avatar: '',
+        bio: '',
+        location: '',
+        rating: 0,
+        ratingCount: 0,
+        favorites: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      },
     ];
 
     const user = mockUsers.find(u => 
@@ -54,12 +96,18 @@ export class AuthService {
     }
     
     return { 
-      id: Math.random().toString(36), 
+      _id: Math.random().toString(36), 
       email: credentials.email, 
       role: credentials.role,
       name: credentials.name,
-      phone: credentials.phone,
-      address: credentials.address
+      avatar: '',
+      bio: '',
+      location: '',
+      rating: 0,
+      ratingCount: 0,
+      favorites: [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     };
   }
 

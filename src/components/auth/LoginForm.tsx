@@ -1,55 +1,55 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuthStore } from '@/store/authStore';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
-import { Loader2 } from 'lucide-react';
+// import { useState } from 'react';
+// import { useRouter } from 'next/navigation';
+// import { useAuthStore } from '@/store/authStore';
+// import { Button } from '@/components/ui/button';
+// import { Input } from '@/components/ui/input';
+import { Card } from '@/components/ui/card';
+// import { Loader2 } from 'lucide-react';
 
 export function LoginForm() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  // const [email, setEmail] = useState('');
+  // const [password, setPassword] = useState('');
+  // const [errors, setErrors] = useState<Record<string, string>>({});
   
-  const { login, isLoading, error, clearError } = useAuthStore();
-  const router = useRouter();
+  // const { login, isLoading, error, clearError } = useAuthStore();
+  // const router = useRouter();
 
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {};
+  // const validateForm = () => {
+  //   const newErrors: Record<string, string> = {};
     
-    if (!email) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = 'Email is invalid';
-    }
+  //   if (!email) {
+  //     newErrors.email = 'Email is required';
+  //   } else if (!/\S+@\S+\.\S+/.test(email)) {
+  //     newErrors.email = 'Email is invalid';
+  //   }
     
-    if (!password) {
-      newErrors.password = 'Password is required';
-    }
+  //   if (!password) {
+  //     newErrors.password = 'Password is required';
+  //   }
     
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  //   setErrors(newErrors);
+  //   return Object.keys(newErrors).length === 0;
+  // };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    clearError();
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   clearError();
     
-    if (!validateForm()) return;
+  //   if (!validateForm()) return;
     
-    try {
-      await login({ email, password });
-      router.push('/dashboard');
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  //   try {
+  //     await login({ email, password });
+  //     router.push('/dashboard');
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
 
   return (
     <Card className="w-full max-w-md mx-auto">
-      <CardContent>
+      {/* <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="email" className="block text-sm font-medium mb-1">
@@ -94,7 +94,7 @@ export function LoginForm() {
             {isLoading ? 'Signing in...' : 'Sign In'}
           </Button>
         </form>
-      </CardContent>
+      </CardContent> */}
     </Card>
   );
 } 
