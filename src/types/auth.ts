@@ -17,6 +17,7 @@ export interface User {
 
 export interface AuthState {
   user: User | null;
+  token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
@@ -46,10 +47,15 @@ export interface RegisterRequest {
   email: string;
   password: string;
   name: string;
-  role: 'user' | 'admin';
+  role: UserRole;
 }
 
 export interface RegisterResponse {
+  token: string;
+  user: User;
+}
+
+export interface LoginResponse {
   token: string;
   user: User;
 }

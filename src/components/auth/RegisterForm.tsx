@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { authService } from '@/services/auth';
+import { authService } from '@/services/auth.service';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
@@ -16,7 +16,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from 'sonner';
 import { Loader2, CheckCircle2 } from 'lucide-react';
 
 const formSchema = z.object({
@@ -58,22 +58,14 @@ export default function RegisterForm() {
       localStorage.setItem('user', JSON.stringify(response.user));
       
       setIsSuccess(true);
-      toast({
-        title: "Thành công!",
-        description: "Tài khoản của bạn đã được tạo thành công.",
-        variant: "default",
-      });
+      toast.success("Tài khoản của bạn đã được tạo thành công.");
 
       setTimeout(() => {
         router.push('/dashboard');
       }, 1500);
     } catch (err) {
       console.error('Registration failed:', err);
-      toast({
-        title: "Lỗi",
-        description: err instanceof Error ? err.message : 'Đăng ký thất bại',
-        variant: "destructive",
-      });
+      toast.error(err instanceof Error ? err.message : 'Đăng ký thất bại');
     } finally {
       setIsLoading(false);
     }

@@ -16,6 +16,7 @@ export const useAuthStore = create<AuthStore>()(
   persist(
     (set, get) => ({
       user: null,
+      token: null,
       isAuthenticated: false,
       isLoading: false,
       error: null,
@@ -23,32 +24,51 @@ export const useAuthStore = create<AuthStore>()(
       login: async (credentials: LoginCredentials) => {
         set({ isLoading: true, error: null });
         try {
-          const user = await AuthService.login(credentials);
-          set({ user, isAuthenticated: true, isLoading: false });
+          const response = await AuthService.login(credentials);
+          set({ 
+            user: response.user, 
+            token: response.token,
+            isAuthenticated: true, 
+            isLoading: false 
+          });
         } catch (error) {
           set({ 
-            error: error instanceof Error ? error.message : 'Login failed', 
+            error: error instanceof Error ? error.message : 'Đăng nhập thất bại', 
             isLoading: false,
             isAuthenticated: false,
-            user: null
+            user: null,
+            token: null
           });
-          throw error; // Re-throw to allow components to handle the error
+          throw error;
         }
       },
 
       register: async (credentials: RegisterCredentials) => {
         set({ isLoading: true, error: null });
         try {
-          const user = await AuthService.register(credentials);
-          set({ user, isAuthenticated: true, isLoading: false });
+          const registerData = {
+            email: credentials.email,
+            password: credentials.password,
+            name: credentials.name,
+            role: credentials.role,
+          };
+          
+          const response = await AuthService.register(registerData);
+          set({ 
+            user: response.user, 
+            token: response.token,
+            isAuthenticated: true, 
+            isLoading: false 
+          });
         } catch (error) {
           set({ 
-            error: error instanceof Error ? error.message : 'Registration failed', 
+            error: error instanceof Error ? error.message : 'Đăng ký thất bại', 
             isLoading: false,
             isAuthenticated: false,
-            user: null
+            user: null,
+            token: null
           });
-          throw error; // Re-throw to allow components to handle the error
+          throw error;
         }
       },
 
@@ -56,11 +76,22 @@ export const useAuthStore = create<AuthStore>()(
         set({ isLoading: true });
         try {
           await AuthService.logout();
-          set({ user: null, isAuthenticated: false, error: null, isLoading: false });
+          set({ 
+            user: null, 
+            token: null,
+            isAuthenticated: false, 
+            error: null, 
+            isLoading: false 
+          });
         } catch (error) {
-          // Even if logout fails on the backend, clear the local state
-          set({ user: null, isAuthenticated: false, error: null, isLoading: false });
-          console.error('Logout error:', error);
+          set({ 
+            user: null, 
+            token: null,
+            isAuthenticated: false, 
+            error: null, 
+            isLoading: false 
+          });
+          console.error('Đăng xuất thất bại:', error);
         }
       },
 
@@ -69,8 +100,8 @@ export const useAuthStore = create<AuthStore>()(
       },
 
       checkAuth: () => {
-        const { user } = get();
-        set({ isAuthenticated: !!user });
+        const { user, token } = get();
+        set({ isAuthenticated: !!(user && token) });
       },
 
       refreshAuth: async () => {
@@ -79,10 +110,13 @@ export const useAuthStore = create<AuthStore>()(
 
         try {
           await AuthService.refreshToken();
-          // If successful, the user is still authenticated
         } catch {
-          // If refresh fails, log the user out
-          set({ user: null, isAuthenticated: false, error: 'Session expired' });
+          set({ 
+            user: null, 
+            token: null,
+            isAuthenticated: false, 
+            error: 'Phiên đăng nhập đã hết hạn' 
+          });
         }
       },
     }),
@@ -90,9 +124,10 @@ export const useAuthStore = create<AuthStore>()(
       name: 'auth-storage',
       partialize: (state) => ({ 
         user: state.user, 
+        token: state.token,
         isAuthenticated: state.isAuthenticated 
       }),
-      version: 1, // Add versioning for future migrations
+      version: 1,
     }
   )
 ); 

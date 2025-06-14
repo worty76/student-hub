@@ -1,130 +1,115 @@
-import { User, LoginCredentials, RegisterCredentials } from '@/types/auth';
+import { User, LoginCredentials, LoginResponse, RegisterRequest, RegisterResponse } from '@/types/auth';
 
-// This would be replaced with actual API calls in a real application
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://be-student-hub-production.up.railway.app/api';
+
 export class AuthService {
-  private static readonly API_DELAY = 1000;
 
-  static async login(credentials: LoginCredentials): Promise<User> {
-    await new Promise(resolve => setTimeout(resolve, this.API_DELAY));
-    
-    // Mock validation - replace with actual API call
-    const mockUsers = [
-      { 
-        _id: '1', 
-        email: 'admin@example.com', 
-        password: 'admin123', 
-        role: 'admin' as const, 
-        name: 'Admin User',
-        avatar: '',
-        bio: '',
-        location: '',
-        rating: 0,
-        ratingCount: 0,
-        favorites: [],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      },
-      { 
-        _id: '2', 
-        email: 'seller@example.com', 
-        password: 'seller123', 
-        role: 'seller' as const, 
-        name: 'Seller User',
-        avatar: '',
-        bio: '',
-        location: '',
-        rating: 0,
-        ratingCount: 0,
-        favorites: [],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      },
-      { 
-        _id: '3', 
-        email: 'user@example.com', 
-        password: 'user123', 
-        role: 'user' as const, 
-        name: 'Regular User',
-        avatar: '',
-        bio: '',
-        location: '',
-        rating: 0,
-        ratingCount: 0,
-        favorites: [],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      },
-    ];
+  static async login(credentials: LoginCredentials): Promise<LoginResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/users/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(credentials),
+      });
 
-    const user = mockUsers.find(u => 
-      u.email === credentials.email && u.password === credentials.password
-    );
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Tài khoản hoặc mật khẩu không chính xác');
+        }
+        throw new Error(`Đăng nhập thất bại: ${response.statusText}`);
+      }
 
-    if (!user) {
-      throw new Error('Invalid email or password');
+      const data: LoginResponse = await response.json();
+      return data;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Lỗi đã xảy ra');
     }
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password: _password, ...userWithoutPassword } = user;
-    return userWithoutPassword;
   }
 
-  static async register(credentials: RegisterCredentials): Promise<User> {
-    await new Promise(resolve => setTimeout(resolve, this.API_DELAY));
-    
-    // Validation
-    if (credentials.password !== credentials.confirmPassword) {
-      throw new Error('Passwords do not match');
-    }
-    
-    if (credentials.password.length < 6) {
-      throw new Error('Password must be at least 6 characters');
-    }
+  static async register(data: RegisterRequest): Promise<RegisterResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/users/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
 
-    if (!credentials.email.includes('@')) {
-      throw new Error('Please enter a valid email address');
-    }
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Đăng ký thất bại!');
+      }
 
-    if (!credentials.name.trim()) {
-      throw new Error('Name is required');
+      return await response.json();
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Lỗi đã xảy ra khi đăng ký');
     }
-    
-    // Check if email already exists
-    const existingEmails = ['admin@example.com', 'seller@example.com', 'user@example.com'];
-    if (existingEmails.includes(credentials.email)) {
-      throw new Error('Email already exists');
-    }
-    
-    return { 
-      _id: Math.random().toString(36), 
-      email: credentials.email, 
-      role: credentials.role,
-      name: credentials.name,
-      avatar: '',
-      bio: '',
-      location: '',
-      rating: 0,
-      ratingCount: 0,
-      favorites: [],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
   }
 
   static async getCurrentUser(): Promise<User | null> {
-    // This would check with the backend to validate the current session
-    // For now, we'll rely on the persisted store data
     return null;
   }
 
   static async refreshToken(): Promise<string> {
-    // In a real app, this would refresh the JWT token
-    await new Promise(resolve => setTimeout(resolve, 500));
-    return 'refreshed-token';
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Không thể làm mới token');
+      }
+
+      const data = await response.json();
+      return data.token;
+    } catch {
+      throw new Error('Phiên đăng nhập đã hết hạn');
+    }
   }
 
   static async logout(): Promise<void> {
-    // This would call the backend to invalidate the session
-    await new Promise(resolve => setTimeout(resolve, 300));
+    try {
+      await fetch(`${API_BASE_URL}/auth/logout`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+    } catch (error) {
+      console.warn('Logout API call failed:', error);
+    }
   }
-} 
+
+  static isValidEmail(email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+
+  static isValidPassword(password: string): boolean {
+    return password.length >= 6;
+  }
+}
+
+export const authService = {
+  register: AuthService.register,
+  login: AuthService.login,
+  logout: AuthService.logout,
+  getCurrentUser: AuthService.getCurrentUser,
+  refreshToken: AuthService.refreshToken,
+  isValidEmail: AuthService.isValidEmail,
+  isValidPassword: AuthService.isValidPassword,
+}; 
