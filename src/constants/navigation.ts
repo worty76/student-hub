@@ -4,12 +4,6 @@ export const NAVIGATION_LINKS = [
   { href: '/about', label: 'About' },
 ] as const;
 
-export const USER_ROLE_DASHBOARD_MAP = {
-  admin: '/admin/dashboard',
-  seller: '/seller/dashboard',
-  user: '/user/dashboard',
-} as const;
-
 export const APP_CONFIG = {
   name: 'StudentHub',
   description: 'Second-Hand Marketplace for Students',
@@ -29,7 +23,4 @@ export const ROUTES = {
   profile: '/profile',
   favorites: '/favorites',
   messages: '/messages',
-  sell: '/sell',
-  search: '/search',
-  unauthorized: '/unauthorized',
 } as const; 

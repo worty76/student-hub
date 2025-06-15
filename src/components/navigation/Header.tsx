@@ -9,7 +9,7 @@ import { UserMenu } from './UserMenu';
 import { SearchBar } from './SearchBar';
 import { MobileMenu } from './MobileMenu';
 import { NAVIGATION_LINKS, APP_CONFIG, ROUTES } from '@/constants/navigation';
-import { ShoppingBag, Plus } from 'lucide-react';
+import { ShoppingBag } from 'lucide-react';
 
 export function Header() {
   const { user, isAuthenticated, checkAuth } = useAuthStore();
@@ -58,16 +58,6 @@ export function Header() {
 
           {/* Right Side Actions */}
           <div className="flex items-center space-x-4">
-            {/* Sell Button */}
-            {isAuthenticated && (
-              <Link href={ROUTES.sell}>
-                <Button size="sm" className="hidden sm:flex items-center gap-2 bg-blue-600 hover:bg-blue-700">
-                  <Plus className="h-4 w-4" />
-                  Sell Item
-                </Button>
-              </Link>
-            )}
-
             {/* Authentication Section */}
             {isAuthenticated && user ? (
               <UserMenu />
