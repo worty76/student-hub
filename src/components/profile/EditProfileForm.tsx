@@ -10,10 +10,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { AlertCircle, Save, User, Mail, MapPin, Link, FileText, Shield } from 'lucide-react';
+import { AlertCircle, Save, User, Mail, MapPin, Link, FileText } from 'lucide-react';
 
 interface EditProfileFormProps {
   className?: string;
@@ -53,13 +52,15 @@ export const EditProfileForm: React.FC<EditProfileFormProps> = ({
   // Initialize form with current profile data
   useEffect(() => {
     if (profile) {
+      // Map role: if profile has 'seller', default to 'user' since form only supports 'user' and 'admin'
+      const mappedRole = profile.role === 'seller' ? 'user' : (profile.role || 'user');
       form.reset({
         name: profile.name || '',
         email: profile.email || '',
         bio: profile.bio || '',
         avatar: profile.avatar || '',
         location: profile.location || '',
-        role: profile.role || 'user',
+        role: mappedRole as 'user' | 'admin',
       });
     }
   }, [profile, form]);
@@ -131,13 +132,15 @@ export const EditProfileForm: React.FC<EditProfileFormProps> = ({
 
   const handleCancel = () => {
     if (profile) {
+      // Map role: if profile has 'seller', default to 'user' since form only supports 'user' and 'admin'
+      const mappedRole = profile.role === 'seller' ? 'user' : (profile.role || 'user');
       form.reset({
         name: profile.name || '',
         email: profile.email || '',
         bio: profile.bio || '',
         avatar: profile.avatar || '',
         location: profile.location || '',
-        role: profile.role || 'user',
+        role: mappedRole as 'user' | 'admin',
       });
     }
     clearUpdateError();

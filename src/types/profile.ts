@@ -12,18 +12,15 @@ export const editProfileSchema = z.object({
     .min(1, 'Email là bắt buộc'),
   bio: z
     .string()
-    .max(500, 'Giới thiệu không được vượt quá 500 ký tự')
-    .default(''),
+    .max(500, 'Giới thiệu không được vượt quá 500 ký tự'),
   avatar: z
     .string()
     .refine((val) => val === '' || z.string().url().safeParse(val).success, {
       message: 'Vui lòng nhập địa chỉ URL hợp lệ hoặc để trống',
-    })
-    .default(''),
+    }),
   location: z
     .string()
-    .max(100, 'Địa chỉ không được vượt quá 100 ký tự')
-    .default(''),
+    .max(100, 'Địa chỉ không được vượt quá 100 ký tự'),
   role: z.enum(['user', 'admin'], {
     required_error: 'Vui lòng chọn vai trò',
   }),
