@@ -3,8 +3,8 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
-import { RegisterForm } from '@/components/auth/RegisterForm';
 import Link from 'next/link';
+import RegisterForm from '@/components/auth/RegisterForm';
 
 export default function RegisterPage() {
   const { isAuthenticated, user } = useAuthStore();
@@ -33,7 +33,7 @@ export default function RegisterPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Redirecting...</p>
+          <p className="text-gray-600">Đang chuyển hướng...</p>
         </div>
       </div>
     );
@@ -44,10 +44,10 @@ export default function RegisterPage() {
       <div className="max-w-lg w-full space-y-8">
         <div className="text-center">
           <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-            Create Your Account
+            Tạo tài khoản
           </h2>
           <p className="mt-2 text-sm text-gray-600">
-            Join StudentHub and start connecting with the community
+            Tham gia StudentHub và bắt đầu kết nối với cộng đồng
           </p>
         </div>
         
@@ -55,12 +55,12 @@ export default function RegisterPage() {
         
         <div className="text-center">
           <p className="text-sm text-gray-600">
-            Already have an account?{' '}
+            Đã có tài khoản?{' '}
             <Link 
               href="/auth/login" 
               className="font-medium text-blue-600 hover:text-blue-500"
             >
-              Sign in here
+              Đăng nhập ở đây
             </Link>
           </p>
         </div>

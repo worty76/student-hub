@@ -7,7 +7,7 @@ import { useAuthStore } from '@/store/authStore';
 import { Button } from '@/components/ui/button';
 import { SearchBar } from './SearchBar';
 import { ROUTES } from '@/constants/navigation';
-import { Menu, X, Plus } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 
 interface MobileMenuProps {
   navLinks: Array<{ href: string; label: string; active: boolean }>;
@@ -81,20 +81,6 @@ export function MobileMenu({ navLinks }: MobileMenuProps) {
                   {link.label}
                 </Link>
               ))}
-
-              {/* Sell Button for authenticated users */}
-              {isAuthenticated && (
-                <Link 
-                  href={ROUTES.sell} 
-                  className="mt-4"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <Button className="w-full flex items-center gap-2 bg-blue-600 hover:bg-blue-700">
-                    <Plus className="h-4 w-4" />
-                    Sell Item
-                  </Button>
-                </Link>
-              )}
 
               {/* Auth Buttons for non-authenticated users */}
               {!isAuthenticated && (
