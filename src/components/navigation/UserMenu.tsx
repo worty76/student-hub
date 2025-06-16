@@ -43,15 +43,6 @@ export function UserMenu({ onMenuToggle }: UserMenuProps) {
     }
   };
 
-  const getDashboardLink = () => {
-    switch (user.role) {
-      case 'admin': return '/admin/dashboard';
-      case 'seller': return '/seller/dashboard';
-      case 'user': return '/user/dashboard';
-      default: return '/dashboard';
-    }
-  };
-
   const handleMenuItemClick = () => {
     setIsOpen(false);
     onMenuToggle?.();
@@ -133,16 +124,7 @@ export function UserMenu({ onMenuToggle }: UserMenuProps) {
             </div>
           </div>
           
-          {/* Menu Items */}
-          <Link
-            href={getDashboardLink()}
-            className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-            onClick={handleMenuItemClick}
-          >
-            <User className="h-4 w-4 mr-3 text-gray-500" />
-            Bảng điều khiển
-          </Link>
-          
+          {/* Menu Items */} 
           <Link
             href="/profile"
             className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
@@ -153,12 +135,12 @@ export function UserMenu({ onMenuToggle }: UserMenuProps) {
           </Link>
           
           <Link
-            href="/profile/edit"
+            href="/my-products"
             className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
             onClick={handleMenuItemClick}
           >
             <Settings className="h-4 w-4 mr-3 text-gray-500" />
-            Chỉnh sửa hồ sơ
+            Sản phẩm của tôi
           </Link>
           
           <Link
