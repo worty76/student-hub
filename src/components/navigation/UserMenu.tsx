@@ -10,10 +10,10 @@ import { ROUTES } from '@/constants/navigation';
 import {
   User,
   LogOut,
-  Settings,
   Heart,
   MessageCircle,
-  ChevronDown
+  ChevronDown,
+  Package2
 } from 'lucide-react';
 
 interface UserMenuProps {
@@ -29,7 +29,6 @@ export function UserMenu({ onMenuToggle }: UserMenuProps) {
 
   if (!user) return null;
 
-  // Use profile data if available, fallback to auth user
   const currentUser = displayUser || user;
 
   const handleLogout = async () => {
@@ -139,7 +138,7 @@ export function UserMenu({ onMenuToggle }: UserMenuProps) {
             className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
             onClick={handleMenuItemClick}
           >
-            <Settings className="h-4 w-4 mr-3 text-gray-500" />
+            <Package2 className="h-4 w-4 mr-3 text-gray-500" />
             Sản phẩm của tôi
           </Link>
           

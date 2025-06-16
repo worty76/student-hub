@@ -18,8 +18,8 @@ import { ProductDataTable } from '@/components/product/ProductDataTable';
 import Link from 'next/link';
 
 interface UserProductsListProps {
-  userId?: string; // Optional - if not provided, uses current user
-  showActions?: boolean; // Show edit/delete actions
+  userId?: string;
+  showActions?: boolean;
   onEdit?: (productId: string) => void;
   onDelete?: (productId: string) => void;
   onViewDetails?: (productId: string) => void;
@@ -36,7 +36,6 @@ export function UserProductsList({
   const { toast } = useToast();
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   
-  // Zustand stores
   const {
     userProducts,
     isLoadingUserProducts,
@@ -48,11 +47,9 @@ export function UserProductsList({
 
   const { user, token } = useAuthStore();
 
-  // Determine which user's products to load  
   const targetUserId = userId || user?._id;
   const isCurrentUser = !userId || targetUserId === user?._id;
 
-  // Load products on component mount
   useEffect(() => {
     const loadProducts = async () => {
       if (!targetUserId) {
@@ -62,10 +59,8 @@ export function UserProductsList({
 
       try {
         if (isCurrentUser && token) {
-          // Use current user endpoint with token
           await loadUserProducts(token);
                  } else if (targetUserId) {
-           // Use specific user endpoint
            await loadUserProductsByUserId(targetUserId, token || undefined);
          }
       } catch (error) {
@@ -83,17 +78,14 @@ export function UserProductsList({
     loadProducts();
   }, [targetUserId, isCurrentUser, token, loadUserProducts, loadUserProductsByUserId, toast]);
 
-  // Handle edit action
   const handleEdit = (productId: string) => {
     if (onEdit) {
       onEdit(productId);
     } else {
-      // Default behavior - could navigate to edit page
       console.log('Edit product:', productId);
     }
   };
 
-  // Handle view details action
   const handleViewDetails = (productId: string) => {
     if (onViewDetails) {
       onViewDetails(productId);
@@ -113,9 +105,6 @@ export function UserProductsList({
 //     }
 //   };
 
-
-
-  // Show loading state during initial load
   if (isInitialLoad || isLoadingUserProducts) {
     return (
       <div className={className}>
@@ -133,7 +122,6 @@ export function UserProductsList({
     );
   }
 
-  // Show error state
   if (userProductsError) {
     return (
       <div className={className}>
@@ -159,7 +147,6 @@ export function UserProductsList({
     );
   }
 
-  // Show empty state
   if (!userProducts || userProducts.length === 0) {
     return (
       <div className={className}>
@@ -197,7 +184,6 @@ export function UserProductsList({
     <div className={className}>
       <Card className="w-full">
         <div className="p-6">
-          {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-primary/10 rounded-lg">
@@ -222,7 +208,6 @@ export function UserProductsList({
             )}
           </div>
 
-          {/* Products Data Table */}
                     <ProductDataTable
             data={userProducts}
             showActions={showActions}
@@ -231,7 +216,6 @@ export function UserProductsList({
             onEdit={handleEdit}
             onViewDetails={handleViewDetails}
             onDeleteSuccess={() => {
-              // Refresh products after successful delete
               if (targetUserId && isCurrentUser && token) {
                 loadUserProducts(token);
               } else if (targetUserId) {

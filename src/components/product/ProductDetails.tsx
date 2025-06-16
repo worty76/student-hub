@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Loader2, ChevronLeft, ChevronRight, MapPin, Eye, Heart, Calendar, User, Package, Tag, DollarSign } from 'lucide-react';
+import { ProductFavoriteButton } from './ProductFavoriteButton';
 
 interface ProductDetailsProps {
   productId?: string;
@@ -384,16 +385,13 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
                     size="lg"
                     disabled={currentProduct.status !== 'available'}
                   >
-                    <Heart className="h-4 w-4 mr-2" />
+                    <User className="h-4 w-4 mr-2" />
                     Liên hệ người bán
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    size="lg"
-                  >
-                    <Heart className="h-4 w-4 mr-2" />
-                    Yêu thích
-                  </Button>
+                  <ProductFavoriteButton 
+                    productId={currentProduct._id} 
+                    className="flex-1"
+                  />
                 </div>
               </CardContent>
             </Card>
