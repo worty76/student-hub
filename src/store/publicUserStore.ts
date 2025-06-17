@@ -5,14 +5,14 @@ import { UserService } from '@/services/user.service';
 import { ProductService } from '@/services/product.service';
 
 interface PublicUserState {
-  users: Record<string, User>; // Cache users by ID
-  userProducts: Record<string, Product[]>; // Cache products by user ID
+  users: Record<string, User>;
+  userProducts: Record<string, Product[]>;
   isLoading: boolean;
   isLoadingProducts: boolean;
   error: string | null;
   productsError: string | null;
-  currentUser: User | null; // Currently viewed user
-  currentUserProducts: Product[] | null; // Products of currently viewed user
+  currentUser: User | null;
+  currentUserProducts: Product[] | null;
 }
 
 interface PublicUserActions {
@@ -26,7 +26,6 @@ interface PublicUserActions {
 interface PublicUserStore extends PublicUserState, PublicUserActions {}
 
 export const usePublicUserStore = create<PublicUserStore>((set, get) => ({
-  // State
   users: {},
   userProducts: {},
   isLoading: false,
@@ -36,9 +35,7 @@ export const usePublicUserStore = create<PublicUserStore>((set, get) => ({
   currentUser: null,
   currentUserProducts: null,
 
-  // Actions
   fetchUser: async (id: string) => {
-    // Check if user is already cached
     const { users } = get();
     if (users[id]) {
       set({ currentUser: users[id], error: null });
@@ -67,7 +64,6 @@ export const usePublicUserStore = create<PublicUserStore>((set, get) => ({
   },
 
   fetchUserProducts: async (userId: string) => {
-    // Check if products are already cached
     const { userProducts } = get();
     if (userProducts[userId]) {
       set({ currentUserProducts: userProducts[userId], productsError: null });

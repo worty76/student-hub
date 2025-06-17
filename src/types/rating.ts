@@ -2,9 +2,15 @@ export interface Rating {
   _id: string;
   rating: number;
   comment: string;
-  user: string;
-  target: string;
+  rater: {
+    _id: string;
+    name: string;
+    avatar?: string;
+  };
+  rated: string;
   createdAt: string;
+  updatedAt: string;
+  __v: number;
 }
 
 export interface CreateRatingRequest {
@@ -31,7 +37,6 @@ export interface RatingValidationErrors {
   comment?: string;
 }
 
-// New interfaces for fetching ratings
 export interface RatingWithUserInfo extends Rating {
   userInfo?: {
     _id: string;

@@ -22,7 +22,7 @@ export default function MyProductsPage() {
   };
 
   const handleViewDetails = (productId: string) => {
-    router.push(`/product/${productId}`);
+    router.push(`/products/${productId}`);
   };
 
   return (

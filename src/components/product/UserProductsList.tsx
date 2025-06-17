@@ -91,7 +91,7 @@ export function UserProductsList({
       onViewDetails(productId);
     } else {
       // Default behavior - navigate to product details page
-      window.open(`/product/${productId}`, '_blank');
+      window.open(`/products/${productId}`, '_blank');
     }
   };
 

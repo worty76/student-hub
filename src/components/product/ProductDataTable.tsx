@@ -152,7 +152,7 @@ export function ProductDataTable({
     if (onViewDetails) {
       onViewDetails(productId);
     } else {
-      window.open(`/product/${productId}`, '_blank');
+      window.open(`/products/${productId}`, '_blank');
     }
   }, [onViewDetails]);
 

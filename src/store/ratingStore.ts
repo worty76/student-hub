@@ -3,12 +3,10 @@ import { CreateRatingRequest, CreateRatingResponse, Rating } from '@/types/ratin
 import { ratingService } from '@/services/rating.service';
 
 interface RatingState {
-  // Rating creation state
   isLoading: boolean;
   error: string | null;
   lastRating: CreateRatingResponse | null;
   
-  // User ratings state
   userRatings: Rating[];
   isLoadingRatings: boolean;
   ratingsError: string | null;
@@ -16,12 +14,10 @@ interface RatingState {
 }
 
 interface RatingActions {
-  // Rating creation actions
   createRating: (userId: string, ratingData: CreateRatingRequest, token: string) => Promise<CreateRatingResponse>;
   clearError: () => void;
   clearLastRating: () => void;
   
-  // User ratings actions
   fetchUserRatings: (userId: string) => Promise<void>;
   clearUserRatings: () => void;
   clearRatingsError: () => void;
@@ -30,18 +26,15 @@ interface RatingActions {
 type RatingStore = RatingState & RatingActions;
 
 export const useRatingStore = create<RatingStore>((set) => ({
-  // Rating creation state
   isLoading: false,
   error: null,
   lastRating: null,
   
-  // User ratings state
   userRatings: [],
   isLoadingRatings: false,
   ratingsError: null,
   currentUserId: null,
 
-  // Rating creation actions
   createRating: async (userId: string, ratingData: CreateRatingRequest, token: string) => {
     set({ isLoading: true, error: null });
     
@@ -54,7 +47,7 @@ export const useRatingStore = create<RatingStore>((set) => ({
       });
       return rating;
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to create rating';
+      const errorMessage = error instanceof Error ? error.message : 'Lỗi khi đánh giá';
       set({ 
         isLoading: false, 
         error: errorMessage,
@@ -72,7 +65,6 @@ export const useRatingStore = create<RatingStore>((set) => ({
     set({ lastRating: null });
   },
 
-  // User ratings actions
   fetchUserRatings: async (userId: string) => {
     set({ isLoadingRatings: true, ratingsError: null });
     
@@ -85,7 +77,7 @@ export const useRatingStore = create<RatingStore>((set) => ({
         currentUserId: userId
       });
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch ratings';
+      const errorMessage = error instanceof Error ? error.message : 'Lỗi khi tải đánh giá';
       set({ 
         userRatings: [],
         isLoadingRatings: false,

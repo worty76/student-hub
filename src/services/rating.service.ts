@@ -22,15 +22,15 @@ export class RatingService {
 
       if (!response.ok) {
         if (response.status === 401) {
-          throw new Error('Unauthorized - Please login again');
+          throw new Error('Bạn không có quyền đánh giá');
         }
         if (response.status === 404) {
-          throw new Error('User not found');
+          throw new Error('Người dùng không tồn tại');
         }
         if (response.status === 400) {
-          throw new Error(data.message || 'Invalid rating data');
+          throw new Error(data.message || 'Dữ liệu đánh giá không hợp lệ');
         }
-        throw new Error(data.message || `Failed to create rating: ${response.statusText}`);
+        throw new Error(data.message || `Lỗi khi đánh giá: ${response.statusText}`);
       }
 
       return data;
@@ -38,7 +38,7 @@ export class RatingService {
       if (error instanceof Error) {
         throw error;
       }
-      throw new Error('Failed to create rating');
+      throw new Error('Lỗi khi đánh giá');
     }
   }
 
@@ -53,16 +53,15 @@ export class RatingService {
 
       if (!response.ok) {
         if (response.status === 404) {
-          throw new Error('User not found');
+          throw new Error('Người dùng không tồn tại');
         }
-        throw new Error(`Failed to fetch ratings: ${response.status} ${response.statusText}`);
+        throw new Error(`Lỗi khi tải đánh giá: ${response.status} ${response.statusText}`);
       }
 
       const ratings: Rating[] = await response.json();
       
-      // Validate the ratings array
       if (!Array.isArray(ratings)) {
-        console.warn('API returned non-array ratings data:', ratings);
+        console.warn('❌ API returned non-array ratings data:', ratings);
         return [];
       }
       
@@ -71,7 +70,7 @@ export class RatingService {
       if (error instanceof Error) {
         throw error;
       }
-      throw new Error('Failed to fetch user ratings');
+      throw new Error('Lỗi khi tải đánh giá');
     }
   }
 }

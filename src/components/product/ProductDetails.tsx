@@ -8,9 +8,10 @@ import { getCategoryLabel, getConditionLabel, getStatusLabel } from '@/types/pro
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Loader2, ChevronLeft, ChevronRight, MapPin, Eye, Heart, Calendar, User, Package, Tag, DollarSign } from 'lucide-react';
+import { Loader2, ChevronLeft, ChevronRight, MapPin, Eye, Heart, Calendar, User, Package, Tag, DollarSign, AlertCircle } from 'lucide-react';
 import { ProductFavoriteButton } from './ProductFavoriteButton';
 import ProductComments from './ProductComments';
+import { formatDate } from '@/lib/utils';
 
 interface ProductDetailsProps {
   productId?: string;
@@ -82,15 +83,9 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
     }).format(price);
   };
 
-  const formatDate = (dateString?: string) => {
+  const formatDateDisplay = (dateString?: string) => {
     if (!dateString) return 'N/A';
-    return new Date(dateString).toLocaleDateString('vi-VN', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    return formatDate.dateTime(dateString);
   };
 
   const getStatusColor = (status: string) => {
@@ -378,14 +373,14 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
                   <div className="flex items-center space-x-2">
                     <Calendar className="h-4 w-4 text-gray-500" />
                     <span className="font-medium">Ngày đăng:</span>
-                    <span>{formatDate(currentProduct.createdAt)}</span>
+                    <span>{formatDateDisplay(currentProduct.createdAt)}</span>
                   </div>
                   
                   {currentProduct.updatedAt && currentProduct.updatedAt !== currentProduct.createdAt && (
                     <div className="flex items-center space-x-2">
                       <Calendar className="h-4 w-4 text-gray-500" />
                       <span className="font-medium">Cập nhật lần cuối:</span>
-                      <span>{formatDate(currentProduct.updatedAt)}</span>
+                      <span>{formatDateDisplay(currentProduct.updatedAt)}</span>
                     </div>
                   )}
                 </div>

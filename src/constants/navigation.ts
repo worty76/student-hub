@@ -1,5 +1,5 @@
 export const NAVIGATION_LINKS = [
-  { href: '/product', label: 'Products' },
+  { href: '/products', label: 'Sản phẩm' },
   { href: '/categories', label: 'Categories' },
   { href: '/about', label: 'About' },
 ] as const;

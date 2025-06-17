@@ -239,17 +239,11 @@ export default function PublicUserProfile({ userId }: PublicUserProfileProps) {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-3">
+                <div className="space-y-3"> 
                   <div>
-                    <span className="font-medium text-gray-700">ID:</span>
-                    <span className="ml-2 font-mono text-sm">{currentUser._id}</span>
+                    <span className="font-medium text-gray-700">Số sản phẩm yêu thích:</span>
+                    <span className="ml-2">{currentUser.favorites?.length || 0}</span>
                   </div>
-                  
-                  <div>
-                    <span className="font-medium text-gray-700">Vai trò:</span>
-                    <span className="ml-2">{getRoleLabel(currentUser.role)}</span>
-                  </div>
-
                   <div>
                     <span className="font-medium text-gray-700">Đánh giá:</span>
                     <span className="ml-2">{currentUser.rating || 0} / 5 ({currentUser.ratingCount || 0} lượt)</span>
@@ -257,11 +251,6 @@ export default function PublicUserProfile({ userId }: PublicUserProfileProps) {
                 </div>
 
                 <div className="space-y-3">
-                  <div>
-                    <span className="font-medium text-gray-700">Số sản phẩm yêu thích:</span>
-                    <span className="ml-2">{currentUser.favorites?.length || 0}</span>
-                  </div>
-
                   <div>
                     <span className="font-medium text-gray-700">Ngày tham gia:</span>
                     <span className="ml-2">{formatDate(currentUser.createdAt)}</span>
@@ -298,25 +287,21 @@ export default function PublicUserProfile({ userId }: PublicUserProfileProps) {
             </CardContent>
           </Card>
 
-          {/* User Ratings Section */}
-          <UserRatingsList 
-            userId={currentUser._id} 
-            userName={currentUser.name}
-          />
-
-          {/* Rating Form Section - Only show if user is authenticated and not viewing their own profile */}
           {currentAuthUser && currentAuthUser._id !== currentUser._id && (
             <RatingForm 
               userId={currentUser._id} 
               userName={currentUser.name}
               onRatingSuccess={() => {
-                // Optionally refresh user data after successful rating
                 fetchUser(userId);
               }}
             />
           )}
 
-          {/* User Products Section */}
+          <UserRatingsList 
+            userId={currentUser._id} 
+            userName={currentUser.name}
+          />
+
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">Sản phẩm đang bán</CardTitle>

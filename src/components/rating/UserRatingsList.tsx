@@ -6,6 +6,7 @@ import { useRatingStore } from '@/store/ratingStore';
 import { userService } from '@/services/user.service';
 import { Loader2, Calendar, User } from 'lucide-react';
 import { RatingWithUserInfo } from '@/types/rating';
+import { formatDate } from '@/lib/utils';
 
 interface UserRatingsListProps {
   userId: string;
@@ -21,57 +22,41 @@ function RatingCard({ rating }: RatingCardProps) {
   const [isLoadingUser, setIsLoadingUser] = React.useState(true);
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
+    // Since the API now returns the rater info directly, we don't need to fetch it
+    const extractUserInfo = () => {
       try {
         setIsLoadingUser(true);
         
-        // Check if user ID is valid
-        if (!rating.user || rating.user.trim() === '') {
-          setUserInfo({ name: 'Anonymous User' });
+        if (!rating.rater || !rating.rater._id) {
+          setUserInfo({ name: 'Người dùng ẩn danh' });
           return;
         }
-
-        const user = await userService.getUserById(rating.user);
+        
         setUserInfo({
-          name: user.name || 'Unknown User',
-          avatar: user.avatar,
+          name: rating.rater.name || 'Người dùng ẩn danh',
+          avatar: rating.rater.avatar,
         });
       } catch (error) {
-        // Log the error for debugging but don't show it to users
-        console.warn(`Failed to fetch user info for ID ${rating.user}:`, error);
-        
-        // Set a fallback name based on error type
-        if (error instanceof Error && error.message.includes('User not found')) {
-          setUserInfo({ name: 'Deleted User' });
-        } else {
-          setUserInfo({ name: 'Unknown User' });
-        }
+        console.warn('Error processing rater info:', error);
+        setUserInfo({ name: 'Người dùng ẩn danh' });
       } finally {
         setIsLoadingUser(false);
       }
     };
 
-    fetchUserInfo();
-  }, [rating.user]);
+    extractUserInfo();
+  }, [rating.rater]);
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+  const formatDateDisplay = (dateString: string) => {
+    return formatDate.dateTime(dateString);
   };
 
   return (
     <Card className="mb-4">
       <CardContent className="pt-6">
         <div className="space-y-4">
-          {/* Rating Header */}
           <div className="flex items-start justify-between">
             <div className="flex items-center space-x-3">
-              {/* User Avatar */}
               <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0">
                 {userInfo?.avatar ? (
                   <Image
@@ -91,26 +76,24 @@ function RatingCard({ rating }: RatingCardProps) {
                   {isLoadingUser ? (
                     <div className="flex items-center space-x-2">
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      <span className="text-sm text-gray-500">Loading...</span>
+                      <span className="text-sm text-gray-500">Đang tải...</span>
                     </div>
                   ) : (
                     <span className="font-medium text-gray-900">
-                      {userInfo?.name || 'Unknown User'}
+                      {userInfo?.name || 'Người dùng ẩn danh'}
                     </span>
                   )}
                 </div>
                 <div className="flex items-center space-x-2 text-sm text-gray-500">
                   <Calendar className="h-4 w-4" />
-                  <span>{formatDate(rating.createdAt)}</span>
+                  <span>{formatDateDisplay(rating.createdAt)}</span>
                 </div>
               </div>
             </div>
             
-            {/* Star Rating */}
             <StarRating rating={rating.rating} readonly size="sm" />
           </div>
           
-          {/* Comment */}
           <div className="pl-0 md:pl-13">
             <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
               {rating.comment}
@@ -123,7 +106,6 @@ function RatingCard({ rating }: RatingCardProps) {
 }
 
 export function UserRatingsList({ userId, userName }: UserRatingsListProps) {
-  // Feature flag to disable ratings display if there are issues
   const ENABLE_RATINGS_DISPLAY = process.env.NEXT_PUBLIC_ENABLE_RATINGS_DISPLAY !== 'false';
   
   const { 
@@ -146,12 +128,10 @@ export function UserRatingsList({ userId, userName }: UserRatingsListProps) {
     };
   }, [userId, fetchUserRatings, clearUserRatings, clearRatingsError]);
 
-  // If ratings display is disabled, don't render anything
   if (!ENABLE_RATINGS_DISPLAY) {
     return null;
   }
 
-  // Calculate average rating
   const averageRating = userRatings.length > 0 
     ? userRatings.reduce((sum, rating) => sum + rating.rating, 0) / userRatings.length
     : 0;
@@ -162,7 +142,7 @@ export function UserRatingsList({ userId, userName }: UserRatingsListProps) {
         <CardContent className="p-8">
           <div className="flex items-center justify-center space-x-2">
             <Loader2 className="h-6 w-6 animate-spin" />
-            <span className="text-lg">Loading ratings...</span>
+            <span className="text-lg">Đang tải đánh giá...</span>
           </div>
         </CardContent>
       </Card>
@@ -170,26 +150,22 @@ export function UserRatingsList({ userId, userName }: UserRatingsListProps) {
   }
 
   if (ratingsError) {
-    // If it's a user not found error, don't show the ratings section at all
     if (ratingsError === 'User not found') {
       return null;
     }
     
-    // For other errors, show a simplified message or hide the section
     console.warn('Ratings error:', ratingsError);
     
-    // For now, just show an empty state instead of an error
-    // This makes the UI more graceful when the ratings API isn't available
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Ratings for {userName}</CardTitle>
+          <CardTitle className="text-lg">Đánh giá cho {userName}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8">
-            <div className="text-gray-500 text-lg mb-2">No ratings available</div>
+            <div className="text-gray-500 text-lg mb-2">Không có đánh giá</div>
             <p className="text-gray-400">
-              Ratings for this user are currently unavailable.
+              Đánh giá cho người dùng này hiện không khả dụng.
             </p>
           </div>
         </CardContent>
@@ -202,7 +178,7 @@ export function UserRatingsList({ userId, userName }: UserRatingsListProps) {
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg">
-            Ratings for {userName}
+            Đánh giá cho {userName}
           </CardTitle>
           <div className="flex items-center space-x-4">
             {userRatings.length > 0 && (
@@ -211,7 +187,7 @@ export function UserRatingsList({ userId, userName }: UserRatingsListProps) {
                   <StarRating rating={Math.round(averageRating * 10) / 10} readonly size="sm" />
                 </div>
                 <span className="text-sm text-gray-600">
-                  ({userRatings.length} review{userRatings.length !== 1 ? 's' : ''})
+                  ({userRatings.length} đánh giá{userRatings.length !== 1 ? 's' : ''})
                 </span>
               </>
             )}
@@ -221,9 +197,9 @@ export function UserRatingsList({ userId, userName }: UserRatingsListProps) {
       <CardContent>
         {userRatings.length === 0 ? (
           <div className="text-center py-8">
-            <div className="text-gray-500 text-lg mb-2">No ratings yet</div>
+            <div className="text-gray-500 text-lg mb-2">Không có đánh giá</div>
                          <p className="text-gray-400">
-               {userName} hasn&apos;t received any ratings yet.
+               {userName} chưa nhận được đánh giá nào.
             </p>
           </div>
         ) : (

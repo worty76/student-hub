@@ -29,13 +29,13 @@ export function RatingForm({ userId, userName, onRatingSuccess }: RatingFormProp
     const newErrors: RatingValidationErrors = {};
 
     if (formData.rating === 0) {
-      newErrors.rating = 'Please select a rating';
+      newErrors.rating = 'Vui lòng chọn đánh giá';
     }
 
     if (!formData.comment.trim()) {
-      newErrors.comment = 'Please enter a comment';
+      newErrors.comment = 'Vui lòng nhập bình luận';
     } else if (formData.comment.trim().length < 10) {
-      newErrors.comment = 'Comment must be at least 10 characters long';
+      newErrors.comment = 'Bình luận phải có ít nhất 10 ký tự';
     }
 
     setErrors(newErrors);
@@ -47,7 +47,7 @@ export function RatingForm({ userId, userName, onRatingSuccess }: RatingFormProp
     clearError();
 
     if (!isAuthenticated || !token) {
-      toast.error('Please login to rate users');
+      toast.error('Vui lòng đăng nhập để đánh giá');
       return;
     }
 
@@ -58,7 +58,7 @@ export function RatingForm({ userId, userName, onRatingSuccess }: RatingFormProp
     try {
       await createRating(userId, formData, token);
       
-      toast.success(`Your rating for ${userName} has been submitted successfully!`);
+      toast.success(`Đánh giá của bạn cho ${userName} đã được gửi thành công!`);
 
       // Reset form
       setFormData({ rating: 0, comment: '' });
@@ -69,7 +69,7 @@ export function RatingForm({ userId, userName, onRatingSuccess }: RatingFormProp
         onRatingSuccess();
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to submit rating. Please try again.');
+      toast.error(error instanceof Error ? error.message : 'Lỗi khi gửi đánh giá. Vui lòng thử lại.');
     }
   };
 
@@ -93,9 +93,9 @@ export function RatingForm({ userId, userName, onRatingSuccess }: RatingFormProp
       <Card>
         <CardContent className="pt-6">
           <div className="text-center">
-            <p className="text-gray-600 mb-4">Please login to rate this user</p>
+            <p className="text-gray-600 mb-4">Vui lòng đăng nhập để đánh giá</p>
             <Button variant="outline" onClick={() => window.location.href = '/auth/login'}>
-              Login
+              Đăng nhập
             </Button>
           </div>
         </CardContent>
@@ -106,14 +106,14 @@ export function RatingForm({ userId, userName, onRatingSuccess }: RatingFormProp
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">Rate {userName}</CardTitle>
+        <CardTitle className="text-lg">Đánh giá {userName}</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Star Rating */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">
-              Rating <span className="text-red-500">*</span>
+              Đánh giá <span className="text-red-500">*</span>
             </label>
             <StarRating
               rating={formData.rating}
@@ -128,12 +128,12 @@ export function RatingForm({ userId, userName, onRatingSuccess }: RatingFormProp
           {/* Comment */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">
-              Comment <span className="text-red-500">*</span>
+              Bình luận <span className="text-red-500">*</span>
             </label>
             <Textarea
               value={formData.comment}
               onChange={handleCommentChange}
-              placeholder="Share your experience with this user..."
+              placeholder="Chia sẻ trải nghiệm của bạn với người dùng này..."
               rows={4}
               error={errors.comment}
             />
@@ -149,10 +149,10 @@ export function RatingForm({ userId, userName, onRatingSuccess }: RatingFormProp
               {isLoading ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Submitting...
+                  Đang gửi...
                 </>
               ) : (
-                'Submit Rating'
+                'Gửi đánh giá'
               )}
             </Button>
           </div>

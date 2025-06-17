@@ -66,7 +66,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
           {/* Overlay on Hover */}
           <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
-            <Link href={`/product/${product.id}`}>
+            <Link href={`/products/${product.id}`}>
               <Button 
                 className="opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 bg-white text-gray-900 hover:bg-gray-100"
               >
@@ -84,7 +84,7 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
 
         {/* Title */}
-        <Link href={`/product/${product.id}`}>
+        <Link href={`/products/${product.id}`}>
           <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors cursor-pointer">
             {product.title}
           </h3>
@@ -114,7 +114,7 @@ export function ProductCard({ product }: ProductCardProps) {
             <span className="text-sm text-gray-600">{product.seller.name}</span>
           </div>
           
-          <Link href={`/product/${product.id}`}>
+          <Link href={`/products/${product.id}`}>
             <Button 
               variant="outline" 
               size="sm"

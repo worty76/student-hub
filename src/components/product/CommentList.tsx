@@ -14,6 +14,7 @@ import EditCommentForm from './EditCommentForm';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useAuthStore } from '@/store/authStore';
 import { DeleteCommentButton } from './DeleteCommentButton';
+import { formatDate } from '@/lib/utils';
 
 interface CommentListProps {
   productId: string;
@@ -50,7 +51,7 @@ export default function CommentList({ }: CommentListProps) {
   const [activeReplyForm, setActiveReplyForm] = useState<string | null>(null);
   const [collapsedReplies, setCollapsedReplies] = useState<Set<string>>(new Set());
 
-  const formatDate = (dateString: string) => {
+  const formatDateDisplay = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
@@ -67,13 +68,7 @@ export default function CommentList({ }: CommentListProps) {
       const days = Math.floor(diffInSeconds / 86400);
       return `${days} ngày trước`;
     } else {
-      return date.toLocaleDateString('vi-VN', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
+      return formatDate.dateTime(dateString);
     }
   };
 
@@ -167,7 +162,7 @@ export default function CommentList({ }: CommentListProps) {
               </h5>
               <div className="flex items-center space-x-1 text-xs text-gray-500">
                 <Clock className="h-2.5 w-2.5" />
-                <span>{formatDate(reply.createdAt)}</span>
+                <span>{formatDateDisplay(reply.createdAt)}</span>
                 {reply.updatedAt !== reply.createdAt && (
                   <span className="text-gray-400">(đã sửa)</span>
                 )}
@@ -249,7 +244,7 @@ export default function CommentList({ }: CommentListProps) {
                 </h4>
                 <div className="flex items-center space-x-1 text-xs text-gray-500">
                   <Clock className="h-3 w-3" />
-                  <span>{formatDate(comment.createdAt)}</span>
+                  <span>{formatDateDisplay(comment.createdAt)}</span>
                   {comment.updatedAt !== comment.createdAt && (
                     <span className="text-gray-400">(đã sửa)</span>
                   )}
