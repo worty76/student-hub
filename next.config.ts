@@ -15,6 +15,12 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'vcdn1-giaitri.vnecdn.net',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 };

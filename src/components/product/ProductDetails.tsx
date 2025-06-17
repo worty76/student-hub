@@ -60,6 +60,21 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
     }
   };
 
+  const handleViewSellerProfile = () => {
+    if (currentProduct?.seller) {
+      let sellerId: string;
+      
+      // Handle both string and object seller types
+      if (typeof currentProduct.seller === 'string') {
+        sellerId = currentProduct.seller;
+      } else {
+        sellerId = currentProduct.seller._id;
+      }
+      
+      router.push(`/users/${sellerId}`);
+    }
+  };
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
@@ -385,9 +400,10 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
                     className="flex-1 cursor-pointer" 
                     size="lg"
                     disabled={currentProduct.status !== 'available'}
+                    onClick={handleViewSellerProfile}
                   >
                     <User className="h-4 w-4 mr-2" />
-                    Liên hệ người bán
+                    Xem trang cá nhân người bán
                   </Button>
                   <ProductFavoriteButton 
                     productId={currentProduct._id} 

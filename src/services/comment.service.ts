@@ -283,10 +283,10 @@ export class CommentService {
     let pollingInterval: NodeJS.Timeout | null = null;
     let lastCommentId: string | null = null;
     let lastReplyTimestamp: number = Date.now();
-    let previousLikeCounts: Map<string, number> = new Map();
-    let previousCommentUpdates: Map<string, string> = new Map(); // Track last updated timestamps
+    const previousLikeCounts: Map<string, number> = new Map();
+    const previousCommentUpdates: Map<string, string> = new Map(); // Track last updated timestamps
     let previousCommentIds: Set<string> = new Set(); // Track comment IDs to detect deletions
-    let previousReplyIds: Map<string, Set<string>> = new Map(); // Track reply IDs per comment
+    const previousReplyIds: Map<string, Set<string>> = new Map(); // Track reply IDs per comment
     let cleanup = false;
 
     const startPolling = () => {

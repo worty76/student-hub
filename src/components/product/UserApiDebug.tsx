@@ -24,9 +24,7 @@ export default function UserApiDebug() {
     
     if (user) {
       const possibleIds = [
-        user._id && `_id: ${user._id}`,
-        (user as any).id && `id: ${(user as any).id}`,
-        (user as any).userId && `userId: ${(user as any).userId}`
+        user._id && `_id: ${user._id}`
       ].filter(Boolean);
       
       addResult(`🆔 Possible user ID fields: ${possibleIds.join(', ') || 'None found'}`);
@@ -39,7 +37,7 @@ export default function UserApiDebug() {
       return;
     }
 
-    const userId = user._id || (user as any).id || (user as any).userId;
+    const userId = user._id;
     setIsLoading(true);
     addResult(`🔍 Testing current user ID: ${userId}`);
     
@@ -95,12 +93,12 @@ export default function UserApiDebug() {
         addResult(`📋 Number of comments: ${comments.length}`);
         
         if (comments.length > 0) {
-          const userIds = [...new Set(comments.map((c: any) => c.user))];
+          const userIds = [...new Set(comments.map((c: unknown) => (c as { user: string }).user))];
           addResult(`👥 User IDs in comments: ${JSON.stringify(userIds)}`);
           
-          const currentUserId = user?.id || user?._id;
+          const currentUserId = user?._id;
           addResult(`👤 Your user ID: ${currentUserId}`);
-          addResult(`🔍 Your comments: ${comments.filter((c: any) => c.user === currentUserId).length}`);
+          addResult(`🔍 Your comments: ${comments.filter((c: unknown) => (c as { user: string }).user === currentUserId).length}`);
         }
       } else {
         const errorText = await response.text();
@@ -114,7 +112,7 @@ export default function UserApiDebug() {
   };
 
   const testUserEndpoint = async () => {
-    const testId = user?.id || user?._id || 'test-user-id';
+    const testId = user?._id || 'test-user-id';
     setIsLoading(true);
     addResult(`📡 Testing user endpoint directly: /users/${testId}`);
     

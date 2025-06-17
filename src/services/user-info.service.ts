@@ -27,7 +27,7 @@ export class UserInfoService {
         console.log('👤 Current user object:', currentUser);
         
         // Handle different possible ID field names
-        const currentUserId = currentUser._id || currentUser.id || (currentUser as any).userId;
+        const currentUserId = currentUser._id;
         console.log('🆔 Extracted user ID:', currentUserId);
         
         if (currentUserId && currentUserId === userId) {

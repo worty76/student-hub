@@ -630,9 +630,6 @@ export const useCommentStore = create<CommentStore>()((set, get) => ({
         if (targetComment && targetComment.likeCount !== likeCount) {
           console.log(`Real-time like update for comment ${commentId}: ${targetComment.likeCount} → ${likeCount}`);
           
-          // Determine if this was a like or unlike operation
-          const wasLikeOperation = likeCount > targetComment.likeCount;
-          
           // Update the comment with new like data
           set((state) => ({
             comments: state.comments.map(comment => {
