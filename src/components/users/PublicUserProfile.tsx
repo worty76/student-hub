@@ -3,12 +3,14 @@
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { usePublicUserStore } from '@/store/publicUserStore';
+import { useAuthStore } from '@/store/authStore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Loader2, ChevronLeft, User, MapPin, Star, Heart, Calendar, Mail } from 'lucide-react';
 import Image from 'next/image';
 import UserProductsGrid from './UserProductsGrid';
+import { RatingForm, UserRatingsList } from '@/components/rating';
 
 interface PublicUserProfileProps {
   userId: string;
@@ -28,6 +30,8 @@ export default function PublicUserProfile({ userId }: PublicUserProfileProps) {
     clearCurrentUser, 
     clearError 
   } = usePublicUserStore();
+  
+  const { user: currentAuthUser } = useAuthStore();
 
   useEffect(() => {
     if (userId) {
@@ -293,6 +297,24 @@ export default function PublicUserProfile({ userId }: PublicUserProfileProps) {
               </div>
             </CardContent>
           </Card>
+
+          {/* User Ratings Section */}
+          <UserRatingsList 
+            userId={currentUser._id} 
+            userName={currentUser.name}
+          />
+
+          {/* Rating Form Section - Only show if user is authenticated and not viewing their own profile */}
+          {currentAuthUser && currentAuthUser._id !== currentUser._id && (
+            <RatingForm 
+              userId={currentUser._id} 
+              userName={currentUser.name}
+              onRatingSuccess={() => {
+                // Optionally refresh user data after successful rating
+                fetchUser(userId);
+              }}
+            />
+          )}
 
           {/* User Products Section */}
           <Card>
