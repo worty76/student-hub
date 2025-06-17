@@ -3,7 +3,6 @@ import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { StarRating } from '@/components/ui/StarRating';
 import { useRatingStore } from '@/store/ratingStore';
-import { userService } from '@/services/user.service';
 import { Loader2, Calendar, User } from 'lucide-react';
 import { RatingWithUserInfo } from '@/types/rating';
 import { formatDate } from '@/lib/utils';

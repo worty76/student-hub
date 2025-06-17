@@ -1,20 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useClickOutside } from '@/hooks/useClickOutside';
 import { ROUTES } from '@/constants/navigation';
-import {
-  User,
-  LogOut,
-  Heart,
-  MessageCircle,
-  ChevronDown,
-  Package2
-} from 'lucide-react';
+import { ChevronDown, User, LogOut, Heart, Package, MessageCircle } from 'lucide-react';
 
 interface UserMenuProps {
   onMenuToggle?: () => void;
@@ -56,9 +50,11 @@ export function UserMenu({ onMenuToggle }: UserMenuProps) {
         {/* User Avatar */}
         <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-gray-200 flex-shrink-0">
           {currentUser.avatar ? (
-            <img
+            <Image
               src={currentUser.avatar}
               alt={currentUser.name || 'User avatar'}
+              width={32}
+              height={32}
               className="w-full h-full object-cover"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
@@ -95,9 +91,11 @@ export function UserMenu({ onMenuToggle }: UserMenuProps) {
               {/* Avatar in dropdown */}
               <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-sm flex-shrink-0">
                 {currentUser.avatar ? (
-                  <img
+                  <Image
                     src={currentUser.avatar}
                     alt={currentUser.name || 'User avatar'}
+                    width={40}
+                    height={40}
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
@@ -137,7 +135,7 @@ export function UserMenu({ onMenuToggle }: UserMenuProps) {
             className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
             onClick={handleMenuItemClick}
           >
-            <Package2 className="h-4 w-4 mr-3 text-gray-500" />
+            <Package className="h-4 w-4 mr-3 text-gray-500" />
             Sản phẩm của tôi
           </Link>
           

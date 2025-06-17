@@ -55,10 +55,10 @@ export function RatingDebug() {
         if (ratings && ratings.length > 0) {
           for (const rating of ratings.slice(0, 3)) { // Test first 3 ratings only
             try {
-              const author = await userService.getUserById(rating.user);
-              addResult(`Author Info (${rating.user})`, true, author);
+              const author = await userService.getUserById(rating.rater._id);
+              addResult(`Author Info (${rating.rater._id})`, true, author);
             } catch (error) {
-              addResult(`Author Info (${rating.user})`, false, error);
+              addResult(`Author Info (${rating.rater._id})`, false, error);
             }
           }
         }

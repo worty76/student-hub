@@ -15,6 +15,7 @@ import { useUserProfile } from '@/hooks/useUserProfile';
 import { useAuthStore } from '@/store/authStore';
 import { DeleteCommentButton } from './DeleteCommentButton';
 import { formatDate } from '@/lib/utils';
+import Image from 'next/image';
 
 interface CommentListProps {
   productId: string;
@@ -135,9 +136,11 @@ export default function CommentList({ }: CommentListProps) {
           {(() => {
             const avatarUrl = processAvatarUrl(reply.userInfo?.avatar || currentUser?.avatar);
             return avatarUrl && !imageError ? (
-              <img
+              <Image
                 src={avatarUrl}
                 alt={reply.userInfo?.name || 'User avatar'}
+                width={24}
+                height={24}
                 className="w-6 h-6 rounded-full object-cover border border-gray-300"
                 onError={(e) => {
                   console.error('Reply avatar image failed to load:', avatarUrl, 'Error:', e);
@@ -217,9 +220,11 @@ export default function CommentList({ }: CommentListProps) {
             {(() => {
               const avatarUrl = processAvatarUrl(comment.userInfo?.avatar || currentUser?.avatar);
               return avatarUrl && !imageError ? (
-                <img
+                <Image
                   src={avatarUrl}
                   alt={comment.userInfo?.name || 'User avatar'}
+                  width={40}
+                  height={40}
                   className="w-10 h-10 rounded-full object-cover border-2 border-gray-200"
                   onError={(e) => {
                     console.error('Avatar image failed to load:', avatarUrl, 'Error:', e);

@@ -8,7 +8,19 @@ import { getCategoryLabel, getConditionLabel, getStatusLabel } from '@/types/pro
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Loader2, ChevronLeft, ChevronRight, MapPin, Eye, Heart, Calendar, User, Package, Tag, DollarSign, AlertCircle } from 'lucide-react';
+import { 
+  Loader2, 
+  ChevronLeft, 
+  ChevronRight, 
+  MapPin, 
+  Calendar, 
+  Package, 
+  User, 
+  Heart, 
+  Eye, 
+  Tag, 
+  DollarSign
+} from 'lucide-react';
 import { ProductFavoriteButton } from './ProductFavoriteButton';
 import ProductComments from './ProductComments';
 import { formatDate } from '@/lib/utils';

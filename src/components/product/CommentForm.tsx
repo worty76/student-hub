@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
@@ -91,10 +92,12 @@ export default function CommentForm({ productId }: CommentFormProps) {
           <div className="flex items-start space-x-3">
             <div className="flex-shrink-0">
               {currentUser?.avatar && isValidAvatarUrl(currentUser.avatar) && !imageError ? (
-                <img
+                <Image
                   src={currentUser.avatar}
                   alt={currentUser.name || 'User avatar'}
-                  className="w-8 h-8 rounded-full object-cover border-2 border-gray-200"
+                  width={40}
+                  height={40}
+                  className="w-10 h-10 rounded-full object-cover border border-gray-300"
                   onError={(e) => {
                     console.error('User avatar image failed to load:', currentUser.avatar, 'Error:', e);
                     setImageError(true);

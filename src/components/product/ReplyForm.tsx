@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2, Send, X } from 'lucide-react';
@@ -99,9 +100,11 @@ export default function ReplyForm({ parentCommentId, onCancel, autoFocus = true 
         <div className="flex items-start space-x-3">
           <div className="flex-shrink-0">
             {currentUser?.avatar && isValidAvatarUrl(currentUser.avatar) && !imageError ? (
-              <img
+              <Image
                 src={currentUser.avatar}
                 alt={currentUser.name || 'User avatar'}
+                width={24}
+                height={24}
                 className="w-6 h-6 rounded-full object-cover border border-gray-300"
                 onError={(e) => {
                   console.error('User avatar image failed to load:', currentUser.avatar, 'Error:', e);
