@@ -108,6 +108,13 @@ export function ProductListCard({ product, className }: ProductListCardProps) {
             </Badge>
           </div>
 
+          {/* Description Preview */}
+          {product.description && (
+            <p className="text-sm text-gray-600 mt-3 mb-3 line-clamp-2">
+              {product.description}
+            </p>
+          )}
+
           {/* Location */}
           {product.location && (
             <div className="flex items-center text-sm text-gray-600 mb-3">
@@ -140,13 +147,6 @@ export function ProductListCard({ product, className }: ProductListCardProps) {
               </div>
             )}
           </div>
-
-          {/* Description Preview */}
-          {product.description && (
-            <p className="text-sm text-gray-600 mt-3 line-clamp-2">
-              {product.description}
-            </p>
-          )}
         </CardContent>
       </Link>
     </Card>

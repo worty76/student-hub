@@ -153,7 +153,7 @@ export const useProductsListStore = create<ProductsListStore>((set, get) => ({
     // Apply sorting
     filtered.sort((a, b) => {
       const { sortBy = 'createdAt', sortOrder = 'desc' } = currentParams;
-      let aValue: any, bValue: any;
+      let aValue: number, bValue: number;
 
       switch (sortBy) {
         case 'price':

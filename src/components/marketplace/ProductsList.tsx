@@ -5,7 +5,7 @@ import { ProductFilters } from './ProductFilters';
 import { Pagination } from './Pagination';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, RefreshCw, Package, AlertCircle } from 'lucide-react';
+import { Loader2, Package, AlertCircle } from 'lucide-react';
 
 interface ProductsListProps {
   className?: string;
