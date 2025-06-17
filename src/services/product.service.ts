@@ -3,6 +3,40 @@ import { CreateProductRequest, CreateProductResponse, EditProductRequest, EditPr
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://be-student-hub-production.up.railway.app/api';
 
 export class ProductService {
+  static async getAllProducts(): Promise<Product[]> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/products`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('Không tìm thấy sản phẩm nào');
+        }
+        throw new Error(`Lỗi khi tải sản phẩm: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      
+      // Handle both response formats: with pagination object or direct array
+      if (data.products && Array.isArray(data.products)) {
+        return data.products;
+      } else if (Array.isArray(data)) {
+        return data;
+      } else {
+        throw new Error('Invalid response format');
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Lỗi khi tải sản phẩm');
+    }
+  }
+
   static async createProduct(token: string, productData: CreateProductRequest): Promise<CreateProductResponse> {
     try {
       const formData = new FormData();
@@ -291,6 +325,7 @@ export class ProductService {
 }
 
 export const productService = {
+  getAllProducts: ProductService.getAllProducts,
   createProduct: ProductService.createProduct,
   editProduct: ProductService.editProduct,
   deleteProduct: ProductService.deleteProduct,

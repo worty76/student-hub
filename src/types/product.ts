@@ -46,6 +46,33 @@ export interface Seller {
   location?: string;
 }
 
+// Pagination interfaces
+export interface Pagination {
+  total: number;
+  page: number;
+  limit: number;
+  pages: number;
+}
+
+export interface ProductsResponse {
+  products: Product[];
+  pagination: Pagination;
+}
+
+export interface ProductsQueryParams {
+  page?: number;
+  limit?: number;
+  category?: string;
+  condition?: string;
+  status?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  location?: string;
+  search?: string;
+  sortBy?: 'price' | 'createdAt' | 'views' | 'favorites';
+  sortOrder?: 'asc' | 'desc';
+}
+
 // New product types for API integration
 export interface Product {
   _id: string;
