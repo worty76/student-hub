@@ -104,7 +104,7 @@ export function ProductFavoriteButton({ productId, className }: ProductFavoriteB
       variant={isProductFavorite ? "default" : "outline"}
       size="lg"
       className={cn(
-        "flex items-center justify-center gap-2 transition-all duration-200 min-w-[160px]",
+        "flex items-center justify-center gap-2 transition-all duration-200 min-w-[160px] cursor-pointer",
         isProductFavorite 
           ? "bg-red-500 hover:bg-red-600 text-white border-red-500" 
           : "border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950/20",
@@ -175,7 +175,7 @@ export function CompactProductFavoriteButton({ productId, className }: ProductFa
       variant="ghost"
       size="icon"
       className={cn(
-        "size-10 rounded-full transition-all duration-200",
+        "size-10 rounded-full transition-all duration-200 cursor-pointer",
         isProductFavorite 
           ? "text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20" 
           : "text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20",

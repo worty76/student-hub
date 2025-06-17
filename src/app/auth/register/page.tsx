@@ -23,7 +23,7 @@ export default function RegisterPage() {
           router.push('/user/dashboard');
           break;
         default:
-          router.push('/dashboard');
+          router.push('/');
       }
     }
   }, [isAuthenticated, user, router]);

@@ -61,7 +61,7 @@ export default function RegisterForm() {
       toast.success("Tài khoản của bạn đã được tạo thành công.");
 
       setTimeout(() => {
-        router.push('/dashboard');
+        router.push('/');
       }, 1500);
     } catch (err) {
       console.error('Registration failed:', err);

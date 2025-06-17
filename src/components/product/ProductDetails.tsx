@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Loader2, ChevronLeft, ChevronRight, MapPin, Eye, Heart, Calendar, User, Package, Tag, DollarSign } from 'lucide-react';
 import { ProductFavoriteButton } from './ProductFavoriteButton';
+import ProductComments from './ProductComments';
 
 interface ProductDetailsProps {
   productId?: string;
@@ -381,7 +382,7 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
               <CardContent className="pt-6">
                 <div className="flex space-x-3">
                   <Button 
-                    className="flex-1" 
+                    className="flex-1 cursor-pointer" 
                     size="lg"
                     disabled={currentProduct.status !== 'available'}
                   >
@@ -396,6 +397,10 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
               </CardContent>
             </Card>
           </div>
+        </div>
+
+        <div className="mt-8">
+          <ProductComments productId={currentProduct._id} />
         </div>
       </div>
     </div>

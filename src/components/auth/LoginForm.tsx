@@ -46,7 +46,7 @@ export function LoginForm() {
       toast.success('Chào mừng trở lại!', {
         description: 'Bạn đã đăng nhập thành công.',
       });
-      router.push('/dashboard');
+      router.push('/');
     } catch (error) {
       toast.error('Đăng nhập thất bại', {
         description: error instanceof Error ? error.message : 'Đã xảy ra lỗi không xác định.',

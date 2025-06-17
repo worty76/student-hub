@@ -376,7 +376,7 @@ export function ProductDataTable({
                       variant="ghost"
                       size="sm"
                       onClick={() => handleEdit(product._id)}
-                      className="h-8 w-8 p-0"
+                      className="h-8 w-8 p-0 cursor-pointer"
                       title="Chỉnh sửa sản phẩm"
                     >
                       <Edit className="h-4 w-4" />

@@ -61,7 +61,6 @@ export function UserMenu({ onMenuToggle }: UserMenuProps) {
               alt={currentUser.name || 'User avatar'}
               className="w-full h-full object-cover"
               onError={(e) => {
-                // Fallback to icon if image fails to load
                 const target = e.target as HTMLImageElement;
                 target.style.display = 'none';
                 target.nextElementSibling?.classList.remove('hidden');
@@ -164,7 +163,7 @@ export function UserMenu({ onMenuToggle }: UserMenuProps) {
           
           <button
             onClick={handleLogout}
-            className="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+            className="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
           >
             <LogOut className="h-4 w-4 mr-3" />
             Đăng xuất

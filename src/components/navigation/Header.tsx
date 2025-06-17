@@ -53,12 +53,9 @@ export function Header() {
             ))}
           </nav>
 
-          {/* Search Bar */}
           <SearchBar placeholder={APP_CONFIG.search.placeholder} />
 
-          {/* Right Side Actions */}
           <div className="flex items-center space-x-4">
-            {/* Authentication Section */}
             {isAuthenticated && user ? (
               <UserMenu />
             ) : (
