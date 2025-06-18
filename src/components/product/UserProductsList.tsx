@@ -21,7 +21,6 @@ interface UserProductsListProps {
   userId?: string;
   showActions?: boolean;
   onEdit?: (productId: string) => void;
-  onDelete?: (productId: string) => void;
   onViewDetails?: (productId: string) => void;
   className?: string;
 }
@@ -90,20 +89,9 @@ export function UserProductsList({
     if (onViewDetails) {
       onViewDetails(productId);
     } else {
-      // Default behavior - navigate to product details page
       window.open(`/products/${productId}`, '_blank');
     }
   };
-
-  // Handle delete action
-//   const handleDelete = (productId: string) => {
-//     if (onDelete) {
-//       onDelete(productId);
-//     } else {
-//       // Default behavior - could show confirmation dialog
-//       console.log('Delete product:', productId);
-//     }
-//   };
 
   if (isInitialLoad || isLoadingUserProducts) {
     return (
@@ -208,7 +196,7 @@ export function UserProductsList({
             )}
           </div>
 
-                    <ProductDataTable
+          <ProductDataTable
             data={userProducts}
             showActions={showActions}
             isCurrentUser={isCurrentUser}

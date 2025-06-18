@@ -41,7 +41,7 @@ export const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> =
           <button
             onClick={onClose}
             disabled={isLoading}
-            className="text-gray-400 hover:text-gray-600 disabled:opacity-50 p-1 rounded-md hover:bg-gray-100 transition-colors"
+            className="text-gray-400 hover:text-gray-600 disabled:opacity-50 p-1 rounded-md hover:bg-gray-100 transition-colors cursor-pointer"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -49,26 +49,24 @@ export const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> =
           </button>
         </div>
 
-        {/* Message */}
         <div className="px-6 pb-6">
           <p className="text-gray-600 leading-relaxed whitespace-pre-line break-all">
             {message}
           </p>
         </div>
 
-        {/* Actions */}
         <div className="flex gap-3 justify-end p-6 pt-0 bg-gray-50 rounded-b-lg">
           <button
             onClick={onClose}
             disabled={isLoading}
-            className="px-4 py-2 text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+            className="px-4 py-2 text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium cursor-pointer"
           >
             {cancelText}
           </button>
           <button
             onClick={onConfirm}
             disabled={isLoading}
-            className="px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-medium min-w-[100px] justify-center"
+            className="px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-medium min-w-[100px] justify-center cursor-pointer"
           >
             {isLoading && (
               <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

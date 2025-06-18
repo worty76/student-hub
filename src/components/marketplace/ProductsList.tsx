@@ -25,13 +25,9 @@ export function ProductsList({ className }: ProductsListProps) {
     refreshProducts,
   } = useProductsListStore();
 
-  // Fetch products on component mount
   useEffect(() => {
     fetchAllProducts();
-    
-    // Cleanup on unmount
     return () => {
-      // Could add cleanup logic here if needed
     };
   }, [fetchAllProducts]);
 
@@ -49,7 +45,6 @@ export function ProductsList({ className }: ProductsListProps) {
 
   return (
     <div className={`space-y-6 ${className}`}>
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Tất cả sản phẩm</h1>
@@ -60,7 +55,6 @@ export function ProductsList({ className }: ProductsListProps) {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Filters Sidebar */}
         <div className="lg:col-span-1">
           <ProductFilters
             onFiltersChange={handleFiltersChange}
@@ -70,9 +64,7 @@ export function ProductsList({ className }: ProductsListProps) {
           />
         </div>
 
-        {/* Main Content */}
         <div className="lg:col-span-3">
-          {/* Error State */}
           {error && (
             <Card className="mb-6 border-red-200 bg-red-50">
               <CardContent className="p-6">
@@ -98,7 +90,6 @@ export function ProductsList({ className }: ProductsListProps) {
             </Card>
           )}
 
-          {/* Loading State */}
           {isLoading && displayedProducts.length === 0 && (
             <Card>
               <CardContent className="p-12">
@@ -115,7 +106,6 @@ export function ProductsList({ className }: ProductsListProps) {
             </Card>
           )}
 
-          {/* Empty State */}
           {!isLoading && !error && displayedProducts.length === 0 && (
             <Card>
               <CardContent className="p-12">
@@ -135,10 +125,8 @@ export function ProductsList({ className }: ProductsListProps) {
             </Card>
           )}
 
-          {/* Products Grid */}
           {displayedProducts.length > 0 && (
             <div className="space-y-6">
-              {/* Results summary */}
               <div className="flex items-center justify-between">
                 <p className="text-sm text-gray-600">
                   {pagination && (
@@ -158,7 +146,6 @@ export function ProductsList({ className }: ProductsListProps) {
                 )}
               </div>
 
-              {/* Products Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {displayedProducts.map((product) => (
                   <ProductListCard
@@ -169,7 +156,6 @@ export function ProductsList({ className }: ProductsListProps) {
                 ))}
               </div>
 
-              {/* Pagination */}
               {pagination && pagination.pages > 1 && (
                 <Pagination
                   pagination={pagination}

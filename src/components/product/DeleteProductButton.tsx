@@ -37,11 +37,9 @@ export const DeleteProductButton: React.FC<DeleteProductButtonProps> = ({
 
   const handleDeleteClick = () => {
     setLocalError(null);
-    clearDeleteError();
     setShowDeleteDialog(true);
   };
 
-  // Helper function to truncate long product titles
   const getTruncatedTitle = (title: string, maxLength: number = 50) => {
     if (title.length <= maxLength) return title;
     return title.substring(0, maxLength) + '...';
@@ -52,16 +50,12 @@ export const DeleteProductButton: React.FC<DeleteProductButtonProps> = ({
       await deleteProduct(productId, token);
       setShowDeleteDialog(false);
       
-      // Call optional success callback
       if (onDeleteSuccess) {
         onDeleteSuccess();
       }
       
-      // Optional: redirect if needed
-      // router.push('/my-products');
       
     } catch (error) {
-      // Error is already handled in the store
       const errorMessage = error instanceof Error ? error.message : 'Lỗi khi xóa sản phẩm';
       setLocalError(errorMessage);
     }
@@ -73,7 +67,6 @@ export const DeleteProductButton: React.FC<DeleteProductButtonProps> = ({
     clearDeleteError();
   };
 
-  // Size classes
   const sizeClasses = {
     sm: 'px-2 py-1 text-sm',
     md: 'px-3 py-2 text-sm',
@@ -105,7 +98,7 @@ export const DeleteProductButton: React.FC<DeleteProductButtonProps> = ({
             disabled:opacity-50 disabled:cursor-not-allowed
             flex items-center justify-center
             border border-red-200 hover:border-red-300
-            shadow-sm hover:shadow-md
+            shadow-sm hover:shadow-md cursor-pointer
             ${className}
           `}
           title={`Xóa ${productTitle}`}
@@ -134,7 +127,6 @@ export const DeleteProductButton: React.FC<DeleteProductButtonProps> = ({
           message={`Bạn có chắc chắn muốn xóa "${getTruncatedTitle(productTitle)}"? \n Hành động này không thể được hoàn tác.`}
         />
 
-        {/* Error Message */}
         {(localError || deleteError) && (
           <div className="fixed top-4 right-4 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg shadow-lg z-50 max-w-sm">
             <div className="flex items-start">
@@ -150,7 +142,7 @@ export const DeleteProductButton: React.FC<DeleteProductButtonProps> = ({
                   setLocalError(null);
                   clearDeleteError();
                 }}
-                className="ml-2 text-red-600 hover:text-red-800 flex-shrink-0 p-1 rounded-md hover:bg-red-100 transition-colors"
+                className="ml-2 text-red-600 hover:text-red-800 flex-shrink-0 p-1 rounded-md hover:bg-red-100 transition-colors cursor-pointer"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -177,6 +169,7 @@ export const DeleteProductButton: React.FC<DeleteProductButtonProps> = ({
           flex items-center gap-2
           shadow-sm hover:shadow-md
           font-medium
+          cursor-pointer
           ${className}
         `}
       >
@@ -205,7 +198,6 @@ export const DeleteProductButton: React.FC<DeleteProductButtonProps> = ({
            message={`Bạn có chắc chắn muốn xóa "${getTruncatedTitle(productTitle)}"? \n Hành động này không thể được hoàn tác.`}
          />
 
-      {/* Error Message */}
       {(localError || deleteError) && (
         <div className="fixed top-4 right-4 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg shadow-lg z-50 max-w-sm">
           <div className="flex items-start">
@@ -221,7 +213,7 @@ export const DeleteProductButton: React.FC<DeleteProductButtonProps> = ({
                 setLocalError(null);
                 clearDeleteError();
               }}
-              className="ml-2 text-red-600 hover:text-red-800 flex-shrink-0 p-1 rounded-md hover:bg-red-100 transition-colors"
+              className="ml-2 text-red-600 hover:text-red-800 flex-shrink-0 p-1 rounded-md hover:bg-red-100 transition-colors cursor-pointer"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

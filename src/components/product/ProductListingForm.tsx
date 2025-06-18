@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { ProductDetail } from '@/types/product';
-import { categories, areas } from '@/constants/marketplace-data';
+import { categories } from '@/constants/marketplace-data';
 import { 
   ImagePlus, 
   X, 
@@ -68,6 +68,15 @@ const SHIPPING_METHODS = [
   'Local Delivery',
   'Express Shipping',
   'Standard Shipping'
+];
+
+// Local areas data since it was removed from marketplace-data
+const areas = [
+  { id: 'fpt', name: 'FPT University Area' },
+  { id: 'duytan', name: 'Duy Tân Area' },
+  { id: 'bachkhoa', name: 'Bách Khoa Area' },
+  { id: 'downtown', name: 'Downtown Area' },
+  { id: 'other', name: 'Other Area' }
 ];
 
 export function ProductListingForm({ 

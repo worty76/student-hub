@@ -1,21 +1,23 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ProductCard } from './ProductCard';
 import { Product } from '@/types/marketplace';
-import { mockProducts, areas, categories } from '@/constants/marketplace-data';
+import { categories } from '@/constants/marketplace-data';
+import { ProductService } from '@/services/product.service';
+import { Product as ApiProduct } from '@/types/product';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { 
   Search, 
-  MapPin, 
   Grid3X3, 
   List, 
   X,
-  ArrowRight
+  ArrowRight,
+  Loader2
 } from 'lucide-react';
 
 interface ProductListProps {
@@ -29,7 +31,6 @@ interface ProductListProps {
   showViewMore?: boolean;
   compactView?: boolean;
   defaultCategory?: string;
-  defaultLocation?: string;
   defaultStatus?: string;
   className?: string;
 }
@@ -38,7 +39,7 @@ type ViewMode = 'grid' | 'list';
 type SortOption = 'newest' | 'price-low' | 'price-high' | 'popular';
 
 export function ProductList({
-  products = mockProducts,
+  products: providedProducts,
   title,
   subtitle,
   maxItems,
@@ -48,17 +49,63 @@ export function ProductList({
   showViewMore = true,
   compactView = false,
   defaultCategory = 'all',
-  defaultLocation = 'all',
   defaultStatus = 'all',
   className = ''
 }: ProductListProps) {
   const router = useRouter();
+  const [realProducts, setRealProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(defaultCategory);
-  const [selectedLocation, setSelectedLocation] = useState(defaultLocation);
+
   const [selectedStatus, setSelectedStatus] = useState(defaultStatus);
   const [sortBy, setSortBy] = useState<SortOption>('newest');
+
+  // Convert API product to marketplace product format
+  const convertApiProduct = (apiProduct: ApiProduct): Product => ({
+    id: apiProduct._id,
+    title: apiProduct.title,
+    price: apiProduct.price,
+    image: apiProduct.images && apiProduct.images.length > 0 ? apiProduct.images[0] : '',
+    location: apiProduct.location,
+    status: 'newly-posted' as const, // Map API status to marketplace status
+    category: apiProduct.category,
+    description: apiProduct.description,
+    seller: {
+      id: typeof apiProduct.seller === 'string' ? apiProduct.seller : apiProduct.seller._id,
+      name: typeof apiProduct.seller === 'string' ? 'Unknown' : apiProduct.seller.name,
+      avatar: typeof apiProduct.seller === 'object' ? apiProduct.seller.avatar : undefined
+    },
+    createdAt: new Date(apiProduct.createdAt || Date.now()),
+    condition: apiProduct.condition === 'new' ? 'like-new' : apiProduct.condition
+  });
+
+  // Fetch real products if not provided
+  useEffect(() => {
+    if (!providedProducts) {
+      const fetchRealProducts = async () => {
+        setIsLoading(true);
+        setError(null);
+        try {
+          const apiProducts = await ProductService.getAllProducts();
+          const convertedProducts = apiProducts.map(convertApiProduct);
+          setRealProducts(convertedProducts);
+        } catch (err) {
+          setError('Failed to load products');
+          console.error('Error fetching products:', err);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      fetchRealProducts();
+    }
+  }, [providedProducts]);
+
+  // Use provided products or fetched real products
+  const products = providedProducts || realProducts;
 
   // Filter and sort products
   const filteredAndSortedProducts = useMemo(() => {
@@ -74,13 +121,7 @@ export function ProductList({
         return false;
       }
 
-      // Location filter
-      if (selectedLocation !== 'all') {
-        const locationArea = areas.find(area => area.id === selectedLocation);
-        if (locationArea && product.location !== locationArea.name) {
-          return false;
-        }
-      }
+
 
       // Status filter
       if (selectedStatus !== 'all' && product.status !== selectedStatus) {
@@ -107,32 +148,92 @@ export function ProductList({
     });
 
     return filtered;
-  }, [products, searchTerm, selectedCategory, selectedLocation, selectedStatus, sortBy]);
+  }, [products, searchTerm, selectedCategory, selectedStatus, sortBy]);
 
   const displayedProducts = maxItems ? filteredAndSortedProducts.slice(0, maxItems) : filteredAndSortedProducts;
 
   const resetFilters = () => {
     setSearchTerm('');
     setSelectedCategory('all');
-    setSelectedLocation('all');
     setSelectedStatus('all');
     setSortBy('newest');
   };
 
   const hasActiveFilters = searchTerm !== '' || selectedCategory !== 'all' || 
-                          selectedLocation !== 'all' || selectedStatus !== 'all';
+                          selectedStatus !== 'all';
 
   const handleViewMore = () => {
     const params = new URLSearchParams();
     if (searchTerm) params.set('search', searchTerm);
     if (selectedCategory !== 'all') params.set('category', selectedCategory);
-    if (selectedLocation !== 'all') params.set('location', selectedLocation);
     if (selectedStatus !== 'all') params.set('status', selectedStatus);
     if (sortBy !== 'newest') params.set('sort', sortBy);
     
     const query = params.toString();
     router.push(`/products${query ? `?${query}` : ''}`);
   };
+
+  // Show loading state when fetching products (only if no products provided)
+  if (!providedProducts && isLoading) {
+    return (
+      <div className={`bg-white ${className}`}>
+        {(title || subtitle) && (
+          <div className="mb-8">
+            {title && (
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                {title}
+              </h2>
+            )}
+            {subtitle && (
+              <p className="text-gray-600 max-w-2xl">
+                {subtitle}
+              </p>
+            )}
+          </div>
+        )}
+        <div className="flex flex-col items-center justify-center py-20">
+          <Loader2 className="w-8 h-8 animate-spin text-blue-600 mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Loading products...</h3>
+          <p className="text-gray-600">Please wait while we fetch the latest products</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state when failed to fetch products
+  if (!providedProducts && error) {
+    return (
+      <div className={`bg-white ${className}`}>
+        {(title || subtitle) && (
+          <div className="mb-8">
+            {title && (
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                {title}
+              </h2>
+            )}
+            {subtitle && (
+              <p className="text-gray-600 max-w-2xl">
+                {subtitle}
+              </p>
+            )}
+          </div>
+        )}
+        <div className="text-center py-20">
+          <div className="w-20 h-20 mx-auto mb-8 bg-red-100 rounded-2xl flex items-center justify-center">
+            <X className="w-10 h-10 text-red-600" />
+          </div>
+          <h3 className="text-2xl font-bold text-gray-900 mb-4">Failed to load products</h3>
+          <p className="text-red-600 mb-8 max-w-md mx-auto text-lg">{error}</p>
+          <Button 
+            onClick={() => window.location.reload()} 
+            className="bg-red-600 hover:bg-red-700 text-white"
+          >
+            Try Again
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   if (compactView) {
     return (
@@ -151,15 +252,23 @@ export function ProductList({
           </CardHeader>
         )}
         <CardContent>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {displayedProducts.slice(0, maxItems || 4).map(product => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-          {displayedProducts.length === 0 && (
-            <div className="text-center py-8">
-              <p className="text-gray-500">No products found</p>
+          {isLoading ? (
+            <div className="flex justify-center py-8">
+              <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
             </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {displayedProducts.slice(0, maxItems || 4).map(product => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+              {displayedProducts.length === 0 && (
+                <div className="text-center py-8">
+                  <p className="text-gray-500">No products found</p>
+                </div>
+              )}
+            </>
           )}
         </CardContent>
       </Card>
@@ -219,20 +328,7 @@ export function ProductList({
                   </SelectContent>
                 </Select>
 
-                <Select value={selectedLocation} onValueChange={setSelectedLocation}>
-                  <SelectTrigger className="w-40">
-                    <SelectValue placeholder="Location" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Locations</SelectItem>
-                    {areas.map(area => (
-                      <SelectItem key={area.id} value={area.id}>
-                        <MapPin className="w-4 h-4 mr-1" />
-                        {area.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+
 
                 <Select value={selectedStatus} onValueChange={setSelectedStatus}>
                   <SelectTrigger className="w-40">

@@ -111,6 +111,11 @@ export function EditProductForm({
 
   const { user, token } = useAuthStore();
 
+  // Reset loading states on component mount to prevent stuck states
+  useEffect(() => {
+    resetEditState();
+  }, [resetEditState]);
+
   // Form setup
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
@@ -294,15 +299,24 @@ export function EditProductForm({
     <div className={className}>
       <Card className="w-full max-w-4xl mx-auto">
         <div className="p-6">
-          {/* Header */}
-          <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 bg-primary/10 rounded-lg">
-              <Edit3 className="h-6 w-6 text-primary" />
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <Edit3 className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">Chỉnh sửa sản phẩm</h1>
+                <p className="text-gray-600">Cập nhật thông tin sản phẩm của bạn</p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">Chỉnh sửa sản phẩm</h2>
-              <p className="text-gray-600">Cập nhật thông tin sản phẩm của bạn</p>
-            </div>
+            <Button 
+              variant="outline" 
+              onClick={handleCancel}
+              disabled={isFormLoading}
+            >
+              <X className="h-4 w-4 mr-2" />
+              Hủy
+            </Button>
           </div>
 
           {/* Success Message */}
@@ -569,16 +583,6 @@ export function EditProductForm({
                 >
                   {isFormLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                   {isFormLoading ? 'Đang cập nhật sản phẩm...' : 'Cập nhật sản phẩm'}
-                </Button>
-                
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleCancel}
-                  disabled={isFormLoading}
-                  className="flex-1 sm:flex-none"
-                >
-                  Hủy bỏ
                 </Button>
               </div>
             </form>

@@ -367,7 +367,7 @@ export function ProductDataTable({
                       variant="ghost"
                       size="sm"
                       onClick={() => handleViewDetails(product._id)}
-                      className="h-8 w-8 p-0"
+                      className="h-8 w-8 p-0 cursor-pointer"
                       title="Xem chi tiết sản phẩm"
                     >
                       <ExternalLink className="h-4 w-4" />

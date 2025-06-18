@@ -103,6 +103,11 @@ export function CreateProductForm({
 
   const { user, token } = useAuthStore();
 
+  // Reset loading states on component mount to prevent stuck states
+  useEffect(() => {
+    resetCreateState();
+  }, [resetCreateState]);
+
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
     defaultValues: {
@@ -203,18 +208,26 @@ export function CreateProductForm({
     <div className={className}>
       <Card className="w-full max-w-4xl mx-auto">
         <div className="p-6">
-          {/* Header */}
-          <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 bg-primary/10 rounded-lg">
-              <Package2 className="h-6 w-6 text-primary" />
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <Package2 className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">Đăng bán sản phẩm</h1>
+                <p className="text-gray-600">Tạo một bài đăng bán sản phẩm mới</p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">Bán sản phẩm</h2>
-              <p className="text-gray-600">Thêm sản phẩm của bạn vào thị trường</p>
-            </div>
+            <Button 
+              variant="outline" 
+              onClick={handleCancel}
+              disabled={isLoading}
+            >
+              <X className="h-4 w-4 mr-2" />
+              Hủy
+            </Button>
           </div>
 
-          {/* Success Message */}
           {successMessage && (
             <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-3">
               <CheckCircle className="h-5 w-5 text-green-600" />
@@ -478,16 +491,6 @@ export function CreateProductForm({
                 >
                   {isLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                   {isLoading ? 'Đang bán sản phẩm...' : 'Bán sản phẩm'}
-                </Button>
-                
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleCancel}
-                  disabled={isLoading}
-                  className="flex-1 sm:flex-none"
-                >
-                  Hủy bỏ
                 </Button>
               </div>
             </form>

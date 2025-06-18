@@ -77,7 +77,7 @@ export const DeleteCommentButton: React.FC<DeleteCommentButtonProps> = ({
         className={`
           ${sizeClasses[size]}
           text-red-600 hover:text-red-700 hover:bg-red-50
-          transition-colors duration-200
+          transition-colors duration-200 cursor-pointer
           ${className}
         `}
         title="Xóa bình luận"
@@ -94,7 +94,7 @@ export const DeleteCommentButton: React.FC<DeleteCommentButtonProps> = ({
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-lg p-6 max-w-md mx-4 shadow-xl">
             <div className="flex items-center gap-3 mb-4">
-              <div className="flex-shrink-0 w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+              <div className="flex-shrink-0 w-10 h-10 bg-red-100 rounded-full flex items-center justify-center cursor-pointer">
                 <Trash2 size={20} className="text-red-600" />
               </div>
               <div>

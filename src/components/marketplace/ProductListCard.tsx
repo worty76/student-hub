@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Card, CardContent } from '@/components/ui/card';
+import { CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Product, getCategoryLabel, getConditionLabel, getStatusLabel } from '@/types/product';
 import { MapPin, Eye, Heart, Calendar } from 'lucide-react';
@@ -61,7 +61,7 @@ export function ProductListCard({ product, className }: ProductListCardProps) {
   const mainImage = product.images && product.images.length > 0 ? product.images[0] : null;
 
   return (
-    <Card className={`hover:shadow-lg transition-shadow duration-200 overflow-hidden ${className}`}>
+    <div className={`hover:shadow-lg transition-shadow duration-200 overflow-hidden bg-white rounded-2xl border border-gray-200 shadow-sm ${className}`}>
       <Link href={`/products/${product._id}`} className="block">
         {/* Product Image */}
         <div className="aspect-square relative bg-gray-100">
@@ -149,6 +149,6 @@ export function ProductListCard({ product, className }: ProductListCardProps) {
           </div>
         </CardContent>
       </Link>
-    </Card>
+    </div>
   );
 } 

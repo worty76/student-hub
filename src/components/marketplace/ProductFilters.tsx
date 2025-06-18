@@ -208,13 +208,13 @@ export function ProductFilters({ onFiltersChange, currentParams, isLoading = fal
           {/* Sort */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700 block">Sắp xếp theo</label>
-            <div className="grid grid-cols-1 gap-3">
+            <div className="grid grid-cols-2 gap-1">
               <Select
                 value={currentParams.sortBy || 'createdAt'}
                 onValueChange={(value) => handleFilterChange('sortBy', value as 'price' | 'createdAt' | 'views' | 'favorites')}
                 disabled={isLoading}
               >
-                <SelectTrigger className="w-full">
+                <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -230,7 +230,7 @@ export function ProductFilters({ onFiltersChange, currentParams, isLoading = fal
                 onValueChange={(value) => handleFilterChange('sortOrder', value as 'asc' | 'desc')}
                 disabled={isLoading}
               >
-                <SelectTrigger className="w-full">
+                <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
