@@ -46,6 +46,32 @@ export class UserService {
     }
   }
 
+  static async getUserById(id: string): Promise<User> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/users/${id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('User not found');
+        }
+        throw new Error(`Lỗi khi lấy thông tin người dùng: ${response.statusText}`);
+      }
+
+      const user: User = await response.json();
+      return user;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Lỗi khi lấy thông tin người dùng');
+    }
+  }
+
   static async updateProfile(token: string, profileData: UpdateProfileRequest): Promise<UpdateProfileResponse> {
     try {
       const response = await fetch(`${API_BASE_URL}/users/profile`, {
@@ -93,5 +119,6 @@ export class UserService {
 
 export const userService = {
   getUserProfile: UserService.getUserProfile,
+  getUserById: UserService.getUserById,
   updateProfile: UserService.updateProfile,
 }; 

@@ -3,7 +3,7 @@
 import { BannerSlider } from './BannerSlider';
 import { FeaturedCategories } from './FeaturedCategories';
 import { SuggestedListings } from './SuggestedListings';
-import { bannerSlides, categories, mockProducts, areas } from '@/constants/marketplace-data';
+import { bannerSlides, categories } from '@/constants/marketplace-data';
 
 export function Homepage() {
   return (
@@ -14,7 +14,7 @@ export function Homepage() {
 
       <FeaturedCategories categories={categories} />
 
-      <SuggestedListings products={mockProducts} areas={areas} />
+      <SuggestedListings />
 
       <section className="py-16 bg-gradient-to-br from-blue-600 to-purple-700">
         <div className="container mx-auto px-4 text-center">

@@ -1,20 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useClickOutside } from '@/hooks/useClickOutside';
 import { ROUTES } from '@/constants/navigation';
-import {
-  User,
-  LogOut,
-  Settings,
-  Heart,
-  MessageCircle,
-  ChevronDown
-} from 'lucide-react';
+import { ChevronDown, User, LogOut, Heart, Package, MessageCircle } from 'lucide-react';
 
 interface UserMenuProps {
   onMenuToggle?: () => void;
@@ -29,7 +23,6 @@ export function UserMenu({ onMenuToggle }: UserMenuProps) {
 
   if (!user) return null;
 
-  // Use profile data if available, fallback to auth user
   const currentUser = displayUser || user;
 
   const handleLogout = async () => {
@@ -40,15 +33,6 @@ export function UserMenu({ onMenuToggle }: UserMenuProps) {
       router.push(ROUTES.home);
     } catch (error) {
       console.error('Logout failed:', error);
-    }
-  };
-
-  const getDashboardLink = () => {
-    switch (user.role) {
-      case 'admin': return '/admin/dashboard';
-      case 'seller': return '/seller/dashboard';
-      case 'user': return '/user/dashboard';
-      default: return '/dashboard';
     }
   };
 
@@ -66,12 +50,13 @@ export function UserMenu({ onMenuToggle }: UserMenuProps) {
         {/* User Avatar */}
         <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-gray-200 flex-shrink-0">
           {currentUser.avatar ? (
-            <img
+            <Image
               src={currentUser.avatar}
               alt={currentUser.name || 'User avatar'}
+              width={32}
+              height={32}
               className="w-full h-full object-cover"
               onError={(e) => {
-                // Fallback to icon if image fails to load
                 const target = e.target as HTMLImageElement;
                 target.style.display = 'none';
                 target.nextElementSibling?.classList.remove('hidden');
@@ -106,9 +91,11 @@ export function UserMenu({ onMenuToggle }: UserMenuProps) {
               {/* Avatar in dropdown */}
               <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-sm flex-shrink-0">
                 {currentUser.avatar ? (
-                  <img
+                  <Image
                     src={currentUser.avatar}
                     alt={currentUser.name || 'User avatar'}
+                    width={40}
+                    height={40}
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
@@ -133,16 +120,7 @@ export function UserMenu({ onMenuToggle }: UserMenuProps) {
             </div>
           </div>
           
-          {/* Menu Items */}
-          <Link
-            href={getDashboardLink()}
-            className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-            onClick={handleMenuItemClick}
-          >
-            <User className="h-4 w-4 mr-3 text-gray-500" />
-            Bảng điều khiển
-          </Link>
-          
+          {/* Menu Items */} 
           <Link
             href="/profile"
             className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
@@ -153,12 +131,12 @@ export function UserMenu({ onMenuToggle }: UserMenuProps) {
           </Link>
           
           <Link
-            href="/profile/edit"
+            href="/my-products"
             className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
             onClick={handleMenuItemClick}
           >
-            <Settings className="h-4 w-4 mr-3 text-gray-500" />
-            Chỉnh sửa hồ sơ
+            <Package className="h-4 w-4 mr-3 text-gray-500" />
+            Sản phẩm của tôi
           </Link>
           
           <Link
@@ -183,7 +161,7 @@ export function UserMenu({ onMenuToggle }: UserMenuProps) {
           
           <button
             onClick={handleLogout}
-            className="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+            className="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
           >
             <LogOut className="h-4 w-4 mr-3" />
             Đăng xuất
