@@ -1,4 +1,4 @@
-import { CreateProductRequest, CreateProductResponse, EditProductRequest, EditProductResponse, DeleteProductResponse, Product } from '@/types/product';
+import { CreateProductRequest, CreateProductResponse, EditProductRequest, EditProductResponse, DeleteProductResponse, Product, BuyProductRequest, BuyProductResponse, BuyProductError } from '@/types/product';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://be-student-hub-production.up.railway.app/api';
 
@@ -21,7 +21,6 @@ export class ProductService {
 
       const data = await response.json();
       
-      // Handle both response formats: with pagination object or direct array
       if (data.products && Array.isArray(data.products)) {
         return data.products;
       } else if (Array.isArray(data)) {
@@ -41,7 +40,6 @@ export class ProductService {
     try {
       const formData = new FormData();
       
-      // Add all the required fields to FormData
       if (productData._id) {
         formData.append('_id', productData._id);
       }
@@ -143,8 +141,6 @@ export class ProductService {
   static async editProduct(productId: string, token: string, productData: EditProductRequest): Promise<EditProductResponse> {
     try {
       const formData = new FormData();
-      
-      // Add all the required fields to FormData
       formData.append('_id', productData._id);
       formData.append('title', productData.title);
       formData.append('description', productData.description);
@@ -322,6 +318,58 @@ export class ProductService {
       throw new Error('Lỗi khi xóa sản phẩm');
     }
   }
+
+  static async buyProduct(productId: string, token: string, buyData: BuyProductRequest): Promise<BuyProductResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/products/${productId}/buy`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(buyData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        const error: BuyProductError = {
+          message: data.message || 'Lỗi khi mua sản phẩm',
+          code: response.status
+        };
+
+        if (response.status === 401) {
+          error.message = 'Vui lòng đăng nhập lại';
+          throw error;
+        }
+        
+        if (response.status === 400) {
+          error.message = 'Sản phẩm không có sẵn';
+          throw error;
+        }
+        
+        if (response.status === 404) {
+          error.message = 'Sản phẩm không tồn tại';
+          throw error;
+        }
+        
+        throw error;
+      }
+
+      // Success response (200 OK)
+      return {
+        success: true,
+        message: data.message || 'Sản phẩm đã được mua thành công',
+        orderId: data.orderId,
+        orderDetails: data.orderDetails
+      };
+    } catch (error) {
+      if (error instanceof Error || (error && typeof error === 'object' && 'code' in error)) {
+        throw error;
+      }
+      throw new Error('Lỗi khi mua sản phẩm');
+    }
+  }
 }
 
 export const productService = {
@@ -332,4 +380,5 @@ export const productService = {
   getProduct: ProductService.getProduct,
   getUserProducts: ProductService.getUserProducts,
   getUserProductsByUserId: ProductService.getUserProductsByUserId,
+  buyProduct: ProductService.buyProduct,
 }; 

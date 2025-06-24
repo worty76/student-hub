@@ -216,4 +216,31 @@ export interface ProductReview {
   images?: string[];
   createdAt: Date;
   helpful: number;
+}
+
+// Buy Product Types
+export interface BuyProductRequest {
+  paymentMethod: 'cash';
+  shippingAddress: string;
+}
+
+export interface BuyProductResponse {
+  success: boolean;
+  message: string;
+  orderId?: string;
+  orderDetails?: {
+    productId: string;
+    productTitle: string;
+    price: number;
+    paymentMethod: string;
+    shippingAddress: string;
+    estimatedDelivery?: string;
+    sellerId: string;
+    sellerName: string;
+  };
+}
+
+export interface BuyProductError {
+  message: string;
+  code: number;
 } 

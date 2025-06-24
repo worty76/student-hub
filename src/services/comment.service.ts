@@ -292,7 +292,6 @@ export class CommentService {
     const startPolling = () => {
       if (pollingInterval) return;
 
-      console.log('Starting polling fallback for product:', productId);
       onStatusChange?.('polling');
       
       pollingInterval = setInterval(async () => {
@@ -369,7 +368,6 @@ export class CommentService {
                     if (onLikeUpdate) {
                       const previousCount = previousLikeCounts.get(reply._id) || 0;
                       if (reply.likeCount !== previousCount) {
-                        console.log(`Like count changed for reply ${reply._id}: ${previousCount} → ${reply.likeCount}`);
                         onLikeUpdate(reply._id, reply.likeCount, reply.likes);
                         previousLikeCounts.set(reply._id, reply.likeCount);
                       }
@@ -379,7 +377,6 @@ export class CommentService {
                     if (onCommentUpdate) {
                       const previousUpdate = previousCommentUpdates.get(reply._id);
                       if (previousUpdate !== reply.updatedAt) {
-                        console.log(`Content updated for reply ${reply._id}: ${previousUpdate} → ${reply.updatedAt}`);
                         onCommentUpdate(reply._id, reply);
                         previousCommentUpdates.set(reply._id, reply.updatedAt);
                       }
@@ -399,7 +396,6 @@ export class CommentService {
               if (onLikeUpdate) {
                 const previousCount = previousLikeCounts.get(comment._id) || 0;
                 if (comment.likeCount !== previousCount) {
-                  console.log(`Like count changed for comment ${comment._id}: ${previousCount} → ${comment.likeCount}`);
                   onLikeUpdate(comment._id, comment.likeCount, comment.likes);
                   previousLikeCounts.set(comment._id, comment.likeCount);
                 }
@@ -409,7 +405,6 @@ export class CommentService {
               if (onCommentUpdate) {
                 const previousUpdate = previousCommentUpdates.get(comment._id);
                 if (previousUpdate !== comment.updatedAt) {
-                  console.log(`Content updated for comment ${comment._id}: ${previousUpdate} → ${comment.updatedAt}`);
                   onCommentUpdate(comment._id, comment);
                   previousCommentUpdates.set(comment._id, comment.updatedAt);
                 }

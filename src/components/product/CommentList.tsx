@@ -146,9 +146,7 @@ export default function CommentList({ }: CommentListProps) {
                   console.error('Reply avatar image failed to load:', avatarUrl, 'Error:', e);
                   setImageError(true);
                 }}
-                onLoad={() => {
-                  console.log('Reply avatar image loaded successfully:', avatarUrl);
-                }}
+                onLoad={() => {}}
               />
             ) : (
               <div className="w-6 h-6 bg-gradient-to-br from-green-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-xs">
@@ -230,9 +228,7 @@ export default function CommentList({ }: CommentListProps) {
                     console.error('Avatar image failed to load:', avatarUrl, 'Error:', e);
                     setImageError(true);
                   }}
-                  onLoad={() => {
-                    console.log('Avatar image loaded successfully:', avatarUrl);
-                  }}
+                  onLoad={() => {}}
                 />
               ) : (
                 <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
