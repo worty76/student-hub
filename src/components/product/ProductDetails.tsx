@@ -24,6 +24,7 @@ import {
 import { ProductFavoriteButton } from './ProductFavoriteButton';
 import ProductComments from './ProductComments';
 import BuyProductButton from './BuyProductButton';
+import ReportProductButton from './ReportProductButton';
 import { formatDate } from '@/lib/utils';
 
 interface ProductDetailsProps {
@@ -428,6 +429,14 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
                     <ProductFavoriteButton 
                       productId={currentProduct._id} 
                       className="flex-1"
+                    />
+                  </div>
+                  
+                  {/* Report action */}
+                  <div className="flex justify-end">
+                    <ReportProductButton
+                      productId={currentProduct._id}
+                      productTitle={currentProduct.title}
                     />
                   </div>
                 </div>

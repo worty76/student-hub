@@ -1,4 +1,4 @@
-import { CreateProductRequest, CreateProductResponse, EditProductRequest, EditProductResponse, DeleteProductResponse, Product, BuyProductRequest, BuyProductResponse, BuyProductError } from '@/types/product';
+import { CreateProductRequest, CreateProductResponse, EditProductRequest, EditProductResponse, DeleteProductResponse, Product, BuyProductRequest, BuyProductResponse, BuyProductError, ReportProductRequest, ReportProductResponse, ReportProductError } from '@/types/product';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://be-student-hub-production.up.railway.app/api';
 
@@ -370,6 +370,56 @@ export class ProductService {
       throw new Error('Lỗi khi mua sản phẩm');
     }
   }
+
+  static async reportProduct(productId: string, token: string, reportData: ReportProductRequest): Promise<ReportProductResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/products/${productId}/report`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(reportData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        const error: ReportProductError = {
+          message: data.message || 'Lỗi khi báo cáo sản phẩm',
+          code: response.status
+        };
+
+        if (response.status === 401) {
+          error.message = 'Vui lòng đăng nhập lại';
+          throw error;
+        }
+        
+        if (response.status === 400) {
+          error.message = 'Dữ liệu nhập không hợp lệ';
+          throw error;
+        }
+        
+        if (response.status === 404) {
+          error.message = 'Sản phẩm không tồn tại';
+          throw error;
+        }
+        
+        throw error;
+      }
+
+      return {
+        success: true,
+        message: data.message || 'Báo cáo sản phẩm thành công',
+        reportId: data.reportId
+      };
+    } catch (error) {
+      if (error instanceof Error || (error && typeof error === 'object' && 'code' in error)) {
+        throw error;
+      }
+      throw new Error('Lỗi khi báo cáo sản phẩm');
+    }
+  }
 }
 
 export const productService = {
@@ -381,4 +431,5 @@ export const productService = {
   getUserProducts: ProductService.getUserProducts,
   getUserProductsByUserId: ProductService.getUserProductsByUserId,
   buyProduct: ProductService.buyProduct,
+  reportProduct: ProductService.reportProduct,
 }; 
