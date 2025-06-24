@@ -59,3 +59,29 @@ export interface LoginResponse {
   token: string;
   user: User;
 }
+
+// Report User Types
+export interface ReportUserRequest {
+  reason: 'inappropriate' | 'spam' | 'fraud' | 'offensive' | 'other';
+  description: string;
+}
+
+export interface ReportUserResponse {
+  success: boolean;
+  message: string;
+  reportId?: string;
+}
+
+export interface ReportUserError {
+  message: string;
+  code: number;
+}
+
+// Report reason options for users
+export const USER_REPORT_REASONS = [
+  { value: 'inappropriate', label: 'Hành vi không phù hợp' },
+  { value: 'spam', label: 'Gửi spam' },
+  { value: 'fraud', label: 'Lừa đảo' },
+  { value: 'offensive', label: 'Ngôn từ xúc phạm' },
+  { value: 'other', label: 'Khác' }
+] as const;

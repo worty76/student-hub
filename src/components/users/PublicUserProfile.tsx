@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Loader2, ChevronLeft, User, MapPin, Star, Heart, Calendar, Mail } from 'lucide-react';
 import Image from 'next/image';
 import UserProductsGrid from './UserProductsGrid';
+import ReportUserButton from './ReportUserButton';
 import { RatingForm, UserRatingsList } from '@/components/rating';
 
 interface PublicUserProfileProps {
@@ -288,13 +289,27 @@ export default function PublicUserProfile({ userId }: PublicUserProfileProps) {
           </Card>
 
           {currentAuthUser && currentAuthUser._id !== currentUser._id && (
-            <RatingForm 
-              userId={currentUser._id} 
-              userName={currentUser.name}
-              onRatingSuccess={() => {
-                fetchUser(userId);
-              }}
-            />
+            <>
+              <RatingForm 
+                userId={currentUser._id} 
+                userName={currentUser.name}
+                onRatingSuccess={() => {
+                  fetchUser(userId);
+                }}
+              />
+              
+              {/* Report User Button */}
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex justify-end">
+                    <ReportUserButton
+                      userId={currentUser._id}
+                      userName={currentUser.name}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            </>
           )}
 
           <UserRatingsList 

@@ -420,7 +420,6 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
                       className="flex-1 cursor-pointer" 
                       size="lg"
                       variant="outline"
-                      disabled={currentProduct.status !== 'available'}
                       onClick={handleViewSellerProfile}
                     >
                       <User className="h-4 w-4 mr-2" />
@@ -433,13 +432,13 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
                   </div>
                   
                   {/* Report action */}
-                  <div className="flex justify-end">
+                  {/* <div className="flex justify-end"> */}
                     <ReportProductButton
                       productId={currentProduct._id}
                       productTitle={currentProduct.title}
                     />
                   </div>
-                </div>
+                {/* </div> */}
               </CardContent>
             </Card>
           </div>
