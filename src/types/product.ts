@@ -216,4 +216,57 @@ export interface ProductReview {
   images?: string[];
   createdAt: Date;
   helpful: number;
-} 
+}
+
+// Buy Product Types
+export interface BuyProductRequest {
+  paymentMethod: 'cash';
+  shippingAddress: string;
+}
+
+export interface BuyProductResponse {
+  success: boolean;
+  message: string;
+  orderId?: string;
+  orderDetails?: {
+    productId: string;
+    productTitle: string;
+    price: number;
+    paymentMethod: string;
+    shippingAddress: string;
+    estimatedDelivery?: string;
+    sellerId: string;
+    sellerName: string;
+  };
+}
+
+export interface BuyProductError {
+  message: string;
+  code: number;
+}
+
+// Report Product Types
+export interface ReportProductRequest {
+  reason: 'inappropriate' | 'spam' | 'fraud' | 'offensive' | 'other';
+  description: string;
+}
+
+export interface ReportProductResponse {
+  success: boolean;
+  message: string;
+  reportId?: string;
+}
+
+export interface ReportProductError {
+  message: string;
+  code: number;
+}
+
+// Report reason options
+export const REPORT_REASONS = [
+  { value: 'inappropriate', label: 'Nội dung không phù hợp' },
+  { value: 'spam', label: 'Spam' },
+  { value: 'fraud', label: 'Lừa đảo' },
+  { value: 'offensive', label: 'Ngôn từ xúc phạm' },
+  { value: 'other', label: 'Khác' }
+] as const; 

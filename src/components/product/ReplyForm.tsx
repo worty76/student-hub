@@ -110,9 +110,7 @@ export default function ReplyForm({ parentCommentId, onCancel, autoFocus = true 
                   console.error('User avatar image failed to load:', currentUser.avatar, 'Error:', e);
                   setImageError(true);
                 }}
-                onLoad={() => {
-                  console.log('User avatar image loaded successfully:', currentUser.avatar);
-                }}
+                onLoad={() => {}}
               />
             ) : (
               <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">

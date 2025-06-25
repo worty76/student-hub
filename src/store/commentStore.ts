@@ -489,7 +489,6 @@ export const useCommentStore = create<CommentStore>()((set, get) => ({
     try {
       const comments = await CommentService.getComments(productId);
       
-      // Handle API response where user field contains full user objects
       const commentsWithUserInfo: CommentWithUserInfo[] = await Promise.all(
         comments
           .filter(comment => !comment.parent) // Only get top-level comments
@@ -517,7 +516,6 @@ export const useCommentStore = create<CommentStore>()((set, get) => ({
               };
             }
 
-            // Fetch replies for this comment
             try {
               const replies = await CommentService.getReplies(comment._id);
               const repliesWithUserInfo: CommentWithUserInfo[] = replies.map(reply => {
@@ -567,10 +565,8 @@ export const useCommentStore = create<CommentStore>()((set, get) => ({
   },
 
   subscribeToComments: (productId: string) => {
-    // First, load existing comments
     get().fetchComments(productId);
 
-    // Then subscribe to real-time updates
     const unsubscribe = CommentService.subscribeToComments(
       productId,
       async (comment: Comment) => {
@@ -579,7 +575,6 @@ export const useCommentStore = create<CommentStore>()((set, get) => ({
           const { comments } = get();
           const exists = comments.some(c => c._id === comment._id);
           if (!exists) {
-            // Fetch user info for the new comment
             const userInfo = await UserInfoService.getUserInfo(comment.user);
             const commentWithUserInfo: CommentWithUserInfo = {
               ...comment,
@@ -597,7 +592,6 @@ export const useCommentStore = create<CommentStore>()((set, get) => ({
         if (parentComment) {
           const replyExists = parentComment.replies?.some(r => r._id === reply._id);
           if (!replyExists) {
-            // Fetch user info for the new reply
             const userInfo = await UserInfoService.getUserInfo(reply.user);
             const replyWithUserInfo: CommentWithUserInfo = {
               ...reply,
@@ -608,11 +602,9 @@ export const useCommentStore = create<CommentStore>()((set, get) => ({
         }
       },
       (commentId: string, likeCount: number, likes: string[]) => {
-        // Handle like/unlike updates with improved state tracking
         const { comments } = get();
         let targetComment: CommentWithUserInfo | undefined;
         
-        // Find the comment (could be a top-level comment or a reply)
         for (const comment of comments) {
           if (comment._id === commentId) {
             targetComment = comment;
@@ -628,9 +620,6 @@ export const useCommentStore = create<CommentStore>()((set, get) => ({
         }
         
         if (targetComment && targetComment.likeCount !== likeCount) {
-          console.log(`Real-time like update for comment ${commentId}: ${targetComment.likeCount} → ${likeCount}`);
-          
-          // Update the comment with new like data
           set((state) => ({
             comments: state.comments.map(comment => {
               if (comment._id === commentId) {
@@ -668,13 +657,9 @@ export const useCommentStore = create<CommentStore>()((set, get) => ({
         }
       },
       (commentId: string, updatedComment: Comment) => {
-        // Handle comment edit updates
-        console.log(`Real-time edit update for comment ${commentId}: content updated`);
         get().updateComment(commentId, updatedComment);
       },
       (commentId: string) => {
-        // Handle comment deletion
-        console.log(`Real-time delete update for comment ${commentId}: comment deleted`);
         get().removeComment(commentId);
       },
       (status: 'realtime' | 'polling' | 'disconnected') => {

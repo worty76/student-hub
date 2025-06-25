@@ -37,15 +37,6 @@ export const DeleteCommentButton: React.FC<DeleteCommentButtonProps> = ({
     md: 14,
     lg: 16
   };
-
-  // Debug logging
-  console.log('DeleteCommentButton Debug:', {
-    commentId,
-    userId,
-    currentUserId: user?._id,
-    isOwner,
-    user: user
-  });
     
   // Don't show delete button if not the comment owner
   if (!isOwner) {
@@ -89,7 +80,6 @@ export const DeleteCommentButton: React.FC<DeleteCommentButtonProps> = ({
         )}
       </Button>
 
-      {/* Confirmation Dialog */}
       {showConfirmDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-lg p-6 max-w-md mx-4 shadow-xl">

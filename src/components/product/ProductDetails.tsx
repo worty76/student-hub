@@ -23,6 +23,8 @@ import {
 } from 'lucide-react';
 import { ProductFavoriteButton } from './ProductFavoriteButton';
 import ProductComments from './ProductComments';
+import BuyProductButton from './BuyProductButton';
+import ReportProductButton from './ReportProductButton';
 import { formatDate } from '@/lib/utils';
 
 interface ProductDetailsProps {
@@ -402,21 +404,41 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
             {/* Action Buttons */}
             <Card>
               <CardContent className="pt-6">
-                <div className="flex space-x-3">
-                  <Button 
-                    className="flex-1 cursor-pointer" 
-                    size="lg"
-                    disabled={currentProduct.status !== 'available'}
-                    onClick={handleViewSellerProfile}
-                  >
-                    <User className="h-4 w-4 mr-2" />
-                    Xem trang cá nhân người bán
-                  </Button>
-                  <ProductFavoriteButton 
-                    productId={currentProduct._id} 
-                    className="flex-1"
+                <div className="space-y-3">
+                  {/* Buy Button - Primary action */}
+                  <BuyProductButton
+                    productId={currentProduct._id}
+                    productTitle={currentProduct.title}
+                    price={currentProduct.price}
+                    isAvailable={currentProduct.status === 'available'}
+                    sellerName={typeof currentProduct.seller === 'object' ? currentProduct.seller.name : currentProduct.seller}
                   />
-                </div>
+                  
+                  {/* Secondary actions */}
+                  <div className="flex space-x-3">
+                    <Button 
+                      className="flex-1 cursor-pointer" 
+                      size="lg"
+                      variant="outline"
+                      onClick={handleViewSellerProfile}
+                    >
+                      <User className="h-4 w-4 mr-2" />
+                      Xem trang cá nhân người bán
+                    </Button>
+                    <ProductFavoriteButton 
+                      productId={currentProduct._id} 
+                      className="flex-1"
+                    />
+                  </div>
+                  
+                  {/* Report action */}
+                  {/* <div className="flex justify-end"> */}
+                    <ReportProductButton
+                      productId={currentProduct._id}
+                      productTitle={currentProduct.title}
+                    />
+                  </div>
+                {/* </div> */}
               </CardContent>
             </Card>
           </div>

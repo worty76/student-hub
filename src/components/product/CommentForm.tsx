@@ -102,9 +102,7 @@ export default function CommentForm({ productId }: CommentFormProps) {
                     console.error('User avatar image failed to load:', currentUser.avatar, 'Error:', e);
                     setImageError(true);
                   }}
-                  onLoad={() => {
-                    console.log('User avatar image loaded successfully:', currentUser.avatar);
-                  }}
+                  onLoad={() => {}}
                 />
               ) : (
                 <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
