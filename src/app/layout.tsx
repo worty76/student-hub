@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { Header } from "@/components/navigation/Header";
-import { Footer } from "@/components/navigation/Footer";
 import { Providers } from "@/components/providers/Providers";
+import { ConditionalLayout } from "@/components/layout/ConditionalLayout";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -32,11 +31,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
         <Providers>
-          <Header />
-          <main className="flex-1">
+          <ConditionalLayout>
             {children}
-          </main>
-          <Footer />
+          </ConditionalLayout>
         </Providers>
         <Toaster />
       </body>
