@@ -2,11 +2,27 @@ import { create } from 'zustand';
 import { User } from '@/types/auth';
 import { AdminService, AdminApiError } from '@/services/admin.service';
 
+interface DashboardStats {
+  counts?: {
+    users: number;
+    products: number;
+    availableProducts: number;
+    soldProducts: number;
+  };
+  categoryStats?: Array<{
+    _id: string;
+    count: number;
+  }>;
+}
+
 interface AdminState {
   users: User[];
   loading: boolean;
   error: string | null;
   deletingUserId: string | null;
+  dashboardStats: DashboardStats;
+  dashboardLoading: boolean;
+  dashboardError: string | null;
 }
 
 interface AdminStore extends AdminState {
@@ -14,6 +30,8 @@ interface AdminStore extends AdminState {
   deleteUser: (token: string, userId: string) => Promise<void>;
   clearError: () => void;
   setUserStatus: (userId: string, status: string) => void;
+  fetchDashboardStats: (token: string) => Promise<void>;
+  clearDashboardError: () => void;
 }
 
 export const useAdminStore = create<AdminStore>((set, get) => ({
@@ -21,6 +39,9 @@ export const useAdminStore = create<AdminStore>((set, get) => ({
   loading: false,
   error: null,
   deletingUserId: null,
+  dashboardStats: {},
+  dashboardLoading: false,
+  dashboardError: null,
 
   fetchAllUsers: async (token: string) => {
     set({ loading: true, error: null });
@@ -104,5 +125,49 @@ export const useAdminStore = create<AdminStore>((set, get) => ({
         : user
     );
     set({ users: updatedUsers });
+  },
+
+  fetchDashboardStats: async (token: string) => {
+    set({ dashboardLoading: true, dashboardError: null });
+    try {
+      const data = await AdminService.getDashboardStats(token);
+      set({ 
+        dashboardStats: data, 
+        dashboardLoading: false, 
+        dashboardError: null 
+      });
+    } catch (error) {
+      if (error instanceof AdminApiError) {
+        if (error.status === 401) {
+          set({ 
+            dashboardError: 'Bạn không có quyền truy cập', 
+            dashboardLoading: false,
+            dashboardStats: {}
+          });
+        } else if (error.status === 403) {
+          set({ 
+            dashboardError: 'Quyền truy cập bị từ chối - Cần quyền admin', 
+            dashboardLoading: false,
+            dashboardStats: {}
+          });
+        } else {
+          set({ 
+            dashboardError: error.message, 
+            dashboardLoading: false,
+            dashboardStats: {}
+          });
+        }
+      } else {
+        set({ 
+          dashboardError: 'Không thể tải dữ liệu dashboard', 
+          dashboardLoading: false,
+          dashboardStats: {}
+        });
+      }
+    }
+  },
+
+  clearDashboardError: () => {
+    set({ dashboardError: null });
   },
 })); 

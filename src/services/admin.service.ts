@@ -2,6 +2,19 @@ import { User } from '@/types/auth';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://be-student-hub-production.up.railway.app/api';
 
+interface DashboardStatsResponse {
+  counts: {
+    users: number;
+    products: number;
+    availableProducts: number;
+    soldProducts: number;
+  };
+  categoryStats: Array<{
+    _id: string;
+    count: number;
+  }>;
+}
+
 export class AdminService {
   static async getAllUsers(token: string): Promise<User[]> {
     try {
@@ -106,6 +119,50 @@ export class AdminService {
       }
       
       throw new AdminApiError('Failed to delete user', 500);
+    }
+  }
+
+  static async getDashboardStats(token: string): Promise<DashboardStatsResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/users/admin/dashboard`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        
+        if (response.status === 401) {
+          throw new AdminApiError('Bạn không có quyền truy cập', 401);
+        }
+        
+        if (response.status === 403) {
+          throw new AdminApiError('Quyền truy cập bị từ chối - Cần quyền admin', 403);
+        }
+        
+        throw new AdminApiError(
+          errorData.message || `Lỗi tải dữ liệu dashboard: ${response.statusText}`,
+          response.status
+        );
+      }
+
+      const data = await response.json();
+      console.log('Dashboard API response:', data);
+      
+      return data;
+    } catch (error) {
+      if (error instanceof AdminApiError) {
+        throw error;
+      }
+      
+      if (error instanceof Error) {
+        throw new AdminApiError(error.message, 500);
+      }
+      
+      throw new AdminApiError('Không thể tải dữ liệu dashboard', 500);
     }
   }
 }
