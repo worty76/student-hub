@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { AdminOverview } from './AdminOverview';
 import { AdminUserManagement } from './AdminUserManagement';
-import { AdminProductManagement } from './AdminProductManagement';
+import { AdminAllProducts } from './AdminAllProducts';
 import { AdminReports } from './AdminReports';
 import { AdminSettings } from './AdminSettings';
 import { Button } from '@/components/ui/button';
@@ -38,7 +38,7 @@ export function AdminDashboard() {
       case 'users':
         return <AdminUserManagement />;
       case 'products':
-        return <AdminProductManagement />;
+        return <AdminAllProducts />;
       case 'reports':
         return <AdminReports />;
       case 'settings':

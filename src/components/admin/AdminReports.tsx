@@ -3,233 +3,85 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { 
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
   AlertTriangle, 
-  User,
-  Package,
-  Clock,
-  CheckCircle,
-  XCircle
+  FileText,
+  Loader2,
+  RefreshCw
 } from 'lucide-react';
-
-interface Report {
-  _id: string;
-  type: 'user' | 'product';
-  reason: string;
-  description: string;
-  reporter: {
-    _id: string;
-    name: string;
-    email: string;
-  };
-  reported: {
-    _id: string;
-    name: string;
-    email?: string;
-    title?: string;
-  };
-  status: 'pending' | 'resolved' | 'dismissed';
-  createdAt: string;
-  resolvedAt?: string;
-}
+import { useAdminStore } from '@/store/adminStore';
+import { useAuthStore } from '@/store/authStore';
+import { AdminProductReportsDataTable } from './AdminProductReportsDataTable';
 
 export function AdminReports() {
-  const [reports, setReports] = useState<Report[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [typeFilter, setTypeFilter] = useState<Report['type'] | 'all'>('all');
-  const [statusFilter, setStatusFilter] = useState<Report['status'] | 'all'>('all');
+  const { token } = useAuthStore();
+  const {
+    productReports,
+    reportsLoading,
+    reportsError,
+    reportsPagination,
+    currentReportsPage,
+    reportsFilters,
+    fetchAllProductReports,
+    setReportsPage,
+    setReportsFilters,
+    clearReportsError
+  } = useAdminStore();
+
+  const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
 
   useEffect(() => {
-    fetchReports();
-  }, []);
+    if (token) {
+      fetchAllProductReports(token, {
+        page: currentReportsPage,
+        limit: 20,
+        ...reportsFilters
+      });
+    }
+  }, [token, currentReportsPage, reportsFilters, fetchAllProductReports]);
 
-  const fetchReports = async () => {
-    setLoading(true);
-    try {
-      // Mock data - replace with actual API call
-      setTimeout(() => {
-        const mockReports: Report[] = [
-          {
-            _id: '1',
-            type: 'user',
-            reason: 'inappropriate',
-            description: 'User is sending inappropriate messages to other users',
-            reporter: {
-              _id: '1',
-              name: 'John Doe',
-              email: 'john.doe@student.edu'
-            },
-            reported: {
-              _id: '4',
-              name: 'Suspended User',
-              email: 'suspended.user@student.edu'
-            },
-            status: 'pending',
-            createdAt: '2024-01-20T14:30:00Z'
-          },
-          {
-            _id: '2',
-            type: 'product',
-            reason: 'fraud',
-            description: 'Product description does not match the actual item',
-            reporter: {
-              _id: '2',
-              name: 'Jane Smith',
-              email: 'jane.smith@student.edu'
-            },
-            reported: {
-              _id: '3',
-              name: 'Gaming Chair - Red',
-              title: 'Gaming Chair - Red'
-            },
-            status: 'resolved',
-            createdAt: '2024-01-18T10:15:00Z',
-            resolvedAt: '2024-01-19T09:30:00Z'
-          },
-          {
-            _id: '3',
-            type: 'user',
-            reason: 'spam',
-            description: 'User is posting too many listings in a short time',
-            reporter: {
-              _id: '3',
-              name: 'Admin User',
-              email: 'admin@studenthub.com'
-            },
-            reported: {
-              _id: '5',
-              name: 'Spammer User',
-              email: 'spammer@student.edu'
-            },
-            status: 'dismissed',
-            createdAt: '2024-01-17T16:45:00Z',
-            resolvedAt: '2024-01-18T08:20:00Z'
-          },
-          {
-            _id: '4',
-            type: 'product',
-            reason: 'offensive',
-            description: 'Product contains offensive content in description',
-            reporter: {
-              _id: '1',
-              name: 'John Doe',
-              email: 'john.doe@student.edu'
-            },
-            reported: {
-              _id: '4',
-              name: 'iPhone 12 Pro',
-              title: 'iPhone 12 Pro'
-            },
-            status: 'pending',
-            createdAt: '2024-01-19T12:00:00Z'
-          },
-        ];
-        setReports(mockReports);
-        setLoading(false);
-      }, 1000);
-    } catch (error) {
-      console.error('Error fetching reports:', error);
-      setLoading(false);
+  const handleRefresh = () => {
+    if (token) {
+      clearReportsError();
+      fetchAllProductReports(token, {
+        page: currentReportsPage,
+        limit: 20,
+        ...reportsFilters
+      });
+      setLastRefresh(new Date());
     }
   };
 
-  const filteredReports = reports.filter(report => {
-    const matchesType = typeFilter === 'all' || report.type === typeFilter;
-    const matchesStatus = statusFilter === 'all' || report.status === statusFilter;
-    
-    return matchesType && matchesStatus;
-  });
-
-  const handleReportAction = async (reportId: string, action: 'resolve' | 'dismiss') => {
-    try {
-      // Mock action - replace with actual API call
-      setReports(prevReports => 
-        prevReports.map(report => {
-          if (report._id === reportId) {
-            return {
-              ...report,
-              status: action === 'resolve' ? 'resolved' as const : 'dismissed' as const,
-              resolvedAt: new Date().toISOString()
-            };
-          }
-          return report;
-        })
-      );
-    } catch (error) {
-      console.error('Error performing report action:', error);
-    }
+  const handlePageChange = (page: number) => {
+    setReportsPage(page);
   };
 
-  const getStatusBadgeColor = (status: Report['status']) => {
-    switch (status) {
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'resolved':
-        return 'bg-green-100 text-green-800';
-      case 'dismissed':
-        return 'bg-gray-100 text-gray-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
+  const handleStatusFilterChange = (status: string) => {
+    const filterValue = status === 'all' ? undefined : status;
+    setReportsFilters({ 
+      ...reportsFilters, 
+      status: filterValue as 'pending' | 'reviewed' | 'dismissed' | undefined 
+    });
   };
 
-  const getReasonBadgeColor = (reason: string) => {
-    switch (reason) {
-      case 'inappropriate':
-        return 'bg-red-100 text-red-800';
-      case 'fraud':
-        return 'bg-orange-100 text-orange-800';
-      case 'spam':
-        return 'bg-purple-100 text-purple-800';
-      case 'offensive':
-        return 'bg-pink-100 text-pink-800';
-      default:
-        return 'bg-blue-100 text-blue-800';
-    }
+  const handleReasonFilterChange = (reason: string) => {
+    const filterValue = reason === 'all' ? undefined : reason;
+    setReportsFilters({ 
+      ...reportsFilters, 
+      reason: filterValue 
+    });
   };
 
-  if (loading) {
+  if (!token) {
     return (
-      <div className="space-y-6">
-        <Card>
-          <CardContent className="p-6">
-            <div className="animate-pulse space-y-4">
-              <div className="h-8 bg-gray-200 rounded w-1/4"></div>
-              <div className="space-y-3">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <div key={i} className="h-12 bg-gray-200 rounded"></div>
-                ))}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      <div className="flex items-center justify-center h-64">
+        <Alert className="max-w-md">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.
+          </AlertDescription>
+        </Alert>
       </div>
     );
   }
@@ -237,208 +89,121 @@ export function AdminReports() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Reports</h1>
-          <p className="text-gray-600 mt-1">Review and manage user and product reports</p>
+          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+            <FileText className="h-6 w-6" />
+            Báo cáo sản phẩm
+          </h1>
+          <p className="text-gray-600 mt-1">
+            Quản lý và xem xét các báo cáo về sản phẩm từ người dùng
+          </p>
         </div>
-        <Button onClick={fetchReports} variant="outline" size="sm">
-          Refresh Reports
-        </Button>
+        
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-gray-500">
+            Cập nhật lần cuối: {lastRefresh.toLocaleTimeString('vi-VN')}
+          </span>
+          <Button
+            onClick={handleRefresh}
+            disabled={reportsLoading}
+            size="sm"
+            variant="outline"
+          >
+            {reportsLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <RefreshCw className="h-4 w-4" />
+            )}
+            Làm mới
+          </Button>
+        </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">
-              Pending Reports
-            </CardTitle>
-            <Clock className="h-4 w-4 text-yellow-600" />
+            <CardTitle className="text-sm font-medium">Tổng báo cáo</CardTitle>
+            <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {reports.filter(r => r.status === 'pending').length}
+              {reportsPagination?.total || 0}
             </div>
           </CardContent>
         </Card>
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">
-              Resolved Reports
-            </CardTitle>
-            <CheckCircle className="h-4 w-4 text-green-600" />
+            <CardTitle className="text-sm font-medium">Đang chờ xử lý</CardTitle>
+            <AlertTriangle className="h-4 w-4 text-yellow-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {reports.filter(r => r.status === 'resolved').length}
+            <div className="text-2xl font-bold text-yellow-600">
+              {productReports.filter(report => report.status === 'pending').length}
             </div>
           </CardContent>
         </Card>
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">
-              Total Reports
-            </CardTitle>
-            <AlertTriangle className="h-4 w-4 text-red-600" />
+            <CardTitle className="text-sm font-medium">Đã xem xét</CardTitle>
+            <AlertTriangle className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{reports.length}</div>
+            <div className="text-2xl font-bold text-green-600">
+              {productReports.filter(report => report.status === 'reviewed').length}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Đã bỏ qua</CardTitle>
+            <AlertTriangle className="h-4 w-4 text-gray-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-gray-600">
+              {productReports.filter(report => report.status === 'dismissed').length}
+            </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Filters */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex flex-col md:flex-row gap-4">
-            <Select value={typeFilter} onValueChange={(value: Report['type'] | 'all') => setTypeFilter(value)}>
-              <SelectTrigger className="w-full md:w-48">
-                <SelectValue placeholder="Filter by type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                <SelectItem value="user">User Reports</SelectItem>
-                <SelectItem value="product">Product Reports</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={statusFilter} onValueChange={(value: Report['status'] | 'all') => setStatusFilter(value)}>
-              <SelectTrigger className="w-full md:w-48">
-                <SelectValue placeholder="Filter by status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="resolved">Resolved</SelectItem>
-                <SelectItem value="dismissed">Dismissed</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Error Alert */}
+      {reportsError && (
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription className="flex items-center justify-between">
+            <span>{reportsError}</span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={clearReportsError}
+              className="ml-2"
+            >
+              Đóng
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
 
-      {/* Reports Table */}
+      {/* Data Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Reports ({filteredReports.length})</CardTitle>
+          <CardTitle>Danh sách báo cáo</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Type</TableHead>
-                <TableHead>Reason</TableHead>
-                <TableHead>Reporter</TableHead>
-                <TableHead>Reported</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredReports.map((report) => (
-                <TableRow key={report._id}>
-                  <TableCell>
-                    <div className="flex items-center space-x-2">
-                      {report.type === 'user' ? (
-                        <User className="h-4 w-4 text-blue-600" />
-                      ) : (
-                        <Package className="h-4 w-4 text-green-600" />
-                      )}
-                      <span className="capitalize">{report.type}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={`text-xs ${getReasonBadgeColor(report.reason)}`} variant="secondary">
-                      {report.reason}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div>
-                      <div className="font-medium">{report.reporter.name}</div>
-                      <div className="text-sm text-gray-500">{report.reporter.email}</div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div>
-                      <div className="font-medium">{report.reported.name}</div>
-                      {report.reported.email && (
-                        <div className="text-sm text-gray-500">{report.reported.email}</div>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={`text-xs ${getStatusBadgeColor(report.status)}`} variant="secondary">
-                      {report.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm text-gray-500">
-                      {new Date(report.createdAt).toLocaleDateString()}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    {report.status === 'pending' && (
-                      <div className="flex items-center space-x-2">
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button variant="outline" size="sm">
-                              <CheckCircle className="h-4 w-4" />
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Resolve Report</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Are you sure you want to mark this report as resolved? This will indicate that appropriate action has been taken.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={() => handleReportAction(report._id, 'resolve')}
-                              >
-                                Resolve
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                        
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button variant="outline" size="sm">
-                              <XCircle className="h-4 w-4" />
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Dismiss Report</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Are you sure you want to dismiss this report? This will mark it as not requiring action.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={() => handleReportAction(report._id, 'dismiss')}
-                              >
-                                Dismiss
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </div>
-                    )}
-                    {report.status !== 'pending' && (
-                      <span className="text-sm text-gray-500">
-                        {report.resolvedAt && new Date(report.resolvedAt).toLocaleDateString()}
-                      </span>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <AdminProductReportsDataTable
+            data={productReports || []}
+            isLoading={reportsLoading}
+            currentPage={currentReportsPage}
+            totalPages={reportsPagination?.pages || 1}
+            onPageChange={handlePageChange}
+            onStatusFilterChange={handleStatusFilterChange}
+            onReasonFilterChange={handleReasonFilterChange}
+          />
         </CardContent>
       </Card>
     </div>
