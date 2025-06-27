@@ -8,7 +8,7 @@ import { useAuthStore } from '@/store/authStore';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useClickOutside } from '@/hooks/useClickOutside';
 import { ROUTES } from '@/constants/navigation';
-import { ChevronDown, User, LogOut, Heart, Package, MessageCircle } from 'lucide-react';
+import { ChevronDown, User, LogOut, Heart, Package, MessageCircle, Shield } from 'lucide-react';
 
 interface UserMenuProps {
   onMenuToggle?: () => void;
@@ -156,6 +156,20 @@ export function UserMenu({ onMenuToggle }: UserMenuProps) {
             <MessageCircle className="h-4 w-4 mr-3 text-gray-500" />
             Tin nhắn
           </Link>
+          
+          {currentUser.role === 'admin' && (
+            <>
+              <div className="border-t my-1"></div>
+              <Link
+                href="/admin"
+                className="flex items-center px-4 py-2 text-sm text-purple-700 hover:bg-purple-50 transition-colors"
+                onClick={handleMenuItemClick}
+              >
+                <Shield className="h-4 w-4 mr-3 text-purple-500" />
+                Admin Dashboard
+              </Link>
+            </>
+          )}
           
           <div className="border-t my-1"></div>
           

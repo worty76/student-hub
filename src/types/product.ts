@@ -269,4 +269,44 @@ export const REPORT_REASONS = [
   { value: 'fraud', label: 'Lừa đảo' },
   { value: 'offensive', label: 'Ngôn từ xúc phạm' },
   { value: 'other', label: 'Khác' }
-] as const; 
+] as const;
+
+// Admin Reports Types
+export interface ProductReport {
+  _id: string;
+  type: 'product';
+  reporter: {
+    _id: string;
+    name: string;
+    email: string;
+  };
+  reported: {
+    _id: string;
+    name: string;
+    email: string;
+  };
+  product: {
+    _id: string;
+    title: string;
+    // ... other product properties
+  } | null;
+  reason: string;
+  description: string;
+  status: 'pending' | 'reviewed' | 'dismissed';
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProductReportsResponse {
+  reports: ProductReport[];
+  pagination: Pagination;
+}
+
+export interface ProductReportsQueryParams {
+  page?: number;
+  limit?: number;
+  status?: 'pending' | 'reviewed' | 'dismissed';
+  reason?: string;
+  sortBy?: 'createdAt' | 'updatedAt';
+  sortOrder?: 'asc' | 'desc';
+} 

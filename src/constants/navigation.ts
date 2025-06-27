@@ -23,4 +23,5 @@ export const ROUTES = {
   profile: '/profile',
   favorites: '/favorites',
   messages: '/messages',
+  admin: '/admin',
 } as const; 
