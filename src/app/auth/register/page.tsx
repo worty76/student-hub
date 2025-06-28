@@ -14,7 +14,7 @@ export default function RegisterPage() {
     if (isAuthenticated && user) {
       switch (user.role) {
         case 'admin':
-          router.push('/admin/dashboard');
+          router.push('/admin');
           break;
         case 'seller':
           router.push('/seller/dashboard');

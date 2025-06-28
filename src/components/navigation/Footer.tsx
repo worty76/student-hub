@@ -17,31 +17,31 @@ import {
 export function Footer() {
   const currentYear = new Date().getFullYear();
 
-  const quickLinks = [
-    { href: '/', label: 'Home' },
-    { href: '/browse', label: 'Browse Items' },
-    { href: '/categories', label: 'Categories' },
-    { href: '/sell', label: 'Sell Item' },
-    { href: '/about', label: 'About Us' },
-    { href: '/contact', label: 'Contact' },
-  ];
+  // const quickLinks = [
+  //   { href: '/', label: 'Home' },
+  //   { href: '/browse', label: 'Browse Items' },
+  //   { href: '/categories', label: 'Categories' },
+  //   { href: '/sell', label: 'Sell Item' },
+  //   { href: '/about', label: 'About Us' },
+  //   { href: '/contact', label: 'Contact' },
+  // ];
 
-  const supportLinks = [
-    { href: '/help', label: 'Help Center' },
-    { href: '/faq', label: 'FAQ' },
-    { href: '/safety', label: 'Safety Guidelines' },
-    { href: '/shipping', label: 'Shipping Info' },
-    { href: '/returns', label: 'Returns & Refunds' },
-    { href: '/support', label: 'Customer Support' },
-  ];
+  // const supportLinks = [
+  //   { href: '/help', label: 'Help Center' },
+  //   { href: '/faq', label: 'FAQ' },
+  //   { href: '/safety', label: 'Safety Guidelines' },
+  //   { href: '/shipping', label: 'Shipping Info' },
+  //   { href: '/returns', label: 'Returns & Refunds' },
+  //   { href: '/support', label: 'Customer Support' },
+  // ];
 
-  const legalLinks = [
-    { href: '/privacy', label: 'Privacy Policy' },
-    { href: '/terms', label: 'Terms of Service' },
-    { href: '/cookies', label: 'Cookie Policy' },
-    { href: '/community-guidelines', label: 'Community Guidelines' },
-    { href: '/seller-agreement', label: 'Seller Agreement' },
-  ];
+  // const legalLinks = [
+  //   { href: '/privacy', label: 'Privacy Policy' },
+  //   { href: '/terms', label: 'Terms of Service' },
+  //   { href: '/cookies', label: 'Cookie Policy' },
+  //   { href: '/community-guidelines', label: 'Community Guidelines' },
+  //   { href: '/seller-agreement', label: 'Seller Agreement' },
+  // ];
 
   const socialLinks = [
     { href: 'https://facebook.com/studenthub', icon: Facebook, label: 'Facebook' },
@@ -55,9 +55,9 @@ export function Footer() {
     <footer className="bg-gray-900 text-gray-300 mt-auto">
       {/* Main Footer Content */}
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+        <div className="flex flex-col lg:flex-row justify-between space-y-12 lg:space-y-0">
           {/* Company Info */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-1">
             <Link href="/" className="flex items-center space-x-2 mb-4">
               <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                 <ShoppingBag className="h-5 w-5 text-white" />
@@ -65,8 +65,8 @@ export function Footer() {
               <span className="text-xl font-bold text-white">StudentHub</span>
             </Link>
             <p className="text-gray-400 mb-6 max-w-md">
-              The premier marketplace for students to buy and sell quality second-hand items. 
-              Find textbooks, electronics, furniture, and more within your local student community.
+              Website hàng đầu dành cho sinh viên mua và bán các mặt hàng cũ chất lượng.
+              Tìm kiếm sách, điện tử, nội thất, và nhiều hơn nữa trong cộng đồng sinh viên của bạn.
             </p>
             
             {/* Contact Info */}
@@ -81,13 +81,13 @@ export function Footer() {
               </div>
               <div className="flex items-center space-x-3">
                 <MapPin className="h-4 w-4 text-blue-400" />
-                <span className="text-sm">123 University Ave, College Town, ST 12345</span>
+                <span className="text-sm">470 Đ. Trần Đại Nghĩa, Hoà Hải, Ngũ Hành Sơn, Đà Nẵng 550000, Việt Nam</span>
               </div>
             </div>
           </div>
 
           {/* Quick Links */}
-          <div>
+          {/* <div>
             <h3 className="text-white font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
               {quickLinks.map((link) => (
@@ -101,10 +101,10 @@ export function Footer() {
                 </li>
               ))}
             </ul>
-          </div>
+          </div> */}
 
           {/* Support */}
-          <div>
+          {/* <div>
             <h3 className="text-white font-semibold mb-4">Support</h3>
             <ul className="space-y-2">
               {supportLinks.map((link) => (
@@ -118,10 +118,10 @@ export function Footer() {
                 </li>
               ))}
             </ul>
-          </div>
+          </div> */}
 
           {/* Legal */}
-          <div>
+          {/* <div>
             <h3 className="text-white font-semibold mb-4">Legal</h3>
             <ul className="space-y-2">
               {legalLinks.map((link) => (
@@ -135,31 +135,34 @@ export function Footer() {
                 </li>
               ))}
             </ul>
+          </div> */}
+          <div>
+            <div className="w-lg">
+              <h3 className="text-white font-semibold mb-2">Liên lạc với chúng tôi</h3>
+              <p className="text-gray-400 text-sm mb-4">
+                Nếu bạn có bất kỳ câu hỏi hoặc ý tưởng nào, vui lòng liên hệ với chúng tôi.
+              </p>
+              <form className="flex space-x-2">
+                <input
+                  type="email"
+                  placeholder="Nhập email của bạn"
+                  className="flex-1 px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                />
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm font-medium"
+                >
+                  Gửi
+                </button>
+              </form>
+            </div>
           </div>
         </div>
 
         {/* Newsletter Signup */}
-        <div className="border-t border-gray-800 mt-12 pt-8">
-          <div className="max-w-md">
-            <h3 className="text-white font-semibold mb-2">Stay Updated</h3>
-            <p className="text-gray-400 text-sm mb-4">
-              Get the latest deals and announcements delivered to your inbox.
-            </p>
-            <form className="flex space-x-2">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-              />
-              <button
-                type="submit"
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm font-medium"
-              >
-                Subscribe
-              </button>
-            </form>
-          </div>
-        </div>
+        {/* <div className="border-t border-gray-800 mt-12 pt-8">
+
+        </div> */}
       </div>
 
       {/* Bottom Bar */}
@@ -168,16 +171,20 @@ export function Footer() {
           <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
             {/* Copyright */}
             <div className="flex items-center space-x-2 text-sm text-gray-400">
-              <span>© {currentYear} StudentHub. All rights reserved.</span>
+              <span>© {currentYear} StudentHub.</span>
               <span className="hidden md:inline">•</span>
               <span className="hidden md:inline flex items-center space-x-1">
-                Made with <Heart className="h-3 w-3 text-red-500 mx-1" /> for students
+                <div className="flex items-center space-x-1">
+                  <span>Được làm bởi </span>
+                  <Heart className="h-3 w-3 text-red-500 mx-1" />
+                  <span>cho sinh viên</span>
+                </div>
               </span>
             </div>
 
             {/* Social Links */}
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-400 mr-2">Follow us:</span>
+              <span className="text-sm text-gray-400 mr-2">Theo dõi chúng tôi:</span>
               {socialLinks.map((social) => {
                 const Icon = social.icon;
                 return (

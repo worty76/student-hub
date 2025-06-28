@@ -12,6 +12,7 @@ import { MapPin, Loader2, ShoppingBag, Eye, Heart, Calendar } from 'lucide-react
 import Link from 'next/link';
 import Image from 'next/image';
 import { getCategoryLabel, getConditionLabel, getStatusLabel } from '@/types/product';
+import { formatPrice, getStatusColor, getConditionColor, formatDate } from '@/lib/utils';
 
 interface SuggestedListingsProps {
   products?: MarketplaceProduct[];
@@ -78,52 +79,6 @@ export function SuggestedListings({ products: initialProducts }: SuggestedListin
       fetchSuggestedProducts();
     }
   }, [isAuthenticated, user, initialProducts, fetchSuggestedProducts]);
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND',
-    }).format(price);
-  };
-
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return '';
-    return new Date(dateString).toLocaleDateString('vi-VN', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    });
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'available':
-        return 'bg-green-100 text-green-800 hover:bg-green-200';
-      case 'sold':
-        return 'bg-red-100 text-red-800 hover:bg-red-200';
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200';
-      default:
-        return 'bg-gray-100 text-gray-800 hover:bg-gray-200';
-    }
-  };
-
-  const getConditionColor = (condition: string) => {
-    switch (condition) {
-      case 'new':
-        return 'bg-blue-100 text-blue-800';
-      case 'like-new':
-        return 'bg-green-100 text-green-800';
-      case 'good':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'fair':
-        return 'bg-orange-100 text-orange-800';
-      case 'poor':
-        return 'bg-red-100 text-red-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
 
   if (!isAuthenticated) {
     return (
@@ -219,9 +174,9 @@ export function SuggestedListings({ products: initialProducts }: SuggestedListin
                 return (
                   <div 
                     key={product._id}
-                    className="hover:shadow-lg transition-shadow duration-200 overflow-hidden bg-white rounded-2xl border border-gray-200 shadow-sm"
+                    className="flex flex-col h-full hover:shadow-lg transition-shadow duration-200 overflow-hidden bg-white rounded-2xl border border-gray-200 shadow-sm"
                   >
-                    <Link href={`/products/${product._id}`} className="block">
+                    <Link href={`/products/${product._id}`} className="flex flex-col h-full">
                       {/* Product Image */}
                       <div className="aspect-square relative bg-gray-100">
                         {mainImage ? (
@@ -246,7 +201,7 @@ export function SuggestedListings({ products: initialProducts }: SuggestedListin
                         </div>
                       </div>
 
-                      <CardContent className="p-4">
+                      <CardContent className="p-4 flex flex-col flex-1">
                         {/* Title */}
                         <h3 className="font-semibold text-lg line-clamp-2 mb-2 hover:text-blue-600 transition-colors">
                           {product.title}
@@ -267,23 +222,29 @@ export function SuggestedListings({ products: initialProducts }: SuggestedListin
                           </Badge>
                         </div>
 
-                        {/* Description Preview */}
-                        {product.description && (
-                          <p className="text-sm text-gray-600 mt-3 mb-3 line-clamp-2">
-                            {product.description}
-                          </p>
-                        )}
+                        {/* Description Preview - Fixed height to maintain consistency */}
+                        <div className="h-10 mb-3">
+                          {product.description && (
+                            <p className="text-sm text-gray-600 line-clamp-2">
+                              {product.description}
+                            </p>
+                          )}
+                        </div>
 
                         {/* Location */}
-                        {product.location && (
-                          <div className="flex items-center text-sm text-gray-600 mb-3">
-                            <MapPin className="h-4 w-4 mr-1" />
-                            <span className="truncate">{product.location}</span>
-                          </div>
-                        )}
+                        <div className="mb-3">
+                          {product.location ? (
+                            <div className="flex items-center text-sm text-gray-600">
+                              <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
+                              <span className="truncate">{product.location}</span>
+                            </div>
+                          ) : (
+                            <div className="h-5"></div>
+                          )}
+                        </div>
 
-                        {/* Stats */}
-                        <div className="flex items-center justify-between text-sm text-gray-500">
+                        {/* Stats - Push to bottom */}
+                        <div className="flex items-center justify-between text-sm text-gray-500 mt-auto">
                           <div className="flex items-center space-x-4">
                             {product.views !== undefined && (
                               <div className="flex items-center">
@@ -302,7 +263,7 @@ export function SuggestedListings({ products: initialProducts }: SuggestedListin
                           {product.createdAt && (
                             <div className="flex items-center">
                               <Calendar className="h-4 w-4 mr-1" />
-                              <span>{formatDate(product.createdAt)}</span>
+                              <span>{formatDate.short(product.createdAt)}</span>
                             </div>
                           )}
                         </div>

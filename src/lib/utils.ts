@@ -5,9 +5,76 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-// Vietnamese date formatting utilities
+export const formatPrice = (price: number) => {
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+  }).format(price);
+};
+
+export const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'available':
+      return 'bg-green-100 text-green-800 hover:bg-green-200';
+    case 'sold':
+      return 'bg-red-100 text-red-800 hover:bg-red-200';
+    case 'pending':
+      return 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200';
+    case 'newly-posted':
+      return 'bg-blue-100 text-blue-800';
+    case 'good-price':
+      return 'bg-green-100 text-green-800';
+    case 'urgent':
+      return 'bg-red-100 text-red-800';
+    default:
+      return 'bg-gray-100 text-gray-800 hover:bg-gray-200';
+  }
+};
+
+export const getConditionColor = (condition: string) => {
+  switch (condition) {
+    case 'new':
+      return 'bg-blue-100 text-blue-800 hover:bg-blue-200';
+    case 'like-new':
+      return 'bg-green-100 text-green-800';
+    case 'good':
+      return 'bg-yellow-100 text-yellow-800';
+    case 'fair':
+      return 'bg-orange-100 text-orange-800';
+    case 'poor':
+      return 'bg-red-100 text-red-800';
+    default:
+      return 'bg-gray-100 text-gray-800';
+  }
+};
+
+export const getConditionTextColor = (condition: string) => {
+  switch (condition) {
+    case 'like-new':
+      return 'text-green-600';
+    case 'good':
+      return 'text-blue-600';
+    case 'fair':
+      return 'text-yellow-600';
+    case 'poor':
+      return 'text-red-600';
+    default:
+      return 'text-gray-600';
+  }
+};
+
+export const timeAgo = (date: Date | string) => {
+  const targetDate = typeof date === 'string' ? new Date(date) : date;
+  const now = new Date();
+  const diffInHours = Math.floor((now.getTime() - targetDate.getTime()) / (1000 * 60 * 60));
+  
+  if (diffInHours < 1) return 'Just now';
+  if (diffInHours < 24) return `${diffInHours}h ago`;
+  if (diffInHours < 168) return `${Math.floor(diffInHours / 24)}d ago`;
+  return `${Math.floor(diffInHours / 168)}w ago`;
+};
+
 export const formatDate = {
-  // Full date with time: "Thứ Hai, 17 tháng 6, 2025 lúc 11:59 SA"
   full: (dateString: string) => {
     return new Date(dateString).toLocaleDateString('vi-VN', {
       weekday: 'long',
@@ -20,7 +87,6 @@ export const formatDate = {
     });
   },
 
-  // Date with time: "17 tháng 6, 2025 lúc 11:59"
   dateTime: (dateString: string) => {
     return new Date(dateString).toLocaleDateString('vi-VN', {
       year: 'numeric',
@@ -32,7 +98,6 @@ export const formatDate = {
     });
   },
 
-  // Date only: "17 tháng 6, 2025"
   dateOnly: (dateString: string) => {
     return new Date(dateString).toLocaleDateString('vi-VN', {
       year: 'numeric',
@@ -41,12 +106,15 @@ export const formatDate = {
     });
   },
 
-  // Short date: "17/06/2025"
-  short: (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('vi-VN');
+  short: (dateString?: string) => {
+    if (!dateString) return '';
+    return new Date(dateString).toLocaleDateString('vi-VN', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
   },
 
-  // Relative time: "2 giờ trước", "3 ngày trước", etc.
   relative: (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -64,7 +132,6 @@ export const formatDate = {
     } else if (diffInDays < 7) {
       return `${diffInDays} ngày trước`;
     } else {
-      // For older dates, show the actual date
       return formatDate.dateOnly(dateString);
     }
   }
