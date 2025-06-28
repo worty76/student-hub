@@ -9,14 +9,15 @@ import {
   CheckCircle, 
   AlertCircle, 
   X,
-  Edit3
+  Edit3,
+  Sparkles
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { RichTextEditor } from '@/components/ui/rich-text-editor';
 import {
   Form,
   FormControl,
@@ -44,6 +45,14 @@ import {
   PRODUCT_STATUS 
 } from '@/types/product';
 
+const stripHtmlTags = (html: string): string => {
+  if (typeof window === 'undefined') {
+    return html.replace(/<[^>]*>/g, '').trim();
+  }
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  return doc.body.textContent || '';
+};
+
 // Validation schema
 const productSchema = z.object({
   title: z.string()
@@ -52,8 +61,14 @@ const productSchema = z.object({
     .max(100, 'Tiêu đề không được vượt quá 100 ký tự'),
   description: z.string()
     .min(1, 'Mô tả là bắt buộc')
-    .min(10, 'Mô tả phải có ít nhất 10 ký tự')
-    .max(1000, 'Mô tả không được vượt quá 1000 ký tự'),
+    .refine((val) => {
+      const textContent = stripHtmlTags(val);
+      return textContent.length >= 10;
+    }, 'Mô tả phải có ít nhất 10 ký tự')
+    .refine((val) => {
+      const textContent = stripHtmlTags(val);
+      return textContent.length <= 1000;
+    }, 'Mô tả không được vượt quá 1000 ký tự'),
   price: z.number()
     .min(0, 'Giá phải là số dương')
     .max(999999999, 'Giá quá cao'),
@@ -93,7 +108,6 @@ export function EditProductForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   
-  // Zustand stores
   const {
     currentProduct,
     isLoading,
@@ -111,12 +125,10 @@ export function EditProductForm({
 
   const { user, token } = useAuthStore();
 
-  // Reset loading states on component mount to prevent stuck states
   useEffect(() => {
     resetEditState();
   }, [resetEditState]);
 
-  // Form setup
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
     defaultValues: {
@@ -132,7 +144,6 @@ export function EditProductForm({
     },
   });
 
-  // Load product data on component mount
   useEffect(() => {
     const loadProductData = async () => {
       if (!productId) return;
@@ -154,13 +165,16 @@ export function EditProductForm({
     loadProductData();
   }, [productId, loadProduct, toast]);
 
-  // Update form when product data is loaded
   useEffect(() => {
     if (currentProduct && currentProduct._id === productId) {
-      // Handle seller field - extract string value if it's an object
       const sellerValue = typeof currentProduct.seller === 'object' 
         ? (currentProduct.seller as { name?: string; seller?: string })?.name || (currentProduct.seller as { name?: string; seller?: string })?.seller || JSON.stringify(currentProduct.seller)
         : currentProduct.seller || '';
+
+      // // Use currentProduct location if it's valid and not "System", otherwise fall back to user location
+      // const locationValue = currentProduct.location && currentProduct.location !== 'System' 
+      //   ? currentProduct.location 
+      //   : user?.location || currentProduct.location || '';
 
       form.reset({
         title: currentProduct.title,
@@ -174,9 +188,8 @@ export function EditProductForm({
         location: currentProduct.location,
       });
     }
-  }, [currentProduct, productId, form]);
+  }, [currentProduct, productId, form, user]);
 
-  // Handle form submission
   const onSubmit = async (data: ProductFormValues) => {
     if (!token) {
       toast({
@@ -221,7 +234,6 @@ export function EditProductForm({
           variant: 'default',
         });
         
-        // Call success callback
         onSuccess?.(response.product._id);
       } else {
         toast({
@@ -242,21 +254,18 @@ export function EditProductForm({
     }
   };
 
-  // Handle cancel
   const handleCancel = () => {
     form.reset();
     resetEditState();
     onCancel?.();
   };
 
-  // Get field error from validation errors
   const getFieldError = (fieldName: string) => {
     return validationErrors[fieldName] || '';
   };
 
   const isFormLoading = isEditing || isSubmitting;
 
-  // Show loading state during initial load
   if (isInitialLoad || (isLoading && !currentProduct)) {
     return (
       <div className={className}>
@@ -274,7 +283,6 @@ export function EditProductForm({
     );
   }
 
-  // Show error if product failed to load
   if (error && !currentProduct) {
     return (
       <div className={className}>
@@ -297,79 +305,88 @@ export function EditProductForm({
 
   return (
     <div className={className}>
-      <Card className="w-full max-w-4xl mx-auto">
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <Edit3 className="h-6 w-6 text-primary" />
+      <Card className="w-full max-w-4xl mx-auto shadow-2xl border-0 bg-gradient-to-br from-white to-blue-50">
+        <div className="p-8">
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl shadow-lg">
+                <Edit3 className="h-7 w-7 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Chỉnh sửa sản phẩm</h1>
-                <p className="text-gray-600">Cập nhật thông tin sản phẩm của bạn</p>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+                  Chỉnh sửa sản phẩm
+                </h1>
+                <p className="text-gray-600 flex items-center gap-2">
+                  <Sparkles className="h-4 w-4" />
+                  Cập nhật thông tin sản phẩm của bạn
+                </p>
               </div>
             </div>
             <Button 
               variant="outline" 
               onClick={handleCancel}
               disabled={isFormLoading}
+              className="hover:bg-gray-50 border-gray-300"
             >
               <X className="h-4 w-4 mr-2" />
               Hủy
             </Button>
           </div>
 
-          {/* Success Message */}
           {successMessage && (
-            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-3">
-              <CheckCircle className="h-5 w-5 text-green-600" />
-              <span className="text-green-800">{successMessage}</span>
+            <div className="mb-6 p-4 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl flex items-center gap-3 shadow-md">
+              <div className="p-1 bg-green-100 rounded-lg">
+                <CheckCircle className="h-5 w-5 text-green-600" />
+              </div>
+              <span className="text-green-800 font-medium">{successMessage}</span>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={clearSuccessMessage}
-                className="ml-auto p-1"
+                className="ml-auto p-1 hover:bg-green-100"
               >
                 <X className="h-4 w-4" />
               </Button>
             </div>
           )}
 
-          {/* Error Message */}
           {editError && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3">
-              <AlertCircle className="h-5 w-5 text-red-600" />
-              <span className="text-red-800">{editError}</span>
+            <div className="mb-6 p-4 bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 rounded-xl flex items-center gap-3 shadow-md">
+              <div className="p-1 bg-red-100 rounded-lg">
+                <AlertCircle className="h-5 w-5 text-red-600" />
+              </div>
+              <span className="text-red-800 font-medium">{editError}</span>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={clearEditError}
-                className="ml-auto p-1"
+                className="ml-auto p-1 hover:bg-red-100"
               >
                 <X className="h-4 w-4" />
               </Button>
             </div>
           )}
 
-          {/* Form */}
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {/* Basic Information */}
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
                   name="title"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Tiêu đề sản phẩm <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel className="text-gray-700 font-semibold">
+                        Tiêu đề sản phẩm <span className="text-red-500">*</span>
+                      </FormLabel>
                       <FormControl>
                         <Input 
                           placeholder="Nhập tiêu đề sản phẩm" 
                           disabled={isFormLoading}
+                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                           {...field} 
                         />
                       </FormControl>
-                      <FormMessage>{getFieldError('title')}</FormMessage>
+                      <FormMessage className="text-red-600">{getFieldError('title')}</FormMessage>
                     </FormItem>
                   )}
                 />
@@ -379,60 +396,69 @@ export function EditProductForm({
                   name="price"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Giá (VND) <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel className="text-gray-700 font-semibold">
+                        Giá (VND) <span className="text-red-500">*</span>
+                      </FormLabel>
                       <FormControl>
                         <Input 
-                          type="number" 
+                          type="text" 
                           placeholder="0" 
                           disabled={isFormLoading}
-                          {...field}
-                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                          value={field.value ? field.value.toLocaleString('vi-VN') : ''}
+                          onChange={(e) => {
+                            const numericValue = e.target.value.replace(/[^\d]/g, '');
+                            field.onChange(parseFloat(numericValue) || 0);
+                          }}
                         />
                       </FormControl>
-                      <FormMessage>{getFieldError('price')}</FormMessage>
+                      <FormMessage className="text-red-600">{getFieldError('price')}</FormMessage>
                     </FormItem>
                   )}
                 />
               </div>
 
-              {/* Description */}
               <FormField
                 control={form.control}
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Mô tả sản phẩm <span className="text-red-500">*</span></FormLabel>
+                    <FormLabel className="text-gray-700 font-semibold">
+                      Mô tả sản phẩm <span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
-                      <Textarea 
-                        placeholder="Mô tả sản phẩm của bạn" 
-                        className="min-h-[120px]"
+                      <RichTextEditor
+                        value={field.value}
+                        onChange={field.onChange}
+                        placeholder="Mô tả chi tiết sản phẩm của bạn..."
                         disabled={isFormLoading}
-                        {...field} 
+                        minHeight="150px"
                       />
                     </FormControl>
-                    <FormDescription>
-                      Mô tả chi tiết sản phẩm của bạn
+                    <FormDescription className="text-gray-600">
+                      Mô tả chi tiết sản phẩm của bạn với định dạng văn bản phong phú
                     </FormDescription>
-                    <FormMessage>{getFieldError('description')}</FormMessage>
+                    <FormMessage className="text-red-600">{getFieldError('description')}</FormMessage>
                   </FormItem>
                 )}
               />
 
-              {/* Category, Condition, Status */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <FormField
                   control={form.control}
                   name="category"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Danh mục <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel className="text-gray-700 font-semibold">
+                        Danh mục <span className="text-red-500">*</span>
+                      </FormLabel>
                       <Select 
                         onValueChange={field.onChange} 
                         value={field.value}
                         disabled={isFormLoading}
                       >
                         <FormControl>
-                          <SelectTrigger>
+                          <SelectTrigger className="border-gray-300 focus:border-blue-500 focus:ring-blue-500">
                             <SelectValue placeholder="Chọn danh mục" />
                           </SelectTrigger>
                         </FormControl>
@@ -444,7 +470,7 @@ export function EditProductForm({
                           ))}
                         </SelectContent>
                       </Select>
-                      <FormMessage>{getFieldError('category')}</FormMessage>
+                      <FormMessage className="text-red-600">{getFieldError('category')}</FormMessage>
                     </FormItem>
                   )}
                 />
@@ -454,14 +480,16 @@ export function EditProductForm({
                   name="condition"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Điều kiện <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel className="text-gray-700 font-semibold">
+                        Điều kiện <span className="text-red-500">*</span>
+                      </FormLabel>
                       <Select 
                         onValueChange={field.onChange} 
                         value={field.value}
                         disabled={isFormLoading}
                       >
                         <FormControl>
-                          <SelectTrigger>
+                          <SelectTrigger className="border-gray-300 focus:border-blue-500 focus:ring-blue-500">
                             <SelectValue placeholder="Chọn điều kiện" />
                           </SelectTrigger>
                         </FormControl>
@@ -473,7 +501,7 @@ export function EditProductForm({
                           ))}
                         </SelectContent>
                       </Select>
-                      <FormMessage>{getFieldError('condition')}</FormMessage>
+                      <FormMessage className="text-red-600">{getFieldError('condition')}</FormMessage>
                     </FormItem>
                   )}
                 />
@@ -483,14 +511,16 @@ export function EditProductForm({
                   name="status"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Trạng thái <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel className="text-gray-700 font-semibold">
+                        Trạng thái <span className="text-red-500">*</span>
+                      </FormLabel>
                       <Select 
                         onValueChange={field.onChange} 
                         value={field.value}
                         disabled={isFormLoading}
                       >
                         <FormControl>
-                          <SelectTrigger>
+                          <SelectTrigger className="border-gray-300 focus:border-blue-500 focus:ring-blue-500">
                             <SelectValue placeholder="Chọn trạng thái" />
                           </SelectTrigger>
                         </FormControl>
@@ -504,28 +534,30 @@ export function EditProductForm({
                           ))}
                         </SelectContent>
                       </Select>
-                      <FormMessage>{getFieldError('status')}</FormMessage>
+                      <FormMessage className="text-red-600">{getFieldError('status')}</FormMessage>
                     </FormItem>
                   )}
                 />
               </div>
 
-              {/* Seller and Location */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
                   name="seller"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Người bán <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel className="text-gray-700 font-semibold">
+                        Người bán <span className="text-red-500">*</span>
+                      </FormLabel>
                       <FormControl>
                         <Input 
                           placeholder="Tên của bạn" 
                           disabled={isFormLoading}
+                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                           {...field} 
                         />
                       </FormControl>
-                      <FormMessage>{getFieldError('seller')}</FormMessage>
+                      <FormMessage className="text-red-600">{getFieldError('seller')}</FormMessage>
                     </FormItem>
                   )}
                 />
@@ -535,27 +567,31 @@ export function EditProductForm({
                   name="location"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Vị trí <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel className="text-gray-700 font-semibold">
+                        Vị trí <span className="text-red-500">*</span>
+                      </FormLabel>
                       <FormControl>
                         <Input 
                           placeholder="Thành phố, Quốc gia" 
                           disabled={isFormLoading}
+                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                           {...field} 
                         />
                       </FormControl>
-                      <FormMessage>{getFieldError('location')}</FormMessage>
+                      <FormMessage className="text-red-600">{getFieldError('location')}</FormMessage>
                     </FormItem>
                   )}
                 />
               </div>
 
-              {/* Images */}
               <FormField
                 control={form.control}
                 name="images"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Ảnh sản phẩm <span className="text-red-500">*</span></FormLabel>
+                    <FormLabel className="text-gray-700 font-semibold">
+                      Ảnh sản phẩm <span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
                       <FileUpload
                         value={field.value}
@@ -566,7 +602,7 @@ export function EditProductForm({
                         error={getFieldError('images')}
                       />
                     </FormControl>
-                    <FormDescription>
+                    <FormDescription className="text-gray-600">
                       Tải lên tối đa 5 ảnh (PNG, JPG, GIF tối đa 5MB mỗi ảnh)
                     </FormDescription>
                     <FormMessage />
@@ -574,12 +610,11 @@ export function EditProductForm({
                 )}
               />
 
-              {/* Form Actions */}
-              <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t">
+              <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">
                 <Button
                   type="submit"
                   disabled={isFormLoading}
-                  className="flex-1 sm:flex-none"
+                  className="flex-1 sm:flex-none bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg"
                 >
                   {isFormLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                   {isFormLoading ? 'Đang cập nhật sản phẩm...' : 'Cập nhật sản phẩm'}

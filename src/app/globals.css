@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "quill/dist/quill.snow.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -151,5 +152,129 @@
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;
+  }
+}
+
+/* Quill Editor Custom Styles */
+@layer components {
+  .quill-wrapper .ql-toolbar {
+    @apply bg-background border-0 border-b border-border px-3 py-2;
+  }
+  
+  .quill-wrapper .ql-container {
+    @apply bg-background border-0;
+  }
+  
+  .quill-wrapper .ql-editor {
+    @apply text-foreground p-3 min-h-[120px] resize-none;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  .quill-wrapper .ql-editor.ql-blank::before {
+    @apply text-muted-foreground italic;
+    font-style: italic;
+  }
+  
+  /* Toolbar button styles */
+  .quill-wrapper .ql-toolbar button {
+    @apply w-7 h-7 rounded hover:bg-accent;
+    border: none;
+    outline: none;
+  }
+  
+  .quill-wrapper .ql-toolbar button:hover {
+    @apply bg-accent;
+  }
+  
+  .quill-wrapper .ql-toolbar button.ql-active {
+    @apply bg-primary text-primary-foreground;
+  }
+  
+  .quill-wrapper .ql-toolbar .ql-stroke {
+    @apply stroke-foreground;
+  }
+  
+  .quill-wrapper .ql-toolbar .ql-fill {
+    @apply fill-foreground;
+  }
+  
+  .quill-wrapper .ql-toolbar button.ql-active .ql-stroke {
+    @apply stroke-primary-foreground;
+  }
+  
+  .quill-wrapper .ql-toolbar button.ql-active .ql-fill {
+    @apply fill-primary-foreground;
+  }
+  
+  /* Picker styles */
+  .quill-wrapper .ql-toolbar .ql-picker {
+    @apply text-foreground;
+  }
+  
+  .quill-wrapper .ql-toolbar .ql-picker-label {
+    @apply text-foreground border-0 px-2 py-1 rounded hover:bg-accent;
+  }
+  
+  .quill-wrapper .ql-toolbar .ql-picker-options {
+    @apply bg-popover border border-border rounded-md shadow-md z-50;
+  }
+  
+  .quill-wrapper .ql-toolbar .ql-picker-item {
+    @apply text-popover-foreground hover:bg-accent px-2 py-1;
+  }
+  
+  /* Content formatting */
+  .quill-wrapper .ql-editor h1 {
+    @apply text-2xl font-bold mb-3;
+  }
+  
+  .quill-wrapper .ql-editor h2 {
+    @apply text-xl font-semibold mb-2;
+  }
+  
+  .quill-wrapper .ql-editor h3 {
+    @apply text-lg font-medium mb-2;
+  }
+  
+  .quill-wrapper .ql-editor ul,
+  .quill-wrapper .ql-editor ol {
+    @apply pl-6 mb-2;
+  }
+  
+  .quill-wrapper .ql-editor li {
+    @apply mb-1;
+  }
+  
+  .quill-wrapper .ql-editor p {
+    @apply mb-2;
+  }
+  
+  .quill-wrapper .ql-editor a {
+    @apply text-primary underline;
+  }
+  
+  /* Focus state */
+  .quill-wrapper .ql-editor:focus {
+    @apply outline-none;
+  }
+  
+  /* Dark mode adjustments */
+  .dark .quill-wrapper .ql-snow .ql-tooltip {
+    @apply bg-popover border-border text-popover-foreground;
+  }
+  
+  .dark .quill-wrapper .ql-snow .ql-tooltip input[type=text] {
+    @apply bg-input border-border text-foreground;
+  }
+  
+  /* Disabled state */
+  .quill-wrapper.ql-disabled .ql-toolbar {
+    @apply opacity-50 pointer-events-none;
+  }
+  
+  .quill-wrapper.ql-disabled .ql-editor {
+    @apply cursor-not-allowed;
   }
 }
