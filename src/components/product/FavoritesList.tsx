@@ -21,15 +21,9 @@ import { toast } from 'sonner';
 import useFavorites from '@/hooks/useFavorites';
 import { FavoriteProduct } from '@/services/favorites.service';
 import { CompactProductFavoriteButton } from './ProductFavoriteButton';
+import { formatPrice, getStatusColor, getConditionColor } from '@/lib/utils';
 
 // Helper functions for formatting
-const formatPrice = (price: number) => {
-  return new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND'
-  }).format(price);
-};
-
 const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString('vi-VN', {
     year: 'numeric',
@@ -68,36 +62,6 @@ const getStatusLabel = (status: string) => {
     'pending': 'Pending'
   };
   return statuses[status as keyof typeof statuses] || status;
-};
-
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case 'available':
-      return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
-    case 'sold':
-      return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
-    case 'pending':
-      return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
-    default:
-      return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
-  }
-};
-
-const getConditionColor = (condition: string) => {
-  switch (condition) {
-    case 'new':
-      return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400';
-    case 'like-new':
-      return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
-    case 'good':
-      return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
-    case 'fair':
-      return 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400';
-    case 'poor':
-      return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
-    default:
-      return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
-  }
 };
 
 // Product Card Component for mobile/responsive view

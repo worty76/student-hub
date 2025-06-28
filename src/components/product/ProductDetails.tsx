@@ -25,7 +25,7 @@ import { ProductFavoriteButton } from './ProductFavoriteButton';
 import ProductComments from './ProductComments';
 import BuyProductButton from './BuyProductButton';
 import ReportProductButton from './ReportProductButton';
-import { formatDate } from '@/lib/utils';
+import { formatDate, formatPrice, getStatusColor, getConditionColor } from '@/lib/utils';
 
 interface ProductDetailsProps {
   productId?: string;
@@ -87,48 +87,6 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
       }
       
       router.push(`/users/${sellerId}`);
-    }
-  };
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND'
-    }).format(price);
-  };
-
-  const formatDateDisplay = (dateString?: string) => {
-    if (!dateString) return 'N/A';
-    return formatDate.dateTime(dateString);
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'available':
-        return 'bg-green-100 text-green-800 hover:bg-green-200';
-      case 'sold':
-        return 'bg-red-100 text-red-800 hover:bg-red-200';
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200';
-      default:
-        return 'bg-gray-100 text-gray-800 hover:bg-gray-200';
-    }
-  };
-
-  const getConditionColor = (condition: string) => {
-    switch (condition) {
-      case 'new':
-        return 'bg-blue-100 text-blue-800 hover:bg-blue-200';
-      case 'like-new':
-        return 'bg-green-100 text-green-800 hover:bg-green-200';
-      case 'good':
-        return 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200';
-      case 'fair':
-        return 'bg-orange-100 text-orange-800 hover:bg-orange-200';
-      case 'poor':
-        return 'bg-red-100 text-red-800 hover:bg-red-200';
-      default:
-        return 'bg-gray-100 text-gray-800 hover:bg-gray-200';
     }
   };
 
@@ -387,14 +345,14 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
                   <div className="flex items-center space-x-2">
                     <Calendar className="h-4 w-4 text-gray-500" />
                     <span className="font-medium">Ngày đăng:</span>
-                    <span>{formatDateDisplay(currentProduct.createdAt)}</span>
+                                          <span>{formatDate.dateTime(currentProduct.createdAt || '')}</span>
                   </div>
                   
                   {currentProduct.updatedAt && currentProduct.updatedAt !== currentProduct.createdAt && (
                     <div className="flex items-center space-x-2">
                       <Calendar className="h-4 w-4 text-gray-500" />
                       <span className="font-medium">Cập nhật lần cuối:</span>
-                      <span>{formatDateDisplay(currentProduct.updatedAt)}</span>
+                                             <span>{formatDate.dateTime(currentProduct.updatedAt || '')}</span>
                     </div>
                   )}
                 </div>

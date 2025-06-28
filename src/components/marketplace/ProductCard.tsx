@@ -4,7 +4,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { MapPin, Clock, User } from 'lucide-react';
 import { Product } from '@/types/marketplace';
-import { formatPrice, getStatusColor, getStatusLabel } from '@/constants/marketplace-data';
+import { getStatusLabel } from '@/constants/marketplace-data';
+import { formatPrice, getConditionTextColor, timeAgo } from '@/lib/utils';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -13,28 +14,17 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const timeAgo = (date: Date) => {
-    const now = new Date();
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-    
-    if (diffInHours < 1) return 'Just now';
-    if (diffInHours < 24) return `${diffInHours}h ago`;
-    if (diffInHours < 168) return `${Math.floor(diffInHours / 24)}d ago`;
-    return `${Math.floor(diffInHours / 168)}w ago`;
-  };
-
-  const getConditionColor = (condition: Product['condition']) => {
-    switch (condition) {
-      case 'like-new':
-        return 'text-green-600';
-      case 'good':
-        return 'text-blue-600';
-      case 'fair':
-        return 'text-yellow-600';
-      case 'poor':
-        return 'text-red-600';
+  // Get status color from utils (but we need to map marketplace status to general status)
+  const getStatusColor = (status: Product['status']) => {
+    switch (status) {
+      case 'newly-posted':
+        return 'bg-blue-100 text-blue-800';
+      case 'good-price':
+        return 'bg-green-100 text-green-800';
+      case 'urgent':
+        return 'bg-red-100 text-red-800';
       default:
-        return 'text-gray-600';
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -59,7 +49,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
           {/* Condition Badge */}
           <div className="absolute top-3 right-3">
-            <span className={`px-2 py-1 text-xs font-medium bg-white rounded-full ${getConditionColor(product.condition)}`}>
+            <span className={`px-2 py-1 text-xs font-medium bg-white rounded-full ${getConditionTextColor(product.condition)}`}>
               {product.condition.replace('-', ' ')}
             </span>
           </div>
