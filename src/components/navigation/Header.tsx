@@ -2,27 +2,27 @@
 
 import { useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+// import { usePathname } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
 import { Button } from '@/components/ui/button';
 import { UserMenu } from './UserMenu';
 import { SearchBar } from './SearchBar';
-import { MobileMenu } from './MobileMenu';
-import { NAVIGATION_LINKS, APP_CONFIG, ROUTES } from '@/constants/navigation';
+// import { MobileMenu } from './MobileMenu';
+import { APP_CONFIG, ROUTES } from '@/constants/navigation';
 import { ShoppingBag } from 'lucide-react';
 
 export function Header() {
   const { user, isAuthenticated, checkAuth } = useAuthStore();
-  const pathname = usePathname();
+  // const pathname = usePathname();
 
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
 
-  const navLinks = NAVIGATION_LINKS.map(link => ({
-    ...link,
-    active: pathname.startsWith(link.href)
-  }));
+  // const navLinks = NAVIGATION_LINKS.map(link => ({
+  //   ...link,
+  //   active: pathname.startsWith(link.href)
+  // }));
 
   return (
     <header className="bg-white shadow-md sticky top-0 z-50 border-b">
@@ -37,7 +37,7 @@ export function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-8">
+          {/* <nav className="hidden lg:flex items-center space-x-8">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
@@ -51,7 +51,7 @@ export function Header() {
                 {link.label}
               </Link>
             ))}
-          </nav>
+          </nav> */}
 
           <SearchBar placeholder={APP_CONFIG.search.placeholder} />
 
@@ -62,19 +62,19 @@ export function Header() {
               <div className="hidden md:flex items-center space-x-3">
                 <Link href={ROUTES.login}>
                   <Button variant="outline" size="sm">
-                    Sign In
+                    Đăng nhập
                   </Button>
                 </Link>
                 <Link href={ROUTES.register}>
                   <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-                    Sign Up
+                    Đăng ký
                   </Button>
                 </Link>
               </div>
             )}
 
             {/* Mobile Menu */}
-            <MobileMenu navLinks={navLinks} />
+            {/* <MobileMenu navLinks={navLinks} /> */}
           </div>
         </div>
       </div>

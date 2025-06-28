@@ -12,7 +12,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { AlertCircle, Save, User, Mail, MapPin, Link, FileText } from 'lucide-react';
+import { FileUpload } from '@/components/ui/file-upload';
+import { AlertCircle, Save, User, Mail, MapPin, Upload, FileText } from 'lucide-react';
 
 interface EditProfileFormProps {
   className?: string;
@@ -49,10 +50,8 @@ export const EditProfileForm: React.FC<EditProfileFormProps> = ({
     },
   });
 
-  // Initialize form with current profile data
   useEffect(() => {
     if (profile) {
-      // Map role: if profile has 'seller', default to 'user' since form only supports 'user' and 'admin'
       const mappedRole = profile.role === 'seller' ? 'user' : (profile.role || 'user');
       form.reset({
         name: profile.name || '',
@@ -65,7 +64,6 @@ export const EditProfileForm: React.FC<EditProfileFormProps> = ({
     }
   }, [profile, form]);
 
-  // Clear errors when form changes
   useEffect(() => {
     const subscription = form.watch(() => {
       if (updateError || Object.keys(validationErrors).length > 0) {
@@ -87,7 +85,22 @@ export const EditProfileForm: React.FC<EditProfileFormProps> = ({
     }
 
     try {
-      const response = await updateProfile(token, data);
+      // Convert File to data URL if avatar is a File
+      let avatarData = data.avatar;
+      if (data.avatar instanceof File) {
+        avatarData = await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (e) => resolve(e.target?.result as string || '');
+          reader.readAsDataURL(data.avatar as File);
+        });
+      }
+
+      const profileData = {
+        ...data,
+        avatar: avatarData as string
+      };
+
+      const response = await updateProfile(token, profileData);
       
       if (response.success) {
         toast({
@@ -96,7 +109,6 @@ export const EditProfileForm: React.FC<EditProfileFormProps> = ({
         });
         onSuccess?.();
       } else {
-        // Handle validation errors from server
         if (response.errors) {
           Object.entries(response.errors).forEach(([field, message]) => {
             form.setError(field as keyof EditProfileFormData, {
@@ -119,7 +131,6 @@ export const EditProfileForm: React.FC<EditProfileFormProps> = ({
           description: "Vui lòng đăng nhập lại để tiếp tục.",
           variant: "destructive",
         });
-        // You might want to redirect to login here
       } else {
         toast({
           title: "Lỗi khi cập nhật hồ sơ",
@@ -132,7 +143,6 @@ export const EditProfileForm: React.FC<EditProfileFormProps> = ({
 
   const handleCancel = () => {
     if (profile) {
-      // Map role: if profile has 'seller', default to 'user' since form only supports 'user' and 'admin'
       const mappedRole = profile.role === 'seller' ? 'user' : (profile.role || 'user');
       form.reset({
         name: profile.name || '',
@@ -163,24 +173,32 @@ export const EditProfileForm: React.FC<EditProfileFormProps> = ({
 
   return (
     <Card className={className}>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <User className="h-5 w-5" />
-          Chỉnh sửa hồ sơ
+      <CardHeader className="pb-6">
+        <CardTitle className="flex items-center gap-3 text-xl">
+          <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg text-white">
+            <User className="h-5 w-5" />
+          </div>
+          <span className="bg-gradient-to-r from-gray-700 via-blue-700 to-purple-700 dark:from-gray-200 dark:via-blue-200 dark:to-purple-200 bg-clip-text text-transparent">
+            Chỉnh sửa hồ sơ
+          </span>
         </CardTitle>
+        <p className="text-muted-foreground ml-11">
+          Cập nhật thông tin cá nhân và tùy chỉnh hồ sơ của bạn
+        </p>
       </CardHeader>
 
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Name Field */}
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="flex items-center gap-2">
-                    <User className="h-4 w-4" />
+                  <FormLabel className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    <div className="p-1.5 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/30 dark:to-blue-800/30 rounded-md">
+                      <User className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+                    </div>
                     Họ và tên
                   </FormLabel>
                   <FormControl>
@@ -188,6 +206,7 @@ export const EditProfileForm: React.FC<EditProfileFormProps> = ({
                       placeholder="Nhập họ và tên của bạn" 
                       {...field} 
                       disabled={isUpdating}
+                      className="border-gray-200 dark:border-gray-700 focus:border-blue-500 focus:ring-blue-500/20 transition-all duration-200"
                     />
                   </FormControl>
                   <FormMessage />
@@ -195,14 +214,15 @@ export const EditProfileForm: React.FC<EditProfileFormProps> = ({
               )}
             />
 
-            {/* Email Field */}
             <FormField
               control={form.control}
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="flex items-center gap-2">
-                    <Mail className="h-4 w-4" />
+                  <FormLabel className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    <div className="p-1.5 bg-gradient-to-br from-emerald-100 to-emerald-200 dark:from-emerald-900/30 dark:to-emerald-800/30 rounded-md">
+                      <Mail className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                    </div>
                     Địa chỉ Email
                   </FormLabel>
                   <FormControl>
@@ -211,6 +231,7 @@ export const EditProfileForm: React.FC<EditProfileFormProps> = ({
                       placeholder="Nhập địa chỉ email của bạn" 
                       {...field} 
                       disabled={isUpdating}
+                      className="border-gray-200 dark:border-gray-700 focus:border-emerald-500 focus:ring-emerald-500/20 transition-all duration-200"
                     />
                   </FormControl>
                   <FormMessage />
@@ -218,63 +239,87 @@ export const EditProfileForm: React.FC<EditProfileFormProps> = ({
               )}
             />
 
-            {/* Bio Field */}
             <FormField
               control={form.control}
               name="bio"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="flex items-center gap-2">
-                    <FileText className="h-4 w-4" />
+                  <FormLabel className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    <div className="p-1.5 bg-gradient-to-br from-purple-100 to-purple-200 dark:from-purple-900/30 dark:to-purple-800/30 rounded-md">
+                      <FileText className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
+                    </div>
                     Giới thiệu
                   </FormLabel>
                   <FormControl>
                     <Textarea 
                       placeholder="Nói cho chúng tôi biết về bạn (tùy chọn)"
-                      className="min-h-[100px]"
+                      className="min-h-[120px] border-gray-200 dark:border-gray-700 focus:border-purple-500 focus:ring-purple-500/20 transition-all duration-200 resize-none"
                       {...field} 
                       disabled={isUpdating}
                     />
                   </FormControl>
-                  <FormMessage />
-                  <p className="text-xs text-muted-foreground">
-                    {field.value?.length || 0}/500 ký tự
-                  </p>
+                  <div className="flex items-center justify-between">
+                    <FormMessage />
+                    <p className="text-xs text-muted-foreground">
+                      <span className={field.value?.length > 450 ? 'text-orange-500' : field.value?.length > 400 ? 'text-yellow-500' : 'text-gray-500'}>
+                        {field.value?.length || 0}
+                      </span>
+                      <span className="text-gray-400">/500 ký tự</span>
+                    </p>
+                  </div>
                 </FormItem>
               )}
             />
 
-            {/* Avatar URL Field */}
             <FormField
               control={form.control}
               name="avatar"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="flex items-center gap-2">
-                    <Link className="h-4 w-4" />
+                  <FormLabel className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    <div className="p-1.5 bg-gradient-to-br from-indigo-100 to-indigo-200 dark:from-indigo-900/30 dark:to-indigo-800/30 rounded-md">
+                      <Upload className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
+                    </div>
                     Ảnh đại diện
                   </FormLabel>
                   <FormControl>
-                    <Input 
-                      type="url"
-                      placeholder="https://example.com/avatar.jpg (tùy chọn)" 
-                      {...field} 
-                      disabled={isUpdating}
-                    />
+                    <div className="relative">
+                      <FileUpload
+                        value={field.value ? [field.value] : []}
+                        onChange={(files) => {
+                          const file = files[0];
+                          field.onChange(file || '');
+                        }}
+                        accept="image/*"
+                        maxFiles={1}
+                        maxSize={5}
+                        disabled={isUpdating}
+                        className="w-full"
+                      />
+                      {isUpdating && (
+                        <div className="absolute inset-0 bg-white/50 dark:bg-gray-800/50 rounded-lg flex items-center justify-center backdrop-blur-sm">
+                          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                            <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                            Đang xử lý...
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* Location Field */}
             <FormField
               control={form.control}
               name="location"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4" />
+                  <FormLabel className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    <div className="p-1.5 bg-gradient-to-br from-rose-100 to-rose-200 dark:from-rose-900/30 dark:to-rose-800/30 rounded-md">
+                      <MapPin className="h-3.5 w-3.5 text-rose-600 dark:text-rose-400" />
+                    </div>
                     Địa chỉ
                   </FormLabel>
                   <FormControl>
@@ -282,6 +327,7 @@ export const EditProfileForm: React.FC<EditProfileFormProps> = ({
                       placeholder="Thành phố, Quốc gia (tùy chọn)" 
                       {...field} 
                       disabled={isUpdating}
+                      className="border-gray-200 dark:border-gray-700 focus:border-rose-500 focus:ring-rose-500/20 transition-all duration-200"
                     />
                   </FormControl>
                   <FormMessage />
@@ -289,23 +335,36 @@ export const EditProfileForm: React.FC<EditProfileFormProps> = ({
               )}
             />
 
-            {/* Global Error Message */}
             {updateError && (
-              <div className="flex items-center gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-md">
-                <AlertCircle className="h-4 w-4 text-destructive flex-shrink-0" />
-                <p className="text-sm text-destructive">{updateError}</p>
+              <div className="relative">
+                <div className="flex items-start gap-3 p-4 bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 border border-red-200 dark:border-red-800/30 rounded-xl">
+                  <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg flex-shrink-0">
+                    <AlertCircle className="h-4 w-4 text-red-600 dark:text-red-400" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-medium text-red-800 dark:text-red-200 mb-1">Có lỗi xảy ra</h4>
+                    <p className="text-sm text-red-700 dark:text-red-300">{updateError}</p>
+                  </div>
+                </div>
               </div>
             )}
 
-            {/* Action Buttons */}
-            <div className="flex gap-3 pt-4">
+            <div className="flex gap-4 pt-6">
               <Button 
                 type="submit" 
                 disabled={isUpdating}
-                className="flex-1"
+                className="flex-1 bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-500 hover:from-blue-600 hover:via-purple-600 hover:to-indigo-600 text-white shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                size="lg"
               >
                 <Save className="h-4 w-4 mr-2" />
-                {isUpdating ? 'Đang cập nhật...' : 'Cập nhật hồ sơ'}
+                {isUpdating ? (
+                  <span className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Đang cập nhật...
+                  </span>
+                ) : (
+                  'Cập nhật hồ sơ'
+                )}
               </Button>
               
               <Button 
@@ -313,6 +372,7 @@ export const EditProfileForm: React.FC<EditProfileFormProps> = ({
                 variant="outline" 
                 onClick={handleCancel}
                 disabled={isUpdating}
+                className="px-8 border-gray-300 dark:border-gray-600 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 dark:hover:from-gray-800 dark:hover:to-gray-700 transition-all duration-200"
               >
                 Bỏ qua
               </Button>
