@@ -14,9 +14,17 @@ export const editProfileSchema = z.object({
     .string()
     .max(500, 'Giới thiệu không được vượt quá 500 ký tự'),
   avatar: z
-    .string()
-    .refine((val) => val === '' || z.string().url().safeParse(val).success, {
-      message: 'Vui lòng nhập địa chỉ URL hợp lệ hoặc để trống',
+    .union([
+      z.string(),
+      z.instanceof(File)
+    ])
+    .refine((val) => {
+      if (typeof val === 'string') {
+        return val === '' || z.string().url().safeParse(val).success;
+      }
+      return val instanceof File && val.type.startsWith('image/');
+    }, {
+      message: 'Vui lòng chọn file ảnh hợp lệ hoặc nhập URL hợp lệ',
     }),
   location: z
     .string()

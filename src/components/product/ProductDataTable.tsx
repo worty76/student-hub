@@ -93,6 +93,14 @@ export function ProductDataTable({
   };
 
   // Helper functions
+  const stripHtmlTags = (html: string) => {
+    // Create a temporary div element to parse HTML
+    const temp = document.createElement('div');
+    temp.innerHTML = html;
+    // Return only the text content
+    return temp.textContent || temp.innerText || '';
+  };
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
@@ -217,9 +225,11 @@ export function ProductDataTable({
         accessorKey: 'description',
         header: 'Mô tả',
         cell: ({ row }) => {
+          const description = row.getValue('description') as string;
+          const plainText = description ? stripHtmlTags(description) : '';
           return (
             <div className="max-w-[300px] text-sm text-gray-600 line-clamp-2">
-              {row.getValue('description')}
+              {plainText}
             </div>
           );
         },
@@ -435,24 +445,25 @@ export function ProductDataTable({
   });
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6 p-6 bg-gradient-to-br from-white to-blue-50 rounded-xl shadow-lg border border-blue-100">
+
       {/* Table Controls */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-4 bg-white rounded-lg shadow-sm border border-gray-200">
+        <div className="flex flex-wrap items-center gap-3">
           <div className="relative">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
             <Input
               placeholder="Tìm kiếm sản phẩm..."
               value={globalFilter ?? ''}
               onChange={(event) => setGlobalFilter(String(event.target.value))}
-              className="pl-8 max-w-sm"
+              className="pl-10 w-64 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
             />
           </div>
           
           {/* Category Filter */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" className="border-gray-300 hover:bg-blue-50 hover:border-blue-400">
                 <Filter className="mr-2 h-4 w-4" />
                 Danh mục
               </Button>
@@ -482,7 +493,7 @@ export function ProductDataTable({
           {/* Status Filter */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" className="border-gray-300 hover:bg-blue-50 hover:border-blue-400">
                 <Filter className="mr-2 h-4 w-4" />
                 Trạng thái
               </Button>
@@ -513,7 +524,7 @@ export function ProductDataTable({
         {/* Column Visibility */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="border-gray-300 hover:bg-gray-50 hover:border-gray-400">
               <Settings2 className="mr-2 h-4 w-4" />
               Cột hiển thị
             </Button>
@@ -541,14 +552,14 @@ export function ProductDataTable({
       </div>
 
       {/* Table */}
-      <div className="rounded-md border">
+      <div className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-gradient-to-r from-gray-50 to-blue-50">
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow key={headerGroup.id} className="border-b border-gray-200">
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className="font-semibold text-gray-700 py-4">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -563,13 +574,16 @@ export function ProductDataTable({
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
+              table.getRowModel().rows.map((row, index) => (
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && 'selected'}
+                  className={`hover:bg-blue-50 transition-colors ${
+                    index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'
+                  }`}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} className="py-4">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
@@ -577,8 +591,11 @@ export function ProductDataTable({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  Không có sản phẩm nào.
+                <TableCell colSpan={columns.length} className="h-32 text-center">
+                  <div className="flex flex-col items-center justify-center gap-3">
+                    <Package2 className="h-8 w-8 text-gray-400" />
+                    <p className="text-gray-500 font-medium">Không có sản phẩm nào.</p>
+                  </div>
                 </TableCell>
               </TableRow>
             )}
@@ -587,14 +604,24 @@ export function ProductDataTable({
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-between space-x-2 py-4">
-        <div className="text-sm text-muted-foreground">
-          Hiển thị {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} đến{' '}
-          {Math.min(
-            (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
-            table.getFilteredRowModel().rows.length
-          )}{' '}
-          của {table.getFilteredRowModel().rows.length} sản phẩm
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-white rounded-lg shadow-sm border border-gray-200">
+        <div className="text-sm font-medium text-gray-600">
+          Hiển thị{' '}
+          <span className="text-blue-600 font-semibold">
+            {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}
+          </span>{' '}
+          đến{' '}
+          <span className="text-blue-600 font-semibold">
+            {Math.min(
+              (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
+              table.getFilteredRowModel().rows.length
+            )}
+          </span>{' '}
+          của{' '}
+          <span className="text-blue-600 font-semibold">
+            {table.getFilteredRowModel().rows.length}
+          </span>{' '}
+          sản phẩm
         </div>
         <div className="flex items-center space-x-2">
           <Button
@@ -602,8 +629,9 @@ export function ProductDataTable({
             size="sm"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
+            className="bg-white hover:bg-blue-50 border-gray-300 disabled:opacity-50"
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="h-4 w-4 mr-1" />
             Trước
           </Button>
           <Button
@@ -611,9 +639,10 @@ export function ProductDataTable({
             size="sm"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
+            className="bg-white hover:bg-blue-50 border-gray-300 disabled:opacity-50"
           >
             Sau
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-4 w-4 ml-1" />
           </Button>
         </div>
       </div>
