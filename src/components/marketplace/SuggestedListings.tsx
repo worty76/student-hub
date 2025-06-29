@@ -14,6 +14,12 @@ import Image from 'next/image';
 import { getCategoryLabel, getConditionLabel, getStatusLabel } from '@/types/product';
 import { formatPrice, getStatusColor, getConditionColor, formatDate } from '@/lib/utils';
 
+// Utility function to strip HTML tags from text
+const stripHtmlTags = (html: string): string => {
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  return doc.body.textContent || "";
+};
+
 interface SuggestedListingsProps {
   products?: MarketplaceProduct[];
 }
@@ -226,7 +232,7 @@ export function SuggestedListings({ products: initialProducts }: SuggestedListin
                         <div className="h-10 mb-3">
                           {product.description && (
                             <p className="text-sm text-gray-600 line-clamp-2">
-                              {product.description}
+                              {stripHtmlTags(product.description)}
                             </p>
                           )}
                         </div>

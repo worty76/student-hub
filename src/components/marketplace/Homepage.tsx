@@ -226,7 +226,7 @@ export function Homepage() {
               },
               {
                 icon: MapPin,
-                title: "Chỉ Dành Cho Đà Nẵng",
+                title: "Hiện Diện Tại Đà Nẵng",
                 description: "Giao dịch địa phương, gặp gỡ trực tiếp, tiết kiệm chi phí vận chuyển",
                 color: "text-blue-500",
                 bgColor: "bg-blue-50"

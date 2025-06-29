@@ -7,6 +7,12 @@ import { Product, getCategoryLabel, getConditionLabel, getStatusLabel } from '@/
 import { MapPin, Eye, Heart, Calendar } from 'lucide-react';
 import { formatPrice, getStatusColor, getConditionColor, formatDate } from '@/lib/utils';
 
+// Utility function to strip HTML tags from text
+const stripHtmlTags = (html: string): string => {
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  return doc.body.textContent || "";
+};
+
 interface ProductListCardProps {
   product: Product;
   className?: string;
@@ -67,7 +73,7 @@ export function ProductListCard({ product, className }: ProductListCardProps) {
           <div className="h-10 mb-3">
             {product.description && (
               <p className="text-sm text-gray-600 line-clamp-2">
-                {product.description}
+                {stripHtmlTags(product.description)}
               </p>
             )}
           </div>

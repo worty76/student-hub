@@ -497,7 +497,7 @@ export function CreateProductForm({
                           {...field} 
                         />
                       </FormControl>
-image.png                      <FormMessage className="text-red-600">{getFieldError('location')}</FormMessage>
+                      <FormMessage className="text-red-600">{getFieldError('location')}</FormMessage>
                     </FormItem>
                   )}
                 />
