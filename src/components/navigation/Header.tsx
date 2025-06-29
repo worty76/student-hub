@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useAuthStore } from '@/store/authStore';
 import { Button } from '@/components/ui/button';
 import { UserMenu } from './UserMenu';
-import { SearchBar } from './SearchBar';
+// import { SearchBar } from './SearchBar';
 // import { MobileMenu } from './MobileMenu';
 import { APP_CONFIG, ROUTES } from '@/constants/navigation';
 import { ShoppingBag } from 'lucide-react';
@@ -53,7 +53,7 @@ export function Header() {
             ))}
           </nav> */}
 
-          <SearchBar placeholder={APP_CONFIG.search.placeholder} />
+          {/* <SearchBar placeholder={APP_CONFIG.search.placeholder} /> */}
 
           <div className="flex items-center space-x-4">
             {isAuthenticated && user ? (
