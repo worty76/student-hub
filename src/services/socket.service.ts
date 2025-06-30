@@ -59,16 +59,19 @@ class SocketService {
         return;
       }
 
+      // Get the socket URL - try dedicated socket URL first, then derive from API URL
+      const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 
+                       (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api').replace('/api', '');
+      
+      console.log('Connecting socket to:', socketUrl);
+
       // Create socket connection with correct URL
-      this.socket = io(
-        process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080",
-        {
-          auth: {
-            token: this.token,
-          },
-          transports: ["websocket", "polling"],
-        }
-      );
+      this.socket = io(socketUrl, {
+        auth: {
+          token: this.token,
+        },
+        transports: ['websocket', 'polling'],
+      });
 
       // Connection event handlers
       this.socket.on("connect", () => {
