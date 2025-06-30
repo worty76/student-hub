@@ -129,6 +129,7 @@ export function AdminProductsDataTable({ data, isLoading = false }: AdminProduct
         return (
           <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100">
             {product.images && product.images.length > 0 ? (
+              // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={product.images[0]}
                 alt={product.title}

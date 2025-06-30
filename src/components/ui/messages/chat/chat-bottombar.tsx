@@ -8,10 +8,8 @@ import {
   Smile,
   X,
 } from "lucide-react";
-import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
-import { Button, buttonVariants } from "../ui/button";
-import { cn } from "@/lib/utils";
+import { Button } from "../ui/button";
 import { AnimatePresence, motion } from "framer-motion";
 import { EmojiPicker } from "../emoji-picker";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
@@ -29,18 +27,18 @@ export default function ChatBottombar({ isMobile }: ChatBottombarProps) {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  
+
   // Use the real API methods from the store
-  const { 
-    sendMessage: sendMessageAPI, 
-    selectedChat, 
+  const {
+    sendMessage: sendMessageAPI,
+    selectedChat,
     isLoading,
-    error 
+    error,
   } = useChatStore();
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(event.target.value);
-    
+
     // Typing indicator logic
     if (!isTyping && event.target.value.length > 0) {
       setIsTyping(true);
@@ -55,7 +53,7 @@ export default function ChatBottombar({ isMobile }: ChatBottombarProps) {
         await sendMessageAPI("👍");
         setMessage("");
       } catch (error) {
-        console.error('Failed to send thumbs up:', error);
+        console.error("Failed to send thumbs up:", error);
       }
     }
   };
@@ -71,7 +69,7 @@ export default function ChatBottombar({ isMobile }: ChatBottombarProps) {
           inputRef.current.focus();
         }
       } catch (error) {
-        console.error('Failed to send message:', error);
+        console.error("Failed to send message:", error);
       }
     }
   };
@@ -135,8 +133,8 @@ export default function ChatBottombar({ isMobile }: ChatBottombarProps) {
                 <PlusCircle size={20} />
               </Button>
             </PopoverTrigger>
-            <PopoverContent 
-              side="top" 
+            <PopoverContent
+              side="top"
               className="w-auto p-2 bg-background/95 backdrop-blur-sm border border-border/50 shadow-lg"
             >
               <div className="flex gap-1">
@@ -164,7 +162,7 @@ export default function ChatBottombar({ isMobile }: ChatBottombarProps) {
           </Popover>
 
           {!message.trim() && !isMobile && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               className="flex gap-1"
@@ -186,20 +184,21 @@ export default function ChatBottombar({ isMobile }: ChatBottombarProps) {
 
         {/* Message input area */}
         <div className="flex-1 relative">
-          <motion.div
-            layout
-            className="relative"
-          >
+          <motion.div layout className="relative">
             <ChatInput
               value={message}
               ref={inputRef}
               onKeyDown={handleKeyPress}
               onChange={handleInputChange}
-              placeholder={selectedChat ? "Type a message..." : "Select a chat to start messaging"}
+              placeholder={
+                selectedChat
+                  ? "Type a message..."
+                  : "Select a chat to start messaging"
+              }
               className="min-h-[44px] max-h-32 pr-24 rounded-2xl border-border/50 bg-muted/30 focus:bg-background transition-colors resize-none"
               disabled={isLoading || !selectedChat}
             />
-            
+
             {/* Emoji picker - improved positioning */}
             <div className="absolute right-12 top-1/2 -translate-y-1/2">
               <Popover open={showEmojiPicker} onOpenChange={setShowEmojiPicker}>
@@ -213,8 +212,8 @@ export default function ChatBottombar({ isMobile }: ChatBottombarProps) {
                     <Smile size={18} />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent 
-                  side="top" 
+                <PopoverContent
+                  side="top"
                   className="w-auto p-0 border-border/50 shadow-xl"
                 >
                   <EmojiPicker
@@ -263,7 +262,11 @@ export default function ChatBottombar({ isMobile }: ChatBottombarProps) {
                   {isLoading ? (
                     <motion.div
                       animate={{ rotate: 360 }}
-                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      transition={{
+                        duration: 1,
+                        repeat: Infinity,
+                        ease: "linear",
+                      }}
                       className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full"
                     />
                   ) : (

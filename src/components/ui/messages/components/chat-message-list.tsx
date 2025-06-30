@@ -14,26 +14,25 @@ interface ChatMessageListProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const ChatMessageList = React.forwardRef<HTMLDivElement, ChatMessageListProps>(
-  ({ 
-    className, 
-    children, 
-    smooth = true, 
-    isLoading = false,
-    isEmpty = false,
-    emptyStateMessage = "No messages yet",
-    emptyStateAction,
-    ...props 
-  }, _ref) => {
-    const {
-      scrollRef,
-      isAtBottom,
-      autoScrollEnabled,
-      scrollToBottom,
-      disableAutoScroll,
-    } = useAutoScroll({
-      smooth,
-      content: children,
-    });
+  (
+    {
+      className,
+      children,
+      smooth = true,
+      isLoading = false,
+      isEmpty = false,
+      emptyStateMessage = "No messages yet",
+      emptyStateAction,
+      ...props
+    },
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _ref
+  ) => {
+    const { scrollRef, isAtBottom, scrollToBottom, disableAutoScroll } =
+      useAutoScroll({
+        smooth,
+        content: children,
+      });
 
     // Empty state component
     const EmptyState = () => (
@@ -112,7 +111,7 @@ const ChatMessageList = React.forwardRef<HTMLDivElement, ChatMessageListProps>(
           {...props}
         >
           <AnimatePresence>
-            <motion.div 
+            <motion.div
               className="flex flex-col gap-2"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

@@ -1,24 +1,25 @@
-'use client';
+/* eslint-disable @next/next/no-img-element */
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { User } from '@/types/auth';
-import { useAuthStore } from '@/store/authStore';
-import { useAdminStore } from '@/store/adminStore';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { 
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { User } from "@/types/auth";
+import { useAuthStore } from "@/store/authStore";
+import { useAdminStore } from "@/store/adminStore";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { 
-  Search, 
+} from "@/components/ui/table";
+import {
+  Search,
   RefreshCw,
   AlertTriangle,
   Users,
@@ -28,29 +29,29 @@ import {
   Mail,
   Loader,
   Grid3X3,
-  List
-} from 'lucide-react';
-import { DeleteUserButton } from './DeleteUserButton';
+  List,
+} from "lucide-react";
+import { DeleteUserButton } from "./DeleteUserButton";
 
-type ViewMode = 'table' | 'grid';
+type ViewMode = "table" | "grid";
 
 export function AllUsersAdmin() {
   const { token, user: currentUser } = useAuthStore();
   const { users, loading, error, fetchAllUsers, clearError } = useAdminStore();
   const router = useRouter();
-  
-  const [searchTerm, setSearchTerm] = useState('');
-  const [viewMode, setViewMode] = useState<ViewMode>('table');
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [viewMode, setViewMode] = useState<ViewMode>("table");
 
   // Check authentication and authorization
   useEffect(() => {
     if (!token) {
-      router.push('/auth/login');
+      router.push("/auth/login");
       return;
     }
-    
-    if (!currentUser || currentUser.role !== 'admin') {
-      router.push('/');
+
+    if (!currentUser || currentUser.role !== "admin") {
+      router.push("/");
       return;
     }
 
@@ -65,34 +66,36 @@ export function AllUsersAdmin() {
   };
 
   // Filter users based on search term
-  const filteredUsers = Array.isArray(users) ? users.filter((user: User) => {
-    const searchLower = searchTerm.toLowerCase();
-    return (
-      user.name?.toLowerCase().includes(searchLower) ||
-      user.email?.toLowerCase().includes(searchLower) ||
-      user.location?.toLowerCase().includes(searchLower) ||
-      user.role?.toLowerCase().includes(searchLower)
-    );
-  }) : [];
+  const filteredUsers = Array.isArray(users)
+    ? users.filter((user: User) => {
+        const searchLower = searchTerm.toLowerCase();
+        return (
+          user.name?.toLowerCase().includes(searchLower) ||
+          user.email?.toLowerCase().includes(searchLower) ||
+          user.location?.toLowerCase().includes(searchLower) ||
+          user.role?.toLowerCase().includes(searchLower)
+        );
+      })
+    : [];
 
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
-      case 'admin':
-        return 'bg-purple-100 text-purple-800 border-purple-200';
-      case 'seller':
-        return 'bg-green-100 text-green-800 border-green-200';
-      case 'user':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
+      case "admin":
+        return "bg-purple-100 text-purple-800 border-purple-200";
+      case "seller":
+        return "bg-green-100 text-green-800 border-green-200";
+      case "user":
+        return "bg-blue-100 text-blue-800 border-blue-200";
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
     });
   };
 
@@ -102,7 +105,9 @@ export function AllUsersAdmin() {
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Tất cả người dùng</h1>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Tất cả người dùng
+            </h1>
             <p className="text-gray-600 mt-1">Đang tải dữ liệu người dùng...</p>
           </div>
           <Button disabled variant="outline" size="sm">
@@ -110,7 +115,7 @@ export function AllUsersAdmin() {
             Đang tải...
           </Button>
         </div>
-        
+
         <Card>
           <CardContent className="p-6">
             <div className="animate-pulse space-y-4">
@@ -133,7 +138,9 @@ export function AllUsersAdmin() {
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Tất cả người dùng</h1>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Tất cả người dùng
+            </h1>
             <p className="text-gray-600 mt-1">Lỗi tải dữ liệu người dùng</p>
           </div>
           <Button onClick={handleRefresh} variant="outline" size="sm">
@@ -141,7 +148,7 @@ export function AllUsersAdmin() {
             Thử lại
           </Button>
         </div>
-        
+
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center space-x-4 text-red-600">
@@ -149,16 +156,16 @@ export function AllUsersAdmin() {
               <div>
                 <h3 className="text-lg font-semibold">Lỗi tải người dùng</h3>
                 <p className="text-sm text-gray-600 mt-1">{error}</p>
-                
-                {error.includes('Unauthorized') && (
+
+                {error.includes("Unauthorized") && (
                   <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                     <p className="text-sm text-yellow-800">
                       Phiên đăng nhập có thể đã hết hạn. Vui lòng đăng nhập lại.
                     </p>
                   </div>
                 )}
-                
-                {error.includes('Forbidden') && (
+
+                {error.includes("Forbidden") && (
                   <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
                     <p className="text-sm text-red-800">
                       Bạn cần quyền admin để truy cập tính năng này.
@@ -179,25 +186,28 @@ export function AllUsersAdmin() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Tất cả người dùng</h1>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Tất cả người dùng
+          </h1>
           <p className="text-gray-600 mt-1">
-            Quản lý và xem tất cả người dùng đã đăng ký ({users.length} tổng cộng)
+            Quản lý và xem tất cả người dùng đã đăng ký ({users.length} tổng
+            cộng)
           </p>
         </div>
         <div className="flex items-center space-x-2">
           <div className="flex border rounded-lg">
             <Button
-              variant={viewMode === 'table' ? 'default' : 'ghost'}
+              variant={viewMode === "table" ? "default" : "ghost"}
               size="sm"
-              onClick={() => setViewMode('table')}
+              onClick={() => setViewMode("table")}
               className="rounded-r-none"
             >
               <List className="h-4 w-4" />
             </Button>
             <Button
-              variant={viewMode === 'grid' ? 'default' : 'ghost'}
+              variant={viewMode === "grid" ? "default" : "ghost"}
               size="sm"
-              onClick={() => setViewMode('grid')}
+              onClick={() => setViewMode("grid")}
               className="rounded-l-none"
             >
               <Grid3X3 className="h-4 w-4" />
@@ -226,7 +236,7 @@ export function AllUsersAdmin() {
       </Card>
 
       {/* Users Display */}
-      {viewMode === 'table' ? (
+      {viewMode === "table" ? (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -251,8 +261,13 @@ export function AllUsersAdmin() {
                 <TableBody>
                   {filteredUsers.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center py-8 text-gray-500">
-                        {searchTerm ? 'Không tìm thấy người dùng phù hợp.' : 'Không có người dùng nào.'}
+                      <TableCell
+                        colSpan={7}
+                        className="text-center py-8 text-gray-500"
+                      >
+                        {searchTerm
+                          ? "Không tìm thấy người dùng phù hợp."
+                          : "Không có người dùng nào."}
                       </TableCell>
                     </TableRow>
                   ) : (
@@ -262,8 +277,8 @@ export function AllUsersAdmin() {
                           <div className="flex items-center space-x-3">
                             <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center">
                               {user.avatar ? (
-                                <img 
-                                  src={user.avatar} 
+                                <img
+                                  src={user.avatar}
                                   alt={user.name}
                                   className="w-full h-full rounded-full object-cover"
                                 />
@@ -274,7 +289,9 @@ export function AllUsersAdmin() {
                               )}
                             </div>
                             <div>
-                              <div className="font-medium text-gray-900">{user.name}</div>
+                              <div className="font-medium text-gray-900">
+                                {user.name}
+                              </div>
                               <div className="text-sm text-gray-500 flex items-center gap-1">
                                 <Mail className="h-3 w-3" />
                                 {user.email}
@@ -288,8 +305,10 @@ export function AllUsersAdmin() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge 
-                            className={`text-xs ${getRoleBadgeColor(user.role)}`} 
+                          <Badge
+                            className={`text-xs ${getRoleBadgeColor(
+                              user.role
+                            )}`}
                             variant="secondary"
                           >
                             {user.role.toUpperCase()}
@@ -298,14 +317,18 @@ export function AllUsersAdmin() {
                         <TableCell>
                           <div className="flex items-center space-x-1">
                             <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                            <span className="font-medium">{user.rating?.toFixed(1) || '0.0'}</span>
-                            <span className="text-gray-400 text-sm">({user.ratingCount || 0})</span>
+                            <span className="font-medium">
+                              {user.rating?.toFixed(1) || "0.0"}
+                            </span>
+                            <span className="text-gray-400 text-sm">
+                              ({user.ratingCount || 0})
+                            </span>
                           </div>
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center space-x-1 text-sm text-gray-600">
                             <MapPin className="h-3 w-3" />
-                            <span>{user.location || 'Chưa xác định'}</span>
+                            <span>{user.location || "Chưa xác định"}</span>
                           </div>
                         </TableCell>
                         <TableCell>
@@ -320,7 +343,11 @@ export function AllUsersAdmin() {
                           </span>
                         </TableCell>
                         <TableCell>
-                          <DeleteUserButton user={user} variant="icon" size="sm" />
+                          <DeleteUserButton
+                            user={user}
+                            variant="icon"
+                            size="sm"
+                          />
                         </TableCell>
                       </TableRow>
                     ))
@@ -341,22 +368,27 @@ export function AllUsersAdmin() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredUsers.length === 0 ? (
-                                 <div className="col-span-full text-center py-12">
-                   <p className="text-gray-500">
-                     {searchTerm ? 'Không tìm thấy người dùng phù hợp.' : 'Không có người dùng nào.'}
-                   </p>
-                 </div>
+                <div className="col-span-full text-center py-12">
+                  <p className="text-gray-500">
+                    {searchTerm
+                      ? "Không tìm thấy người dùng phù hợp."
+                      : "Không có người dùng nào."}
+                  </p>
+                </div>
               ) : (
                 filteredUsers.map((user) => (
-                  <Card key={user._id} className="hover:shadow-md transition-shadow">
+                  <Card
+                    key={user._id}
+                    className="hover:shadow-md transition-shadow"
+                  >
                     <CardContent className="p-6">
                       <div className="flex flex-col space-y-4">
                         {/* User Avatar and Basic Info */}
                         <div className="flex items-center space-x-3">
                           <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center">
                             {user.avatar ? (
-                              <img 
-                                src={user.avatar} 
+                              <img
+                                src={user.avatar}
                                 alt={user.name}
                                 className="w-full h-full rounded-full object-cover"
                               />
@@ -367,9 +399,13 @@ export function AllUsersAdmin() {
                             )}
                           </div>
                           <div className="flex-1">
-                            <h3 className="font-medium text-gray-900 truncate">{user.name}</h3>
-                            <Badge 
-                              className={`text-xs ${getRoleBadgeColor(user.role)}`} 
+                            <h3 className="font-medium text-gray-900 truncate">
+                              {user.name}
+                            </h3>
+                            <Badge
+                              className={`text-xs ${getRoleBadgeColor(
+                                user.role
+                              )}`}
                               variant="secondary"
                             >
                               {user.role.toUpperCase()}
@@ -390,7 +426,9 @@ export function AllUsersAdmin() {
                             </div>
                           )}
                           {user.bio && (
-                            <p className="text-xs text-gray-500 line-clamp-2">{user.bio}</p>
+                            <p className="text-xs text-gray-500 line-clamp-2">
+                              {user.bio}
+                            </p>
                           )}
                         </div>
 
@@ -399,27 +437,37 @@ export function AllUsersAdmin() {
                           <div className="text-center">
                             <div className="flex items-center justify-center space-x-1">
                               <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                              <span className="font-medium">{user.rating?.toFixed(1) || '0.0'}</span>
+                              <span className="font-medium">
+                                {user.rating?.toFixed(1) || "0.0"}
+                              </span>
                             </div>
-                                                         <div className="text-xs text-gray-500 mt-1">
-                               {user.ratingCount || 0} đánh giá
-                             </div>
+                            <div className="text-xs text-gray-500 mt-1">
+                              {user.ratingCount || 0} đánh giá
+                            </div>
                           </div>
                           <div className="text-center">
                             <div className="flex items-center justify-center space-x-1">
                               <Calendar className="h-4 w-4 text-gray-400" />
-                              <span className="text-sm font-medium">{formatDate(user.createdAt)}</span>
+                              <span className="text-sm font-medium">
+                                {formatDate(user.createdAt)}
+                              </span>
                             </div>
-                                                         <div className="text-xs text-gray-500 mt-1">Tham gia</div>
+                            <div className="text-xs text-gray-500 mt-1">
+                              Tham gia
+                            </div>
                           </div>
                         </div>
 
-                                                 {/* Actions */}
+                        {/* Actions */}
                         <div className="flex justify-between items-center pt-3 border-t border-gray-100">
                           <div className="text-xs text-gray-500">
                             {user.favorites?.length || 0} yêu thích
                           </div>
-                          <DeleteUserButton user={user} variant="icon" size="sm" />
+                          <DeleteUserButton
+                            user={user}
+                            variant="icon"
+                            size="sm"
+                          />
                         </div>
                       </div>
                     </CardContent>
@@ -432,4 +480,4 @@ export function AllUsersAdmin() {
       )}
     </div>
   );
-} 
+}

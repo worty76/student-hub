@@ -1,10 +1,8 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
-import { Button, type ButtonProps } from "../ui/button";
 import { cn } from "@/lib/utils";
 import { Check, CheckCheck } from "lucide-react";
-import { motion } from "framer-motion";
 
 // ChatBubble
 const chatBubbleVariant = cva(
@@ -125,9 +123,7 @@ const ChatBubbleMessage = React.forwardRef<
           <MessageLoading />
         </div>
       ) : (
-        <div className="relative">
-          {children}
-        </div>
+        <div className="relative">{children}</div>
       )}
     </div>
   )
@@ -144,7 +140,9 @@ const MessageStatus: React.FC<MessageStatusProps> = ({ status, className }) => {
   const getStatusIcon = () => {
     switch (status) {
       case "sending":
-        return <div className="w-2 h-2 bg-muted-foreground/50 rounded-full animate-pulse" />;
+        return (
+          <div className="w-2 h-2 bg-muted-foreground/50 rounded-full animate-pulse" />
+        );
       case "sent":
         return <Check className="w-3 h-3 text-muted-foreground/70" />;
       case "delivered":
@@ -157,9 +155,7 @@ const MessageStatus: React.FC<MessageStatusProps> = ({ status, className }) => {
   };
 
   return (
-    <div className={cn("flex items-center", className)}>
-      {getStatusIcon()}
-    </div>
+    <div className={cn("flex items-center", className)}>{getStatusIcon()}</div>
   );
 };
 
@@ -178,24 +174,17 @@ const ChatBubbleTimestamp: React.FC<ChatBubbleTimestampProps> = ({
   className,
   ...props
 }) => (
-  <div 
+  <div
     className={cn(
       "flex items-center gap-1 text-xs text-muted-foreground/70 mt-1",
       variant === "sent" ? "justify-end" : "justify-start",
       className
-    )} 
+    )}
     {...props}
   >
     <span>{timestamp}</span>
-    {variant === "sent" && status && (
-      <MessageStatus status={status} />
-    )}
+    {variant === "sent" && status && <MessageStatus status={status} />}
   </div>
 );
 
-export {
-  ChatBubble,
-  ChatBubbleAvatar,
-  ChatBubbleMessage,
-  ChatBubbleTimestamp,
-};
+export { ChatBubble, ChatBubbleAvatar, ChatBubbleMessage, ChatBubbleTimestamp };
