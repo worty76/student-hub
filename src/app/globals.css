@@ -129,6 +129,21 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  /* Ensure consistent box-sizing */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+  
+  /* Improve text rendering */
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 }
 
@@ -152,6 +167,218 @@
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;
+  }
+
+  /* Custom scrollbar styles */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--muted-foreground) / 0.3) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--muted-foreground) / 0.3);
+    border-radius: 3px;
+    transition: background-color 0.2s ease;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--muted-foreground) / 0.5);
+  }
+
+  .scrollbar-thumb-muted::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--muted));
+  }
+
+  .scrollbar-track-transparent::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  /* Hide scrollbar for mobile */
+  @media (max-width: 768px) {
+    .scrollbar-thin {
+      scrollbar-width: none;
+    }
+    
+    .scrollbar-thin::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  /* Chat layout utilities */
+  .chat-layout {
+    height: 100vh;
+    overflow: hidden;
+  }
+  
+  .chat-sidebar {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  
+  .chat-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-width: 0;
+  }
+  
+  .chat-header {
+    flex-shrink: 0;
+    border-bottom: 1px solid hsl(var(--border) / 0.5);
+    background: hsl(var(--background));
+    z-index: 10;
+  }
+  
+  .chat-messages {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .chat-input {
+    flex-shrink: 0;
+    border-top: 1px solid hsl(var(--border) / 0.5);
+    background: hsl(var(--background));
+    z-index: 10;
+  }
+
+  /* Chat-specific animations */
+  .animate-message-in {
+    animation: messageIn 0.3s ease-out;
+  }
+
+  .animate-typing {
+    animation: typing 1.5s ease-in-out infinite;
+  }
+
+  @keyframes messageIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes typing {
+    0%, 60%, 100% {
+      transform: translateY(0);
+    }
+    30% {
+      transform: translateY(-10px);
+    }
+  }
+
+  /* Backdrop blur support */
+  .backdrop-blur-sm {
+    backdrop-filter: blur(4px);
+  }
+
+  .backdrop-blur {
+    backdrop-filter: blur(8px);
+  }
+
+  /* Glass effect for modern UI */
+  .glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .dark .glass {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* Gradient text support */
+  .gradient-text {
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary)) 40%, hsl(var(--muted-foreground)));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Improved focus styles */
+  .focus-visible:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+
+  /* Better button hover effects */
+  .hover-scale:hover {
+    transform: scale(1.05);
+    transition: transform 0.2s ease;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
+  }
+
+  /* Message bubble styles */
+  .message-sent {
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary)) 90%);
+    color: hsl(var(--primary-foreground));
+  }
+
+  .message-received {
+    background: hsl(var(--muted));
+    color: hsl(var(--muted-foreground));
+  }
+
+  /* Loading animation */
+  .loading-dots {
+    display: inline-block;
+  }
+
+  .loading-dots:after {
+    content: '...';
+    animation: dots 1.5s steps(4, end) infinite;
+  }
+
+  @keyframes dots {
+    0%, 20% {
+      content: '.';
+    }
+    40% {
+      content: '..';
+    }
+    60% {
+      content: '...';
+    }
+    90%, 100% {
+      content: '';
+    }
+  }
+  
+  /* Ensure proper text selection */
+  .select-text {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+  }
+  
+  .select-none {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
   }
 }
 
