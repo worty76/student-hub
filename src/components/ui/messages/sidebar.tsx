@@ -225,16 +225,16 @@ export function Sidebar({
                             </p>
                           )}
                         </div>
-
+{/* 
                         {chat.unreadCount && chat.unreadCount > 0 && (
                           <motion.div
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
                             className="bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium shadow-sm shrink-0"
                           >
-                            {chat.unreadCount > 9 ? "9+" : chat.unreadCount}
+                            {chat.unreadCount > 9 ? "9+" : `${chat.unreadCount}`}
                           </motion.div>
-                        )}
+                        )} */}
                       </div>
                     </motion.button>
                   )
