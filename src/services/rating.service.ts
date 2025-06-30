@@ -1,6 +1,6 @@
 import { CreateRatingRequest, CreateRatingResponse, Rating } from '@/types/rating';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://be-student-hub-production.up.railway.app/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
 export class RatingService {
   static async createRating(

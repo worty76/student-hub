@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -14,6 +15,7 @@ import {
   Shield,
   Clock
 } from 'lucide-react';
+import { SendMessageButton } from '@/components/ui/messages/components/send-message-button';
 
 interface Seller {
   id: string;
@@ -29,9 +31,10 @@ interface Seller {
 
 interface SellerProfileProps {
   seller: Seller;
+  productId?: string;
 }
 
-export function SellerProfile({ seller }: SellerProfileProps) {
+export function SellerProfile({ seller, productId }: SellerProfileProps) {
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, index) => (
       <Star
@@ -198,14 +201,24 @@ export function SellerProfile({ seller }: SellerProfileProps) {
 
         {/* Quick Actions */}
         <div className="border-t pt-4 space-y-2">
-          <Button variant="outline" size="sm" className="w-full justify-start">
+          <SendMessageButton
+            receiverId={seller.id}
+            receiverName={seller.name}
+            productId={productId}
+            variant="outline"
+            size="sm"
+            className="w-full justify-start"
+          >
             <MessageCircle className="w-4 h-4 mr-2" />
             Message Seller
-          </Button>
-          <Button variant="outline" size="sm" className="w-full justify-start">
-            <User className="w-4 h-4 mr-2" />
-            View Profile
-          </Button>
+          </SendMessageButton>
+          
+          <Link href={`/users/${seller.id}`} className="block">
+            <Button variant="outline" size="sm" className="w-full justify-start">
+              <User className="w-4 h-4 mr-2" />
+              View Profile
+            </Button>
+          </Link>
         </div>
 
         {/* Safety Reminder */}
