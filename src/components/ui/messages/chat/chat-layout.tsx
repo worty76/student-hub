@@ -29,7 +29,7 @@ export function ChatLayout({
   const [isCollapsed, setIsCollapsed] = React.useState(defaultCollapsed);
   const [isMobile, setIsMobile] = useState(false);
   const searchParams = useSearchParams();
-  const chatIdFromUrl = searchParams.get('chat');
+  const chatIdFromUrl = searchParams.get("chat");
 
   // Chat store state
   const {
@@ -37,12 +37,15 @@ export function ChatLayout({
     selectedChat,
     messages,
     isLoading,
+    isSwitchingChat,
     error,
     currentUserId,
     loadUserChats,
     selectChat,
     setCurrentUserId,
-    clearError
+    clearError,
+    initializeSocket,
+    disconnectSocket,
   } = useChatStore();
 
   useEffect(() => {
@@ -65,66 +68,97 @@ export function ChatLayout({
   // Load user data and chats on mount
   useEffect(() => {
     const initializeChat = async () => {
+      // Only initialize in browser environment
+      if (typeof window === "undefined") {
+        return;
+      }
+
       try {
         // Get current user from localStorage or auth context
-        const token = localStorage.getItem('token');
-        const userData = localStorage.getItem('user');
-        
-        console.log('initializeChat - Token exists:', !!token);
-        console.log('initializeChat - User data:', userData);
-        
+        const token = localStorage.getItem("token");
+        const userData = localStorage.getItem("user");
+
         if (token && userData) {
           const user = JSON.parse(userData);
-          console.log('initializeChat - Parsed user:', user);
-          console.log('initializeChat - Setting currentUserId to:', user._id);
           setCurrentUserId(user._id);
+
+          // Initialize socket connection first
+          await initializeSocket(token, user._id);
+
+          // Then load chats
           await loadUserChats();
         }
       } catch (error) {
-        console.error('Failed to initialize chat:', error);
+        console.error("Failed to initialize chat:", error);
       }
     };
 
     initializeChat();
-  }, [loadUserChats, setCurrentUserId]);
 
-  // Handle auto-selecting chat from URL parameter
+    // Cleanup on unmount (only in browser)
+    return () => {
+      if (typeof window !== "undefined") {
+        disconnectSocket();
+      }
+    };
+  }, [loadUserChats, setCurrentUserId, initializeSocket, disconnectSocket]);
+
+  // Handle auto-selecting chat from URL parameter (optimized to prevent double calls)
   useEffect(() => {
-    if (chatIdFromUrl && chats.length > 0 && (!selectedChat || selectedChat._id !== chatIdFromUrl)) {
-      const chatExists = chats.find(chat => chat._id === chatIdFromUrl);
-      if (chatExists) {
-        selectChat(chatIdFromUrl);
+    if (chatIdFromUrl && chats.length > 0 && !isSwitchingChat) {
+      // Only select if it's different from current selection and not already switching
+      if (!selectedChat || selectedChat._id !== chatIdFromUrl) {
+        const chatExists = chats.find((chat) => chat._id === chatIdFromUrl);
+        if (chatExists) {
+          console.log("URL effect: Selecting chat from URL:", chatIdFromUrl);
+          selectChat(chatIdFromUrl);
+        }
       }
     }
-  }, [chatIdFromUrl, chats, selectedChat, selectChat]);
+  }, [chatIdFromUrl, chats, selectedChat, selectChat, isSwitchingChat]);
 
-  // Handle chat selection
+  // Handle chat selection with optimized URL sync
   const handleChatSelect = async (chatId: string) => {
+    // Prevent multiple calls
+    if (isSwitchingChat || selectedChat?._id === chatId) {
+      return;
+    }
+
     try {
-      await selectChat(chatId);
-      // Update URL without causing a page refresh
+      // Update URL immediately to prevent race conditions
       const url = new URL(window.location.href);
-      url.searchParams.set('chat', chatId);
-      window.history.replaceState({}, '', url.toString());
+      url.searchParams.set("chat", chatId);
+      window.history.replaceState({}, "", url.toString());
+
+      // Then select the chat
+      await selectChat(chatId);
     } catch (error) {
-      console.error('Failed to select chat:', error);
+      console.error("Failed to select chat:", error);
     }
   };
 
   // Convert chats to sidebar format
   const sidebarChats = chats.map((chat) => {
     // Find the other participant (not the current user)
-    const otherParticipant = chat.participants.find(p => p._id !== currentUserId);
-    const unreadCount = currentUserId ? (chat.unreadCount[currentUserId] || 0) : 0;
-    
+    const otherParticipant = chat.participants.find(
+      (p) => p._id !== currentUserId
+    );
+    const unreadCount = currentUserId
+      ? chat.unreadCount[currentUserId] || 0
+      : 0;
+
     return {
       id: chat._id,
-      name: otherParticipant?.name || 'Unknown User',
-      avatar: otherParticipant?.avatar || '',
-      lastMessage: chat.lastMessage?.content || '',
-      timestamp: chat.lastMessage?.createdAt ? formatDate.relative(chat.lastMessage.createdAt) : '',
+      name: otherParticipant?.name || "Unknown User",
+      avatar: otherParticipant?.avatar || "",
+      lastMessage: chat.lastMessage?.content || "",
+      timestamp: chat.lastMessage?.createdAt
+        ? formatDate.relative(chat.lastMessage.createdAt)
+        : "",
       unreadCount,
-      variant: (selectedChat?._id === chat._id ? "secondary" : "ghost") as "secondary" | "ghost",
+      variant: (selectedChat?._id === chat._id ? "secondary" : "ghost") as
+        | "secondary"
+        | "ghost",
     };
   });
 
@@ -137,7 +171,7 @@ export function ChatLayout({
           Select a conversation
         </div>
       </div>
-      
+
       {/* Main empty state content */}
       <div className="flex-1 flex items-center justify-center p-8">
         <motion.div
@@ -153,7 +187,7 @@ export function ChatLayout({
           >
             <MessageCircle className="w-10 h-10 text-primary/70" />
           </motion.div>
-          
+
           <motion.h3
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -162,16 +196,17 @@ export function ChatLayout({
           >
             Welcome to Messages
           </motion.h3>
-          
+
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
             className="text-muted-foreground mb-6 leading-relaxed"
           >
-            Select a conversation from the sidebar to start chatting, or create a new conversation to connect with someone.
+            Select a conversation from the sidebar to start chatting, or create
+            a new conversation to connect with someone.
           </motion.p>
-          
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -193,11 +228,9 @@ export function ChatLayout({
     <div className="h-full flex flex-col">
       {/* Header area to match chat topbar height */}
       <div className="h-16 border-b border-border/50 flex items-center justify-center">
-        <div className="text-sm text-destructive font-medium">
-          Error
-        </div>
+        <div className="text-sm text-destructive font-medium">Error</div>
       </div>
-      
+
       {/* Main error content */}
       <div className="flex-1 flex items-center justify-center p-8">
         <motion.div
@@ -211,7 +244,7 @@ export function ChatLayout({
           <p className="text-muted-foreground mb-6">
             {error || "Unable to load messages. Please try again."}
           </p>
-          <motion.button 
+          <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => {
@@ -278,13 +311,17 @@ export function ChatLayout({
             isLoading={isLoading}
           />
         </ResizablePanel>
-        
-        <ResizableHandle 
-          withHandle 
-          className="w-1 bg-border/50 hover:bg-border transition-colors data-[panel-group-direction=vertical]:h-1 data-[panel-group-direction=vertical]:w-full" 
+
+        <ResizableHandle
+          withHandle
+          className="w-1 bg-border/50 hover:bg-border transition-colors data-[panel-group-direction=vertical]:h-1 data-[panel-group-direction=vertical]:w-full"
         />
-        
-        <ResizablePanel defaultSize={defaultLayout[1]} minSize={30} className="flex flex-col h-full">
+
+        <ResizablePanel
+          defaultSize={defaultLayout[1]}
+          minSize={30}
+          className="flex flex-col h-full"
+        >
           <AnimatePresence mode="wait">
             {selectedChat ? (
               <motion.div
@@ -298,10 +335,21 @@ export function ChatLayout({
                 <Chat
                   messages={messages}
                   selectedUser={{
-                    id: parseInt(selectedChat._id.replace(/[^0-9]/g, '')) || Math.floor(Math.random() * 10000),
-                    name: selectedChat.participants.find(p => p._id !== currentUserId)?.name || 'Unknown User',
-                    avatar: selectedChat.participants.find(p => p._id !== currentUserId)?.avatar || '',
-                    messages: []
+                    id:
+                      parseInt(
+                        selectedChat.participants.find(
+                          (p) => p._id !== currentUserId
+                        )?._id || "0"
+                      ) || 0,
+                    name:
+                      selectedChat.participants.find(
+                        (p) => p._id !== currentUserId
+                      )?.name || "Unknown User",
+                    avatar:
+                      selectedChat.participants.find(
+                        (p) => p._id !== currentUserId
+                      )?.avatar || "",
+                    messages: [],
                   }}
                   isMobile={isMobile}
                 />

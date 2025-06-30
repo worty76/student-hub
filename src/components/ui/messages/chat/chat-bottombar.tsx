@@ -27,6 +27,7 @@ export default function ChatBottombar({ isMobile }: ChatBottombarProps) {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Use the real API methods from the store
   const {
@@ -34,16 +35,41 @@ export default function ChatBottombar({ isMobile }: ChatBottombarProps) {
     selectedChat,
     isLoading,
     error,
+    sendTyping,
   } = useChatStore();
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(event.target.value);
 
     // Typing indicator logic
-    if (!isTyping && event.target.value.length > 0) {
+    const hasContent = event.target.value.length > 0;
+
+    if (hasContent && !isTyping) {
       setIsTyping(true);
-    } else if (isTyping && event.target.value.length === 0) {
+      if (selectedChat) {
+        sendTyping(selectedChat._id, true);
+      }
+    }
+
+    // Clear previous timeout
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+
+    // Set new timeout to stop typing indicator after 1.5 seconds of inactivity
+    if (hasContent) {
+      typingTimeoutRef.current = setTimeout(() => {
+        setIsTyping(false);
+        if (selectedChat) {
+          sendTyping(selectedChat._id, false);
+        }
+      }, 1500);
+    } else if (isTyping) {
+      // If input is empty, stop typing immediately
       setIsTyping(false);
+      if (selectedChat) {
+        sendTyping(selectedChat._id, false);
+      }
     }
   };
 
@@ -52,6 +78,11 @@ export default function ChatBottombar({ isMobile }: ChatBottombarProps) {
       try {
         await sendMessageAPI("👍");
         setMessage("");
+        // Stop typing indicator when sending
+        if (isTyping) {
+          setIsTyping(false);
+          sendTyping(selectedChat._id, false);
+        }
       } catch (error) {
         console.error("Failed to send thumbs up:", error);
       }
@@ -63,7 +94,18 @@ export default function ChatBottombar({ isMobile }: ChatBottombarProps) {
       try {
         await sendMessageAPI(message.trim());
         setMessage("");
-        setIsTyping(false);
+
+        // Stop typing indicator when sending
+        if (isTyping) {
+          setIsTyping(false);
+          sendTyping(selectedChat._id, false);
+        }
+
+        // Clear any pending typing timeout
+        if (typingTimeoutRef.current) {
+          clearTimeout(typingTimeoutRef.current);
+          typingTimeoutRef.current = null;
+        }
 
         if (inputRef.current) {
           inputRef.current.focus();
@@ -74,10 +116,32 @@ export default function ChatBottombar({ isMobile }: ChatBottombarProps) {
     }
   };
 
+  // Clean up typing timeout on unmount or chat change
+  useEffect(() => {
+    return () => {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+      if (isTyping && selectedChat) {
+        sendTyping(selectedChat._id, false);
+      }
+    };
+  }, [selectedChat, isTyping, sendTyping]);
+
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
+
+    // Reset typing state when chat changes
+    if (isTyping) {
+      setIsTyping(false);
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = null;
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedChat]);
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {

@@ -7,10 +7,15 @@ import {
   ChatBubbleAvatar,
   ChatBubbleMessage,
   ChatBubbleTimestamp,
-  ChatBubble,
 } from "../components/chat-bubble";
 import { ChatMessageList } from "../components/chat-message-list";
 import useChatStore from "@/hooks/useChatStore";
+import {
+  shouldShowAvatar,
+  getMessageAlignment,
+  getMarginTop,
+  isSameUser,
+} from "@/utils/chatLogics";
 
 interface ChatListProps {
   messages: APIMessage[];
@@ -48,164 +53,138 @@ const formatTimestamp = (timestamp: string): string => {
   return date.toLocaleDateString();
 };
 
-// Group messages by sender and time
-const groupMessages = (messages: APIMessage[]) => {
-  const groups: APIMessage[][] = [];
-  let currentGroup: APIMessage[] = [];
-
-  messages.forEach((message, index) => {
-    const prevMessage = messages[index - 1];
-    const shouldGroup =
-      prevMessage &&
-      prevMessage.sender._id === message.sender._id &&
-      prevMessage.createdAt &&
-      message.createdAt &&
-      new Date(message.createdAt).getTime() -
-        new Date(prevMessage.createdAt).getTime() <
-        300000; // 5 minutes
-
-    if (shouldGroup) {
-      currentGroup.push(message);
-    } else {
-      if (currentGroup.length > 0) {
-        groups.push(currentGroup);
-      }
-      currentGroup = [message];
-    }
-  });
-
-  if (currentGroup.length > 0) {
-    groups.push(currentGroup);
-  }
-
-  return groups;
-};
-
 export function ChatList({ messages, selectedUser }: ChatListProps) {
-  const { isLoading, currentUserId, setCurrentUserId } = useChatStore();
+  const {
+    isLoading,
+    currentUserId,
+    setCurrentUserId,
+    isSwitchingChat,
+    selectedChat,
+    typingUsers,
+  } = useChatStore();
 
-  // Immediately detect and set currentUserId in store if not available
+  // Simplified user ID detection - only run once if currentUserId is not set
   useEffect(() => {
-    if (!currentUserId && messages.length > 0) {
-      console.log("Attempting to detect currentUserId...");
-
-      // Try localStorage first
+    if (!currentUserId) {
+      // Try localStorage first - this should be sufficient since auth already sets it
       try {
         const userData = localStorage.getItem("user");
         if (userData) {
           const user = JSON.parse(userData);
-          if (user._id) {
-            console.log("Setting currentUserId from localStorage:", user._id);
-            setCurrentUserId(user._id);
+          const userId = user._id || user.id;
+          if (userId) {
+            setCurrentUserId(userId);
             return;
           }
         }
       } catch (error) {
-        console.error("Error parsing user data from localStorage:", error);
-      }
-
-      // Fallback: If all messages are from the same sender, assume current user
-      const allSenderIds = new Set(messages.map((m) => m.sender._id));
-      if (allSenderIds.size === 1) {
-        const singleSenderId = Array.from(allSenderIds)[0];
-        console.log(
-          "All messages from single sender, setting as currentUserId:",
-          singleSenderId
-        );
-        setCurrentUserId(singleSenderId);
+        console.error("Error getting user ID from localStorage:", error);
       }
     }
-  }, [currentUserId, messages, setCurrentUserId]);
+  }, [currentUserId, setCurrentUserId]); // Only depend on currentUserId, not messages
 
-  // Get effective currentUserId (prefer store, fallback to detection)
+  // Get effective currentUserId
   const getEffectiveCurrentUserId = () => {
     if (currentUserId) {
       return currentUserId;
     }
 
-    // Only for immediate rendering before useEffect runs
+    // Immediate fallback for rendering
     try {
       const userData = localStorage.getItem("user");
       if (userData) {
         const user = JSON.parse(userData);
-        return user._id;
+        return user._id || user.id;
       }
     } catch (error) {
-      console.error("Error parsing user data:", error);
+      console.error("Error in fallback user ID detection:", error);
     }
 
     return null;
   };
 
   const effectiveCurrentUserId = getEffectiveCurrentUserId();
-
-  // Simplified message variant detection
-  const getMessageVariant = (senderId: string, currentUserId: string) => {
-    const isMatch = senderId === currentUserId;
-    console.log("getMessageVariant:", {
-      senderId,
-      currentUserId,
-      match: isMatch,
-      result: isMatch ? "sent" : "received",
-    });
-
-    return isMatch ? "sent" : "received";
-  };
-
-  // Debug logging
-  useEffect(() => {
-    console.log("=== ChatList Debug Info ===");
-    console.log("ChatList - Current User ID from store:", currentUserId);
-    console.log(
-      "ChatList - Effective Current User ID:",
-      effectiveCurrentUserId
-    );
-
-    // Debug localStorage
-    const userData = localStorage.getItem("user");
-    console.log("ChatList - Raw user data from localStorage:", userData);
-    if (userData) {
-      try {
-        const parsedUser = JSON.parse(userData);
-        console.log("ChatList - Parsed user from localStorage:", parsedUser);
-        console.log("ChatList - User ID from localStorage:", parsedUser._id);
-      } catch (e) {
-        console.log("ChatList - Error parsing user data:", e);
-      }
-    }
-
-    console.log(
-      "ChatList - Messages with sender info:",
-      messages.map((m, index) => ({
-        index,
-        messageId: m._id,
-        senderId: m.sender._id,
-        senderName: m.sender.name,
-        content: m.content.substring(0, 30) + "...",
-        senderIdType: typeof m.sender._id,
-        senderIdLength: m.sender._id?.length,
-      }))
-    );
-
-    // Check if all messages are from the same sender
-    if (messages.length > 0) {
-      const senderIds = messages.map((m) => m.sender._id);
-      const uniqueSenders = new Set(senderIds);
-      console.log("Unique senders in chat:", Array.from(uniqueSenders));
-      console.log("All messages from same sender?", uniqueSenders.size === 1);
-    }
-
-    console.log("=== End ChatList Debug Info ===");
-  }, [currentUserId, effectiveCurrentUserId, messages]);
-
-  const messageGroups = groupMessages(messages);
   const hasMessages = messages.length > 0;
+
+  // Get typing users for current chat (excluding current user)
+  const currentChatTypingUsers =
+    selectedChat?.participants.filter((participant) => {
+      const chatTypingUsers = typingUsers[selectedChat._id] || [];
+      return (
+        chatTypingUsers.includes(participant._id) &&
+        participant._id !== effectiveCurrentUserId
+      );
+    }) || [];
+
+  // Typing indicator component
+  const TypingIndicator = () => {
+    if (currentChatTypingUsers.length === 0) return null;
+
+    const getTypingText = () => {
+      if (currentChatTypingUsers.length === 1) {
+        return `${currentChatTypingUsers[0].name} is typing...`;
+      } else if (currentChatTypingUsers.length === 2) {
+        return `${currentChatTypingUsers[0].name} and ${currentChatTypingUsers[1].name} are typing...`;
+      } else {
+        return `${currentChatTypingUsers[0].name} and ${
+          currentChatTypingUsers.length - 1
+        } others are typing...`;
+      }
+    };
+
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -10 }}
+        className="flex items-center justify-start px-4 py-2"
+      >
+        <div className="flex items-end max-w-[80%]">
+          {/* Avatar for typing user */}
+          <div className="flex-shrink-0 w-8 h-8 mr-2">
+            <ChatBubbleAvatar
+              src={currentChatTypingUsers[0]?.avatar || ""}
+              fallback={
+                currentChatTypingUsers[0]?.name?.charAt(0).toUpperCase() || "U"
+              }
+            />
+          </div>
+
+          {/* Typing bubble */}
+          <div className="bg-muted rounded-2xl px-4 py-2 max-w-fit">
+            <div className="flex items-center gap-1">
+              <span className="text-sm text-muted-foreground">
+                {getTypingText()}
+              </span>
+              <div className="flex gap-1 ml-2">
+                {[...Array(3)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="w-2 h-2 bg-muted-foreground/50 rounded-full"
+                    animate={{
+                      scale: [1, 1.2, 1],
+                      opacity: [0.5, 1, 0.5],
+                    }}
+                    transition={{
+                      duration: 1.5,
+                      repeat: Infinity,
+                      delay: i * 0.2,
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    );
+  };
 
   return (
     <div className="w-full overflow-y-hidden h-full flex flex-col">
       <ChatMessageList
-        isLoading={isLoading}
-        isEmpty={!hasMessages && !isLoading}
+        isLoading={isLoading || isSwitchingChat}
+        isEmpty={!hasMessages && !isLoading && !isSwitchingChat}
         emptyStateMessage="Start your conversation"
         emptyStateAction={
           <p className="text-xs text-muted-foreground">
@@ -213,64 +192,76 @@ export function ChatList({ messages, selectedUser }: ChatListProps) {
           </p>
         }
       >
-        <AnimatePresence>
-          {messageGroups.map((group, groupIndex) => (
-            <motion.div
-              key={`group-${groupIndex}`}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ delay: groupIndex * 0.1 }}
-              className="flex flex-col"
-            >
-              {group.map((message, messageIndex) => {
-                const globalIndex = messages.indexOf(message);
-                const variant = getMessageVariant(
-                  message.sender._id,
-                  effectiveCurrentUserId || ""
-                );
-                const isFirstInGroup = messageIndex === 0;
-                const isLastInGroup = messageIndex === group.length - 1;
+        {!isSwitchingChat && (
+          <AnimatePresence>
+            {messages.map((message, index) => {
+              const variant = getMessageAlignment(
+                message.sender._id,
+                effectiveCurrentUserId || ""
+              );
+              const showAvatar = shouldShowAvatar(
+                messages,
+                message,
+                index,
+                effectiveCurrentUserId || ""
+              );
+              const marginTop = getMarginTop(messages, message, index);
+              const isSameUserMsg = isSameUser(messages, message, index);
 
-                return (
-                  <motion.div
-                    key={`message-${globalIndex}`}
-                    layout
-                    initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95, y: -20 }}
-                    transition={{
-                      duration: 0.3,
-                      ease: "easeOut",
-                      layout: { duration: 0.2 },
-                    }}
+              return (
+                <motion.div
+                  key={`message-${index}`}
+                  layout
+                  initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: -20 }}
+                  transition={{
+                    duration: 0.3,
+                    ease: "easeOut",
+                    layout: { duration: 0.2 },
+                  }}
+                  className={cn(
+                    "flex w-full mb-1",
+                    variant === "sent" ? "justify-end" : "justify-start"
+                  )}
+                  style={{
+                    marginTop: `${marginTop * 4}px`,
+                  }}
+                >
+                  <div
                     className={cn(
-                      "flex flex-col relative",
-                      !isLastInGroup && "mb-1",
-                      isLastInGroup && "mb-4"
+                      "flex items-end max-w-[80%]",
+                      variant === "sent" ? "flex-row-reverse" : "flex-row"
                     )}
                   >
-                    <ChatBubble variant={variant}>
-                      {/* Show avatar only for first message in group and received messages */}
-                      {isFirstInGroup && variant === "received" ? (
-                        <ChatBubbleAvatar
-                          src={message.sender.avatar || ""}
-                          fallback={message.sender.name.charAt(0).toUpperCase()}
-                        />
-                      ) : (
-                        variant === "received" && <div className="w-8" />
-                      )}
+                    {/* Avatar section for received messages */}
+                    {variant === "received" && (
+                      <div className="flex-shrink-0 w-8 h-8 mr-2">
+                        {showAvatar ? (
+                          <ChatBubbleAvatar
+                            src={message.sender.avatar || ""}
+                            fallback={message.sender.name
+                              .charAt(0)
+                              .toUpperCase()}
+                          />
+                        ) : (
+                          <div className="w-8 h-8" />
+                        )}
+                      </div>
+                    )}
 
-                      <div className="flex flex-col max-w-full">
-                        <ChatBubbleMessage
-                          variant={variant}
-                          isLoading={message.isLoading}
-                        >
-                          {message.content}
-                        </ChatBubbleMessage>
+                    {/* Message content */}
+                    <div className="flex flex-col">
+                      <ChatBubbleMessage
+                        variant={variant}
+                        isLoading={message.isLoading}
+                      >
+                        {message.content}
+                      </ChatBubbleMessage>
 
-                        {/* Show timestamp only for last message in group */}
-                        {isLastInGroup && message.createdAt && (
+                      {/* Show timestamp for non-grouped messages or last message */}
+                      {(!isSameUserMsg || index === messages.length - 1) &&
+                        message.createdAt && (
                           <ChatBubbleTimestamp
                             timestamp={formatTimestamp(message.createdAt)}
                             variant={variant}
@@ -279,14 +270,16 @@ export function ChatList({ messages, selectedUser }: ChatListProps) {
                             }
                           />
                         )}
-                      </div>
-                    </ChatBubble>
-                  </motion.div>
-                );
-              })}
-            </motion.div>
-          ))}
-        </AnimatePresence>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+
+            {/* Show typing indicator */}
+            <TypingIndicator />
+          </AnimatePresence>
+        )}
       </ChatMessageList>
     </div>
   );

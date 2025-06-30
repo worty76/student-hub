@@ -26,7 +26,7 @@ export function Chat({ messages, selectedUser, isMobile }: ChatProps) {
   };
 
   return (
-    <div className="h-full w-full flex flex-col bg-background">
+    <div className="h-full w-full flex flex-col bg-background relative">
       {/* Chat Top Bar */}
       <div className="flex-shrink-0">
         <ChatTopbar selectedUser={selectedUser} />
