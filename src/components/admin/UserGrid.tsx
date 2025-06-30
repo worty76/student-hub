@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,50 +13,44 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import { 
-  UserX, 
-  Shield, 
-  CheckCircle,
-  Star,
-  Calendar,
-  Mail
-} from 'lucide-react';
-import { User, UserRole } from '@/types/auth';
-import { DeleteUserButton } from './DeleteUserButton';
+} from "@/components/ui/alert-dialog";
+import { UserX, Shield, CheckCircle, Star, Calendar, Mail } from "lucide-react";
+import { User, UserRole } from "@/types/auth";
+import { DeleteUserButton } from "./DeleteUserButton";
 
 interface AdminUser extends User {
-  status?: 'active' | 'suspended' | 'banned';
+  status?: "active" | "suspended" | "banned";
   lastLogin?: string;
   reportsCount?: number;
 }
 
 interface UserGridProps {
   users: AdminUser[];
-  onUserAction: (userId: string, action: 'suspend' | 'activate' | 'ban' | 'promote') => void;
+  onUserAction: (
+    userId: string,
+    action: "suspend" | "activate" | "ban" | "promote"
+  ) => void;
 }
 
 export function UserGrid({ users, onUserAction }: UserGridProps) {
   const getRoleBadgeColor = (role: UserRole) => {
     switch (role) {
-      case 'admin':
-        return 'bg-purple-100 text-purple-800';
-      case 'seller':
-        return 'bg-green-100 text-green-800';
-      case 'user':
-        return 'bg-blue-100 text-blue-800';
+      case "admin":
+        return "bg-purple-100 text-purple-800";
+      case "seller":
+        return "bg-green-100 text-green-800";
+      case "user":
+        return "bg-blue-100 text-blue-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
-
-
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('vi-VN', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
+    return new Date(dateString).toLocaleDateString("vi-VN", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
     });
   };
 
@@ -78,8 +72,9 @@ export function UserGrid({ users, onUserAction }: UserGridProps) {
               <div className="flex items-center space-x-3">
                 <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center">
                   {user.avatar ? (
-                    <img 
-                      src={user.avatar} 
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={user.avatar}
                       alt={user.name}
                       className="w-full h-full rounded-full object-cover"
                     />
@@ -90,15 +85,19 @@ export function UserGrid({ users, onUserAction }: UserGridProps) {
                   )}
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-medium text-gray-900 truncate">{user.name}</h3>
+                  <h3 className="font-medium text-gray-900 truncate">
+                    {user.name}
+                  </h3>
                   <div className="flex items-center gap-2 mt-1">
-                    <Badge className={`text-xs ${getRoleBadgeColor(user.role)}`} variant="secondary">
-                      {user.role === 'admin' 
-    ? 'Quản trị viên' 
-    : user.role === 'user' 
-      ? 'Người dùng' 
-      : user.role
-  }
+                    <Badge
+                      className={`text-xs ${getRoleBadgeColor(user.role)}`}
+                      variant="secondary"
+                    >
+                      {user.role === "admin"
+                        ? "Quản trị viên"
+                        : user.role === "user"
+                        ? "Người dùng"
+                        : user.role}
                     </Badge>
                   </div>
                 </div>
@@ -123,42 +122,46 @@ export function UserGrid({ users, onUserAction }: UserGridProps) {
                 <div className="text-center">
                   <div className="flex items-center justify-center space-x-1">
                     <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                    <span className="font-medium">{user.rating?.toFixed(1) || '0.0'}</span>
+                    <span className="font-medium">
+                      {user.rating?.toFixed(1) || "0.0"}
+                    </span>
                   </div>
-                                               <div className="text-xs text-gray-500 mt-1">
-                               {user.ratingCount || 0} đánh giá
-                             </div>
+                  <div className="text-xs text-gray-500 mt-1">
+                    {user.ratingCount || 0} đánh giá
+                  </div>
                 </div>
                 <div className="text-center">
                   <div className="text-xs text-gray-500 mt-1">Tham gia vào</div>
                   <div className="flex items-center justify-center space-x-1">
                     <Calendar className="h-4 w-4 text-gray-400" />
-                    <span className="text-sm font-medium">{formatDate(user.createdAt)}</span>
+                    <span className="text-sm font-medium">
+                      {formatDate(user.createdAt)}
+                    </span>
                   </div>
                 </div>
               </div>
 
               {/* Reports Count */}
-                               {user.reportsCount && user.reportsCount > 0 && (
-                   <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                     <div className="text-sm font-medium text-red-800">
-                       {user.reportsCount} Báo cáo
-                     </div>
-                     <div className="text-xs text-red-600">Cần chú ý</div>
-                   </div>
-                 )}
+              {user.reportsCount && user.reportsCount > 0 && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                  <div className="text-sm font-medium text-red-800">
+                    {user.reportsCount} Báo cáo
+                  </div>
+                  <div className="text-xs text-red-600">Cần chú ý</div>
+                </div>
+              )}
 
-                               {/* Last Login */}
-                 {user.lastLogin && (
-                   <div className="text-xs text-gray-500">
-                     Lần cuối đăng nhập: {formatDate(user.lastLogin)}
-                   </div>
-                 )}
+              {/* Last Login */}
+              {user.lastLogin && (
+                <div className="text-xs text-gray-500">
+                  Lần cuối đăng nhập: {formatDate(user.lastLogin)}
+                </div>
+              )}
 
               {/* Actions */}
               <div className="flex flex-wrap gap-2 pt-3 border-t border-gray-100">
                 <div className="flex gap-2 flex-1">
-                  {user.status === 'active' && (
+                  {user.status === "active" && (
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button variant="outline" size="sm" className="flex-1">
@@ -168,15 +171,18 @@ export function UserGrid({ users, onUserAction }: UserGridProps) {
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle>Tạm khóa người dùng</AlertDialogTitle>
+                          <AlertDialogTitle>
+                            Tạm khóa người dùng
+                          </AlertDialogTitle>
                           <AlertDialogDescription>
-                            Bạn có chắc chắn muốn tạm khóa {user.name}? Họ sẽ không thể truy cập tài khoản của mình.
+                            Bạn có chắc chắn muốn tạm khóa {user.name}? Họ sẽ
+                            không thể truy cập tài khoản của mình.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>Hủy</AlertDialogCancel>
                           <AlertDialogAction
-                            onClick={() => onUserAction(user._id, 'suspend')}
+                            onClick={() => onUserAction(user._id, "suspend")}
                           >
                             Tạm khóa
                           </AlertDialogAction>
@@ -184,24 +190,24 @@ export function UserGrid({ users, onUserAction }: UserGridProps) {
                       </AlertDialogContent>
                     </AlertDialog>
                   )}
-                  
-                  {user.status === 'suspended' && (
+
+                  {user.status === "suspended" && (
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => onUserAction(user._id, 'activate')}
+                      onClick={() => onUserAction(user._id, "activate")}
                       className="flex-1"
                     >
                       <CheckCircle className="h-4 w-4 mr-1" />
                       Kích hoạt
                     </Button>
                   )}
-                  
-                  {user.role !== 'admin' && (
+
+                  {user.role !== "admin" && (
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => onUserAction(user._id, 'promote')}
+                      onClick={() => onUserAction(user._id, "promote")}
                       className="flex-1"
                     >
                       <Shield className="h-4 w-4 mr-1" />
@@ -209,7 +215,7 @@ export function UserGrid({ users, onUserAction }: UserGridProps) {
                     </Button>
                   )}
                 </div>
-                
+
                 {/* Delete Button */}
                 <DeleteUserButton user={user} variant="icon" size="sm" />
               </div>
@@ -219,4 +225,4 @@ export function UserGrid({ users, onUserAction }: UserGridProps) {
       ))}
     </div>
   );
-} 
+}

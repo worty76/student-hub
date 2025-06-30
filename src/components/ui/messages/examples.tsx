@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import useChatStore, { Example } from "@/hooks/useChatStore";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function Examples() {
@@ -23,6 +23,7 @@ export default function Examples() {
     setSelectedExample(
       examples.find((example) => example.url === pathname) as Example
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   const handleChange = (value: string) => {
