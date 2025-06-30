@@ -1,25 +1,42 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useUserProfile } from '@/hooks/useUserProfile';
-import { Card, CardContent, CardHeader, CardTitle, CardAction } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/components/ui/use-toast';
-import { RefreshCw, Mail, MapPin, Star, User, Calendar, AlertCircle, Crown, Heart, Sparkles } from 'lucide-react';
+import React from "react";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardAction,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/components/ui/use-toast";
+import {
+  RefreshCw,
+  Mail,
+  MapPin,
+  Star,
+  User,
+  Calendar,
+  AlertCircle,
+  Crown,
+  Heart,
+  Sparkles,
+} from "lucide-react";
 
 interface UserProfileProps {
   className?: string;
 }
 
 export const UserProfile: React.FC<UserProfileProps> = ({ className }) => {
-  const { 
-    displayUser, 
-    isLoading, 
-    error, 
-    isAuthenticated, 
-    refetchProfile, 
-    clearError 
+  const {
+    displayUser,
+    isLoading,
+    error,
+    isAuthenticated,
+    refetchProfile,
+    clearError,
   } = useUserProfile();
   const { toast } = useToast();
 
@@ -33,7 +50,8 @@ export const UserProfile: React.FC<UserProfileProps> = ({ className }) => {
     } catch (error) {
       toast({
         title: "Lỗi khi cập nhật hồ sơ",
-        description: error instanceof Error ? error.message : "Lỗi khi cập nhật hồ sơ",
+        description:
+          error instanceof Error ? error.message : "Lỗi khi cập nhật hồ sơ",
         variant: "destructive",
       });
     }
@@ -55,7 +73,9 @@ export const UserProfile: React.FC<UserProfileProps> = ({ className }) => {
               <div className="absolute -inset-1 bg-gradient-to-r from-gray-400 to-gray-600 rounded-full opacity-20 blur"></div>
             </div>
             <h3 className="font-semibold text-lg mb-2">Chưa đăng nhập</h3>
-            <p className="text-muted-foreground">Vui lòng đăng nhập để xem hồ sơ của bạn</p>
+            <p className="text-muted-foreground">
+              Vui lòng đăng nhập để xem hồ sơ của bạn
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -73,10 +93,15 @@ export const UserProfile: React.FC<UserProfileProps> = ({ className }) => {
               </div>
               <div className="absolute -inset-1 bg-gradient-to-r from-red-500 to-orange-500 rounded-full opacity-20 blur"></div>
             </div>
-            <h3 className="font-semibold text-destructive mb-2 text-lg">Lỗi khi tải hồ sơ</h3>
+            <h3 className="font-semibold text-destructive mb-2 text-lg">
+              Lỗi khi tải hồ sơ
+            </h3>
             <p className="text-muted-foreground mb-6">{error}</p>
             <div className="flex gap-3 justify-center">
-              <Button onClick={handleRefresh} className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600">
+              <Button
+                onClick={handleRefresh}
+                className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
+              >
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Thử lại
               </Button>
@@ -105,7 +130,9 @@ export const UserProfile: React.FC<UserProfileProps> = ({ className }) => {
             disabled={isLoading}
             className="hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:border-blue-300 transition-all duration-200"
           >
-            <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+            <RefreshCw
+              className={`h-4 w-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
+            />
             Cập nhật
           </Button>
         </CardAction>
@@ -131,6 +158,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ className }) => {
               <div className="relative group">
                 {displayUser.avatar ? (
                   <div className="relative">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={displayUser.avatar}
                       alt={displayUser.name}
@@ -150,40 +178,50 @@ export const UserProfile: React.FC<UserProfileProps> = ({ className }) => {
                   </div>
                 )}
               </div>
-              
+
               <div className="flex-1 min-w-0 space-y-3">
                 <div className="flex items-center gap-3 flex-wrap">
                   <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-900 via-purple-900 to-blue-900 dark:from-white dark:via-purple-100 dark:to-blue-100 bg-clip-text text-transparent">
                     {displayUser.name}
                   </h2>
-                  <Badge 
-                    variant={displayUser.role === 'admin' ? 'default' : 'secondary'} 
+                  <Badge
+                    variant={
+                      displayUser.role === "admin" ? "default" : "secondary"
+                    }
                     className={`${
-                      displayUser.role === 'admin' 
-                        ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-lg' 
-                        : 'bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 dark:from-blue-900/30 dark:to-purple-900/30 dark:text-blue-300'
+                      displayUser.role === "admin"
+                        ? "bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-lg"
+                        : "bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 dark:from-blue-900/30 dark:to-purple-900/30 dark:text-blue-300"
                     } font-medium`}
                   >
-                    {displayUser.role === 'admin' && <Crown className="h-3 w-3 mr-1" />}
-                    {displayUser.role === 'user' ? 'Người dùng' : 'Admin'}
+                    {displayUser.role === "admin" && (
+                      <Crown className="h-3 w-3 mr-1" />
+                    )}
+                    {displayUser.role === "user" ? "Người dùng" : "Admin"}
                   </Badge>
                 </div>
-                
+
                 <div className="flex items-center text-muted-foreground group hover:text-blue-600 transition-colors duration-200">
                   <div className="p-2 rounded-lg bg-blue-50 dark:bg-blue-900/20 mr-3 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/30 transition-colors duration-200">
                     <Mail className="h-4 w-4 text-blue-500" />
                   </div>
-                  <span className="truncate font-medium">{displayUser.email}</span>
+                  <span className="truncate font-medium">
+                    {displayUser.email}
+                  </span>
                 </div>
-                
+
                 {displayUser.rating > 0 && (
                   <div className="flex items-center text-muted-foreground group">
                     <div className="p-2 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 mr-3">
                       <Star className="h-4 w-4 text-yellow-500 fill-yellow-400" />
                     </div>
                     <span className="font-medium">
-                      <span className="text-yellow-600 dark:text-yellow-400 font-bold">{displayUser.rating.toFixed(1)}</span>
-                      <span className="text-sm ml-1">({displayUser.ratingCount} đánh giá)</span>
+                      <span className="text-yellow-600 dark:text-yellow-400 font-bold">
+                        {displayUser.rating.toFixed(1)}
+                      </span>
+                      <span className="text-sm ml-1">
+                        ({displayUser.ratingCount} đánh giá)
+                      </span>
                     </span>
                   </div>
                 )}
@@ -197,7 +235,9 @@ export const UserProfile: React.FC<UserProfileProps> = ({ className }) => {
                   <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
                   Giới thiệu
                 </h3>
-                <p className="text-muted-foreground leading-relaxed">{displayUser.bio}</p>
+                <p className="text-muted-foreground leading-relaxed">
+                  {displayUser.bio}
+                </p>
               </div>
             )}
 
@@ -225,14 +265,14 @@ export const UserProfile: React.FC<UserProfileProps> = ({ className }) => {
                   Ngày tham gia
                 </h4>
                 <p className="text-muted-foreground font-medium">
-                  {new Date(displayUser.createdAt).toLocaleDateString('vi-VN', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
+                  {new Date(displayUser.createdAt).toLocaleDateString("vi-VN", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
                   })}
                 </p>
               </div>
-              
+
               {displayUser.favorites && displayUser.favorites.length > 0 && (
                 <div className="bg-gradient-to-br from-pink-50 to-rose-50 dark:from-pink-900/20 dark:to-rose-900/20 rounded-xl p-6 border border-pink-100 dark:border-pink-800/30">
                   <h4 className="font-semibold mb-3 flex items-center gap-2 text-gray-700 dark:text-gray-300">
@@ -259,11 +299,13 @@ export const UserProfile: React.FC<UserProfileProps> = ({ className }) => {
                 <div className="absolute -inset-1 bg-gradient-to-r from-gray-400 to-gray-600 rounded-full opacity-20 blur"></div>
               </div>
               <h3 className="font-semibold text-lg mb-2">Không có dữ liệu</h3>
-              <p className="text-muted-foreground">Không có dữ liệu hồ sơ để hiển thị</p>
+              <p className="text-muted-foreground">
+                Không có dữ liệu hồ sơ để hiển thị
+              </p>
             </div>
           </div>
         )}
       </CardContent>
     </Card>
   );
-}; 
+};

@@ -3,11 +3,7 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarImage } from "./ui/avatar";
-import { 
-  MessageSquare,
-  SquarePen,
-  MoreHorizontal,
-} from "lucide-react";
+import { MessageSquare, SquarePen, MoreHorizontal } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Tooltip,
@@ -34,14 +30,12 @@ interface SidebarProps {
   isLoading?: boolean;
 }
 
-export function Sidebar({ 
-  chats, 
-  isCollapsed, 
-  isMobile, 
+export function Sidebar({
+  chats,
+  isCollapsed,
   onChatSelect,
-  isLoading = false 
+  isLoading = false,
 }: SidebarProps) {
-
   const handleChatClick = (chatId: string) => {
     onChatSelect?.(chatId);
   };
@@ -72,7 +66,9 @@ export function Sidebar({
                 transition={{ duration: 0.6, repeat: Infinity, delay: 0.4 }}
               />
             </div>
-            <span className="text-sm text-muted-foreground font-medium">Loading chats...</span>
+            <span className="text-sm text-muted-foreground font-medium">
+              Loading chats...
+            </span>
           </motion.div>
         </div>
       </div>
@@ -95,23 +91,21 @@ export function Sidebar({
                 <MessageSquare className="w-5 h-5 text-primary" />
               </div>
               <div>
-                <h2 className="font-semibold text-base text-foreground">Messages</h2>
+                <h2 className="font-semibold text-base text-foreground">
+                  Messages
+                </h2>
                 <p className="text-xs text-muted-foreground">
-                  {chats.length} conversation{chats.length !== 1 ? 's' : ''}
+                  {chats.length} conversation{chats.length !== 1 ? "s" : ""}
                 </p>
               </div>
             </div>
 
             <div className="flex items-center gap-1">
-              <button
-                className="inline-flex items-center justify-center w-8 h-8 rounded-md transition-colors hover:bg-accent hover:text-accent-foreground text-muted-foreground"
-              >
+              <button className="inline-flex items-center justify-center w-8 h-8 rounded-md transition-colors hover:bg-accent hover:text-accent-foreground text-muted-foreground">
                 <SquarePen className="w-4 h-4" />
               </button>
 
-              <button
-                className="inline-flex items-center justify-center w-8 h-8 rounded-md transition-colors hover:bg-accent hover:text-accent-foreground text-muted-foreground"
-              >
+              <button className="inline-flex items-center justify-center w-8 h-8 rounded-md transition-colors hover:bg-accent hover:text-accent-foreground text-muted-foreground">
                 <MoreHorizontal className="w-4 h-4" />
               </button>
             </div>
@@ -121,10 +115,12 @@ export function Sidebar({
 
       {/* Chat List */}
       <div className="flex-1 overflow-hidden">
-        <div className={cn(
-          "h-full overflow-y-auto scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent",
-          isCollapsed ? "px-2 py-4" : "p-2"
-        )}>
+        <div
+          className={cn(
+            "h-full overflow-y-auto scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent",
+            isCollapsed ? "px-2 py-4" : "p-2"
+          )}
+        >
           <AnimatePresence>
             {chats.length === 0 ? (
               <motion.div
@@ -151,7 +147,8 @@ export function Sidebar({
                             className={cn(
                               "w-full h-12 p-2 rounded-lg relative transition-all duration-200 hover:bg-accent",
                               "flex items-center justify-center",
-                              chat.variant === "secondary" && "bg-accent text-accent-foreground"
+                              chat.variant === "secondary" &&
+                                "bg-accent text-accent-foreground"
                             )}
                           >
                             <Avatar className="w-8 h-8">
@@ -167,16 +164,13 @@ export function Sidebar({
                                 animate={{ scale: 1 }}
                                 className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium shadow-lg"
                               >
-                                {chat.unreadCount > 9 ? '9+' : chat.unreadCount}
+                                {chat.unreadCount > 9 ? "9+" : chat.unreadCount}
                               </motion.div>
                             )}
                             <span className="sr-only">{chat.name}</span>
                           </motion.button>
                         </TooltipTrigger>
-                        <TooltipContent
-                          side="right"
-                          className="max-w-xs"
-                        >
+                        <TooltipContent side="right" className="max-w-xs">
                           <div>
                             <p className="font-medium">{chat.name}</p>
                             {chat.lastMessage && (
@@ -198,7 +192,7 @@ export function Sidebar({
                       className={cn(
                         "w-full p-3 rounded-lg text-left transition-all duration-200 hover:bg-accent relative group/item",
                         chat.variant === "secondary"
-                          ? "bg-accent text-accent-foreground" 
+                          ? "bg-accent text-accent-foreground"
                           : "hover:bg-accent/50"
                       )}
                     >
@@ -212,7 +206,7 @@ export function Sidebar({
                             />
                           </Avatar>
                         </div>
-                        
+
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between mb-1">
                             <p className="font-medium text-sm truncate text-foreground">
@@ -224,21 +218,21 @@ export function Sidebar({
                               </span>
                             )}
                           </div>
-                          
+
                           {chat.lastMessage && (
                             <p className="text-xs text-muted-foreground truncate leading-relaxed">
                               {chat.lastMessage}
                             </p>
                           )}
                         </div>
-                        
+
                         {chat.unreadCount && chat.unreadCount > 0 && (
                           <motion.div
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
                             className="bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium shadow-sm shrink-0"
                           >
-                            {chat.unreadCount > 9 ? '9+' : chat.unreadCount}
+                            {chat.unreadCount > 9 ? "9+" : chat.unreadCount}
                           </motion.div>
                         )}
                       </div>

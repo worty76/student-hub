@@ -1,43 +1,44 @@
-'use client';
+/* eslint-disable @next/next/no-img-element */
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { 
-  Loader2, 
-  Heart, 
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Loader2,
+  Heart,
   AlertCircle,
   RefreshCw,
   ShoppingBag,
   Grid,
-  List
-} from 'lucide-react';
-import { toast } from 'sonner';
-import useFavorites from '@/hooks/useFavorites';
-import { FavoritesList } from './FavoritesList';
+  List,
+} from "lucide-react";
+import { toast } from "sonner";
+import useFavorites from "@/hooks/useFavorites";
+import { FavoritesList } from "./FavoritesList";
 
 export function FavoritesPage() {
   const router = useRouter();
-  const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
+  const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const {
     favoriteProductsData,
     isLoading,
     error,
     isAuthenticated,
     refreshFavorites,
-    clearError
+    clearError,
   } = useFavorites();
 
   // Handle authentication redirect
   useEffect(() => {
     if (!isAuthenticated) {
-      toast.error('Unauthorized', {
-        description: 'Please log in to view your favorites',
+      toast.error("Unauthorized", {
+        description: "Please log in to view your favorites",
         action: {
-          label: 'Login',
-          onClick: () => router.push('/auth/login'),
+          label: "Login",
+          onClick: () => router.push("/auth/login"),
         },
       });
     }
@@ -54,8 +55,12 @@ export function FavoritesPage() {
       <div className="max-w-7xl mx-auto p-6">
         <div className="text-center py-12">
           <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
-          <h2 className="text-xl font-semibold mb-2">Loading your favorites...</h2>
-          <p className="text-muted-foreground">Please wait while we fetch your favorite products</p>
+          <h2 className="text-xl font-semibold mb-2">
+            Loading your favorites...
+          </h2>
+          <p className="text-muted-foreground">
+            Please wait while we fetch your favorite products
+          </p>
         </div>
       </div>
     );
@@ -71,19 +76,23 @@ export function FavoritesPage() {
               <AlertCircle className="h-12 w-12 text-red-500 mx-auto" />
               <div>
                 <h2 className="text-xl font-semibold mb-2">
-                  {error === 'Unauthorized' ? 'Unauthorized' : 
-                   error === 'User not found' ? 'User Not Found' : 
-                   'Error Loading Favorites'}
+                  {error === "Unauthorized"
+                    ? "Unauthorized"
+                    : error === "User not found"
+                    ? "User Not Found"
+                    : "Error Loading Favorites"}
                 </h2>
                 <p className="text-muted-foreground mb-4">
-                  {error === 'Unauthorized' ? 'Please log in to view your favorites' :
-                   error === 'User not found' ? 'Unable to find your user account' :
-                   'There was an error loading your favorite products'}
+                  {error === "Unauthorized"
+                    ? "Please log in to view your favorites"
+                    : error === "User not found"
+                    ? "Unable to find your user account"
+                    : "There was an error loading your favorite products"}
                 </p>
               </div>
               <div className="flex gap-2 justify-center">
-                {error === 'Unauthorized' ? (
-                  <Button onClick={() => router.push('/auth/login')}>
+                {error === "Unauthorized" ? (
+                  <Button onClick={() => router.push("/auth/login")}>
                     Go to Login
                   </Button>
                 ) : (
@@ -111,11 +120,11 @@ export function FavoritesPage() {
               <div>
                 <h2 className="text-xl font-semibold mb-2">No Favorites Yet</h2>
                 <p className="text-muted-foreground mb-4">
-                  You haven&apos;t added any products to your favorites list yet. 
-                  Start exploring and add products you like!
+                  You haven&apos;t added any products to your favorites list
+                  yet. Start exploring and add products you like!
                 </p>
               </div>
-              <Button onClick={() => router.push('/marketplace')}>
+              <Button onClick={() => router.push("/marketplace")}>
                 <ShoppingBag className="h-4 w-4 mr-2" />
                 Browse Products
               </Button>
@@ -134,32 +143,33 @@ export function FavoritesPage() {
           <div>
             <h1 className="text-3xl font-bold mb-2">My Favorites</h1>
             <p className="text-muted-foreground">
-              {favoriteProductsData.length} product{favoriteProductsData.length !== 1 ? 's' : ''} in your favorites
+              {favoriteProductsData.length} product
+              {favoriteProductsData.length !== 1 ? "s" : ""} in your favorites
             </p>
           </div>
           <div className="flex items-center space-x-4">
             {/* View Toggle */}
             <div className="flex rounded-lg border">
               <Button
-                variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                variant={viewMode === "grid" ? "default" : "ghost"}
                 size="sm"
-                onClick={() => setViewMode('grid')}
+                onClick={() => setViewMode("grid")}
                 className="rounded-r-none"
               >
                 <Grid className="h-4 w-4 mr-2" />
                 Grid
               </Button>
               <Button
-                variant={viewMode === 'table' ? 'default' : 'ghost'}
+                variant={viewMode === "table" ? "default" : "ghost"}
                 size="sm"
-                onClick={() => setViewMode('table')}
+                onClick={() => setViewMode("table")}
                 className="rounded-l-none"
               >
                 <List className="h-4 w-4 mr-2" />
                 Table
               </Button>
             </div>
-            
+
             <Button onClick={handleRefresh} variant="outline">
               <RefreshCw className="h-4 w-4 mr-2" />
               Refresh
@@ -169,7 +179,7 @@ export function FavoritesPage() {
       </div>
 
       {/* Content */}
-      {viewMode === 'grid' ? (
+      {viewMode === "grid" ? (
         <FavoritesList />
       ) : (
         <div className="space-y-4">
@@ -199,7 +209,10 @@ export function FavoritesPage() {
                     </thead>
                     <tbody>
                       {favoriteProductsData.map((product) => (
-                        <tr key={product._id} className="border-b hover:bg-muted/50 transition-colors">
+                        <tr
+                          key={product._id}
+                          className="border-b hover:bg-muted/50 transition-colors"
+                        >
                           <td className="p-4">
                             <div className="flex items-center space-x-3">
                               <div className="w-12 h-12 relative bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden">
@@ -216,7 +229,9 @@ export function FavoritesPage() {
                                 )}
                               </div>
                               <div className="min-w-0 flex-1">
-                                <p className="font-medium text-sm truncate">{product.title}</p>
+                                <p className="font-medium text-sm truncate">
+                                  {product.title}
+                                </p>
                                 <p className="text-xs text-muted-foreground truncate">
                                   {product._id}
                                 </p>
@@ -225,9 +240,9 @@ export function FavoritesPage() {
                           </td>
                           <td className="p-4">
                             <span className="font-semibold text-green-600">
-                              {new Intl.NumberFormat('vi-VN', {
-                                style: 'currency',
-                                currency: 'VND'
+                              {new Intl.NumberFormat("vi-VN", {
+                                style: "currency",
+                                currency: "VND",
                               }).format(product.price)}
                             </span>
                           </td>
@@ -235,7 +250,9 @@ export function FavoritesPage() {
                             <Badge variant="outline">{product.status}</Badge>
                           </td>
                           <td className="p-4">
-                            <Badge variant="secondary">{product.condition}</Badge>
+                            <Badge variant="secondary">
+                              {product.condition}
+                            </Badge>
                           </td>
                           <td className="p-4">
                             <span className="text-sm">{product.category}</span>
@@ -251,19 +268,25 @@ export function FavoritesPage() {
                           </td>
                           <td className="p-4">
                             <span className="text-xs text-muted-foreground">
-                              {new Date(product.createdAt).toLocaleDateString('vi-VN')}
+                              {new Date(product.createdAt).toLocaleDateString(
+                                "vi-VN"
+                              )}
                             </span>
                           </td>
                           <td className="p-4">
                             <span className="text-xs text-muted-foreground">
-                              {new Date(product.updatedAt).toLocaleDateString('vi-VN')}
+                              {new Date(product.updatedAt).toLocaleDateString(
+                                "vi-VN"
+                              )}
                             </span>
                           </td>
                           <td className="p-4">
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => router.push(`/products/${product._id}`)}
+                              onClick={() =>
+                                router.push(`/products/${product._id}`)
+                              }
                             >
                               View
                             </Button>
@@ -287,4 +310,4 @@ export function FavoritesPage() {
   );
 }
 
-export default FavoritesPage; 
+export default FavoritesPage;

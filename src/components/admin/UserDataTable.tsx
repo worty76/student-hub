@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import Link from 'next/link';
+import * as React from "react";
+import Link from "next/link";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -13,19 +13,19 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from '@tanstack/react-table';
-import { ArrowUpDown, ChevronDown, Eye, Search } from 'lucide-react';
+} from "@tanstack/react-table";
+import { ArrowUpDown, ChevronDown, Eye, Search } from "lucide-react";
 
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { DeleteUserButton } from './DeleteUserButton';
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { DeleteUserButton } from "./DeleteUserButton";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -33,29 +33,31 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { User } from '@/types/auth';
+} from "@/components/ui/table";
+import { User } from "@/types/auth";
 // Local date formatting utilities
 const formatDate = {
   dateOnly: (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('vi-VN', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
+    return new Date(dateString).toLocaleDateString("vi-VN", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
     });
   },
-  
+
   relative: (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
-    const diffInDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
-    
-    if (diffInDays === 0) return 'Hôm nay';
-    if (diffInDays === 1) return 'Hôm qua';
+    const diffInDays = Math.floor(
+      (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24)
+    );
+
+    if (diffInDays === 0) return "Hôm nay";
+    if (diffInDays === 1) return "Hôm qua";
     if (diffInDays < 30) return `${diffInDays} ngày trước`;
     if (diffInDays < 365) return `${Math.floor(diffInDays / 30)} tháng trước`;
     return `${Math.floor(diffInDays / 365)} năm trước`;
-  }
+  },
 };
 
 interface UserDataTableProps {
@@ -64,27 +66,30 @@ interface UserDataTableProps {
 
 export function UserDataTable({ data }: UserDataTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
-      case 'admin':
-        return 'bg-purple-100 text-purple-800 border-purple-200';
-      case 'user':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
+      case "admin":
+        return "bg-purple-100 text-purple-800 border-purple-200";
+      case "user":
+        return "bg-blue-100 text-blue-800 border-blue-200";
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
 
   const getRoleLabel = (role: string) => {
     switch (role) {
-      case 'admin':
-        return 'Quản trị viên';
-      case 'user':
-        return 'Người dùng';
+      case "admin":
+        return "Quản trị viên";
+      case "user":
+        return "Người dùng";
       default:
         return role;
     }
@@ -92,12 +97,12 @@ export function UserDataTable({ data }: UserDataTableProps) {
 
   const columns: ColumnDef<User>[] = [
     {
-      accessorKey: 'name',
+      accessorKey: "name",
       header: ({ column }) => {
         return (
           <Button
             variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             className="h-auto p-0 font-semibold hover:bg-transparent"
           >
             Người dùng
@@ -111,8 +116,9 @@ export function UserDataTable({ data }: UserDataTableProps) {
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center">
               {user.avatar ? (
-                <img 
-                  src={user.avatar} 
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={user.avatar}
                   alt={user.name}
                   className="w-full h-full rounded-full object-cover"
                 />
@@ -131,12 +137,12 @@ export function UserDataTable({ data }: UserDataTableProps) {
       },
     },
     {
-      accessorKey: 'role',
+      accessorKey: "role",
       header: ({ column }) => {
         return (
           <Button
             variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             className="h-auto p-0 font-semibold hover:bg-transparent"
           >
             Vai trò
@@ -145,10 +151,10 @@ export function UserDataTable({ data }: UserDataTableProps) {
         );
       },
       cell: ({ row }) => {
-        const role = row.getValue('role') as string;
+        const role = row.getValue("role") as string;
         return (
-          <Badge 
-            className={`text-xs ${getRoleBadgeColor(role)}`} 
+          <Badge
+            className={`text-xs ${getRoleBadgeColor(role)}`}
             variant="secondary"
           >
             {getRoleLabel(role)}
@@ -160,12 +166,12 @@ export function UserDataTable({ data }: UserDataTableProps) {
       },
     },
     {
-      accessorKey: 'rating',
+      accessorKey: "rating",
       header: ({ column }) => {
         return (
           <Button
             variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             className="h-auto p-0 font-semibold hover:bg-transparent"
           >
             Đánh giá
@@ -178,31 +184,35 @@ export function UserDataTable({ data }: UserDataTableProps) {
         return (
           <div className="flex items-center space-x-1">
             <span className="text-yellow-500">⭐</span>
-            <span className="font-medium">{user.rating?.toFixed(1) || '0.0'}</span>
-            <span className="text-gray-400 text-sm">({user.ratingCount || 0})</span>
+            <span className="font-medium">
+              {user.rating?.toFixed(1) || "0.0"}
+            </span>
+            <span className="text-gray-400 text-sm">
+              ({user.ratingCount || 0})
+            </span>
           </div>
         );
       },
     },
     {
-      accessorKey: 'location',
-      header: 'Địa điểm',
+      accessorKey: "location",
+      header: "Địa điểm",
       cell: ({ row }) => {
-        const location = row.getValue('location') as string;
+        const location = row.getValue("location") as string;
         return (
           <span className="text-sm text-gray-600">
-            {location || 'Chưa xác định'}
+            {location || "Chưa xác định"}
           </span>
         );
       },
     },
     {
-      accessorKey: 'createdAt',
+      accessorKey: "createdAt",
       header: ({ column }) => {
         return (
           <Button
             variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             className="h-auto p-0 font-semibold hover:bg-transparent"
           >
             Ngày tham gia
@@ -211,7 +221,7 @@ export function UserDataTable({ data }: UserDataTableProps) {
         );
       },
       cell: ({ row }) => {
-        const date = row.getValue('createdAt') as string;
+        const date = row.getValue("createdAt") as string;
         return (
           <div className="text-sm">
             <div className="font-medium">{formatDate.dateOnly(date)}</div>
@@ -220,14 +230,18 @@ export function UserDataTable({ data }: UserDataTableProps) {
       },
     },
     {
-      id: 'actions',
-      header: 'Hành động',
+      id: "actions",
+      header: "Hành động",
       cell: ({ row }) => {
         const user = row.original;
         return (
           <div className="flex items-center gap-2">
             <Link href={`/users/${user._id}`}>
-              <Button variant="outline" size="sm" className="cursor-pointer hover:bg-gray-50">
+              <Button
+                variant="outline"
+                size="sm"
+                className="cursor-pointer hover:bg-gray-50"
+              >
                 <Eye className="h-4 w-4 mr-1" />
                 Xem
               </Button>
@@ -272,9 +286,11 @@ export function UserDataTable({ data }: UserDataTableProps) {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
               placeholder="Tìm kiếm theo tên hoặc email..."
-              value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+              value={
+                (table.getColumn("name")?.getFilterValue() as string) ?? ""
+              }
               onChange={(event) =>
-                table.getColumn('name')?.setFilterValue(event.target.value)
+                table.getColumn("name")?.setFilterValue(event.target.value)
               }
               className="pl-10 max-w-sm"
             />
@@ -286,19 +302,27 @@ export function UserDataTable({ data }: UserDataTableProps) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {['admin', 'user'].map((role) => (
+              {["admin", "user"].map((role) => (
                 <DropdownMenuCheckboxItem
                   key={role}
                   className="capitalize"
                   checked={
-                    (table.getColumn('role')?.getFilterValue() as string[])?.includes(role) ?? false
+                    (
+                      table.getColumn("role")?.getFilterValue() as string[]
+                    )?.includes(role) ?? false
                   }
                   onCheckedChange={(value) => {
-                    const currentFilters = (table.getColumn('role')?.getFilterValue() as string[]) || [];
+                    const currentFilters =
+                      (table.getColumn("role")?.getFilterValue() as string[]) ||
+                      [];
                     const newFilters = value
                       ? [...currentFilters, role]
                       : currentFilters.filter((r) => r !== role);
-                    table.getColumn('role')?.setFilterValue(newFilters.length ? newFilters : undefined);
+                    table
+                      .getColumn("role")
+                      ?.setFilterValue(
+                        newFilters.length ? newFilters : undefined
+                      );
                   }}
                 >
                   {getRoleLabel(role)}
@@ -335,7 +359,7 @@ export function UserDataTable({ data }: UserDataTableProps) {
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
+                  data-state={row.getIsSelected() && "selected"}
                   className="hover:bg-gray-50"
                 >
                   {row.getVisibleCells().map((cell) => (
@@ -365,7 +389,7 @@ export function UserDataTable({ data }: UserDataTableProps) {
       {/* Pagination */}
       <div className="flex items-center justify-between space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
-          Hiển thị {table.getFilteredRowModel().rows.length} trong tổng số{' '}
+          Hiển thị {table.getFilteredRowModel().rows.length} trong tổng số{" "}
           {data.length} người dùng
         </div>
         <div className="flex items-center space-x-2">
@@ -379,7 +403,7 @@ export function UserDataTable({ data }: UserDataTableProps) {
           </Button>
           <div className="flex items-center space-x-1">
             <span className="text-sm font-medium">
-              Trang {table.getState().pagination.pageIndex + 1} trên{' '}
+              Trang {table.getState().pagination.pageIndex + 1} trên{" "}
               {table.getPageCount()}
             </span>
           </div>
@@ -395,4 +419,4 @@ export function UserDataTable({ data }: UserDataTableProps) {
       </div>
     </div>
   );
-} 
+}
