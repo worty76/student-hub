@@ -12,6 +12,7 @@ import Image from 'next/image';
 import UserProductsGrid from './UserProductsGrid';
 import ReportUserButton from './ReportUserButton';
 import { RatingForm, UserRatingsList } from '@/components/rating';
+import { SendMessageButton } from '@/components/ui/messages/components/send-message-button';
 
 interface PublicUserProfileProps {
   userId: string;
@@ -215,6 +216,18 @@ export default function PublicUserProfile({ userId }: PublicUserProfileProps) {
                     </div>
                   </div>
                 </div>
+
+                {/* Quick Actions for other users */}
+                {currentAuthUser && currentAuthUser._id !== currentUser._id && (
+                  <div className="flex flex-col gap-2">
+                    <SendMessageButton
+                      receiverId={currentUser._id}
+                      receiverName={currentUser.name}
+                      variant="default"
+                      size="sm"
+                    />
+                  </div>
+                )}
               </div>
             </CardHeader>
           </Card>

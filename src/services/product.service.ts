@@ -1,6 +1,6 @@
 import { CreateProductRequest, CreateProductResponse, EditProductRequest, EditProductResponse, DeleteProductResponse, Product, BuyProductRequest, BuyProductResponse, BuyProductError, ReportProductRequest, ReportProductResponse, ReportProductError } from '@/types/product';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://be-student-hub-production.up.railway.app/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
 export class ProductService {
   static async getAllProducts(): Promise<Product[]> {

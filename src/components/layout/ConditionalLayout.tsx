@@ -23,9 +23,9 @@ export function ConditionalLayout({ children }: ConditionalLayoutProps) {
   );
 
   if (shouldHideHeaderFooter) {
-    // Admin layout without header and footer - fixed sidebar with scrollable content
+    // Full screen layout without header and footer
     return (
-      <div className="h-screen bg-gray-50 overflow-hidden">
+      <div className="h-screen bg-background overflow-hidden">
         {children}
       </div>
     );
