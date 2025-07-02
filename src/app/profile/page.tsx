@@ -61,7 +61,7 @@ export default function EditProfilePage() {
           <div className={`transition-all duration-500 ${showPreview ? 'lg:block hidden' : 'block'}`}>
             <div className="sticky top-8">
               <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/30 overflow-hidden">
-                <div className="bg-gradient-to-r from-emerald-500 to-teal-500 p-6 text-white">
+                <div className="bg-gradient-to-l from-violet-500 to-purple-500 p-6 text-white">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-white/20 rounded-lg">
                       <Edit3 className="h-5 w-5" />

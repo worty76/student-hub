@@ -1,7 +1,6 @@
 export const NAVIGATION_LINKS = [
   { href: '/products', label: 'Sản phẩm' },
-  { href: '/categories', label: 'Categories' },
-  { href: '/about', label: 'About' },
+  { href: '/about', label: 'Giới thiệu' },
 ] as const;
 
 export const APP_CONFIG = {

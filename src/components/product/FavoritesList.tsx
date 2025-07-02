@@ -126,10 +126,12 @@ function ProductCard({ product }: { product: FavoriteProduct }) {
 
           {/* Details */}
           <div className="space-y-2 text-sm text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <MapPin className="h-4 w-4" />
-              <span>{product.location}</span>
-            </div>
+            {product.location && (
+              <div className="flex items-center gap-2">
+                <MapPin className="h-4 w-4" />
+                <span>{product.location}</span>
+              </div>
+            )}
             <div className="flex items-center gap-2">
               <Package className="h-4 w-4" />
               <span>{getCategoryLabel(product.category)}</span>

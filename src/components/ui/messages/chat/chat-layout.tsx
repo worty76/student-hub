@@ -31,7 +31,6 @@ export function ChatLayout({
   const searchParams = useSearchParams();
   const chatIdFromUrl = searchParams.get("chat");
 
-  // Chat store state
   const {
     chats,
     selectedChat,
@@ -53,10 +52,8 @@ export function ChatLayout({
       setIsMobile(window.innerWidth <= 768);
     };
 
-    // Initial check
     checkScreenWidth();
 
-    // Event listener for screen width changes
     window.addEventListener("resize", checkScreenWidth);
 
     // Cleanup the event listener on component unmount
@@ -168,7 +165,7 @@ export function ChatLayout({
       {/* Header area to match chat topbar height */}
       <div className="h-16 border-b border-border/50 flex items-center justify-center">
         <div className="text-sm text-muted-foreground font-medium">
-          Select a conversation
+          Chọn một cuộc trò chuyện
         </div>
       </div>
 
@@ -188,23 +185,14 @@ export function ChatLayout({
             <MessageCircle className="w-10 h-10 text-primary/70" />
           </motion.div>
 
-          <motion.h3
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="text-2xl font-semibold mb-3 text-foreground"
-          >
-            Welcome to Messages
-          </motion.h3>
-
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
             className="text-muted-foreground mb-6 leading-relaxed"
           >
-            Select a conversation from the sidebar to start chatting, or create
-            a new conversation to connect with someone.
+            Chọn một cuộc trò chuyện từ thanh bên để bắt đầu trò chuyện, hoặc tạo
+            một cuộc trò chuyện mới để kết nối với ai đó.
           </motion.p>
 
           <motion.div
@@ -215,7 +203,7 @@ export function ChatLayout({
           >
             <div className="flex items-center gap-2">
               <Users className="w-4 h-4" />
-              <span>{chats.length} conversations</span>
+              <span>{chats.length} cuộc trò chuyện</span>
             </div>
           </motion.div>
         </motion.div>
@@ -228,7 +216,7 @@ export function ChatLayout({
     <div className="h-full flex flex-col">
       {/* Header area to match chat topbar height */}
       <div className="h-16 border-b border-border/50 flex items-center justify-center">
-        <div className="text-sm text-destructive font-medium">Error</div>
+        <div className="text-sm text-destructive font-medium">Lỗi</div>
       </div>
 
       {/* Main error content */}
@@ -239,10 +227,10 @@ export function ChatLayout({
           className="text-center max-w-md"
         >
           <h3 className="text-lg font-semibold text-destructive mb-2">
-            Something went wrong
+            Có lỗi xảy ra
           </h3>
           <p className="text-muted-foreground mb-6">
-            {error || "Unable to load messages. Please try again."}
+            {error || "Không thể tải tin nhắn. Vui lòng thử lại."}
           </p>
           <motion.button
             whileHover={{ scale: 1.05 }}
@@ -253,7 +241,7 @@ export function ChatLayout({
             }}
             className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors shadow-lg font-medium"
           >
-            Try Again
+            Thử lại
           </motion.button>
         </motion.div>
       </div>

@@ -8,6 +8,7 @@ import { useAuthStore } from '@/store/authStore';
 import { toast } from 'sonner';
 import { RatingFormData, RatingValidationErrors } from '@/types/rating';
 import { Loader2 } from 'lucide-react';
+import ReportUserButton from '../users/ReportUserButton';
 
 interface RatingFormProps {
   userId: string;
@@ -140,11 +141,16 @@ export function RatingForm({ userId, userName, onRatingSuccess }: RatingFormProp
           </div>
 
           {/* Submit Button */}
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-10 items-center">
+            <ReportUserButton
+              userId={userId}
+              userName={userName}
+            />
+
             <Button 
               type="submit" 
               disabled={isLoading}
-              className="min-w-[120px]"
+              className="min-w-[120px] bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0"
             >
               {isLoading ? (
                 <>

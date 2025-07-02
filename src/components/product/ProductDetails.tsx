@@ -417,17 +417,17 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
               <Card className="shadow-2xl border-0 bg-gradient-to-r from-white/90 to-white/80 backdrop-blur-sm">
                 <CardContent className="pt-8 pb-8">
                   <div className="space-y-4">
-                    {/* Buy Button - Primary action */}
-                    <BuyProductButton
-                      productId={currentProduct._id}
-                      productTitle={currentProduct.title}
-                      price={currentProduct.price}
-                      isAvailable={currentProduct.status === 'available'}
-                      sellerName={typeof currentProduct.seller === 'object' ? currentProduct.seller.name : currentProduct.seller}
-                    />
-                    
                     {/* Secondary actions */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Buy Button - Primary action */}
+                      <BuyProductButton
+                        productId={currentProduct._id}
+                        productTitle={currentProduct.title}
+                        price={currentProduct.price}
+                        isAvailable={currentProduct.status === 'available'}
+                        sellerName={typeof currentProduct.seller === 'object' ? currentProduct.seller.name :  currentProduct.seller}
+                        className='bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0'
+                      />
                       <Button 
                         className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300" 
                         size="lg"
@@ -440,13 +440,10 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
                         productId={currentProduct._id} 
                         className="py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
                       />
-                    </div>
-                    
-                    {/* Report action */}
-                    <div className="pt-2">
                       <ReportProductButton
                         productId={currentProduct._id}
                         productTitle={currentProduct.title}
+                        className='bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white border-0 hover:text-white'
                       />
                     </div>
                   </div>
