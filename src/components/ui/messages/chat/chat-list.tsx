@@ -34,23 +34,57 @@ const formatTimestamp = (timestamp: string): string => {
 
   // Less than 1 minute
   if (diff < 60000) {
-    return "Just now";
+    return "Vừa xong";
   }
 
   // Less than 1 hour
   if (diff < 3600000) {
     const minutes = Math.floor(diff / 60000);
-    return `${minutes}m ago`;
+    return `${minutes} phút trước`;
   }
 
   // Less than 24 hours
   if (diff < 86400000) {
     const hours = Math.floor(diff / 3600000);
-    return `${hours}h ago`;
+    return `${hours} giờ trước`;
   }
 
-  // More than 24 hours
-  return date.toLocaleDateString();
+  // Same day (today)
+  if (date.toDateString() === now.toDateString()) {
+    return date.toLocaleTimeString('vi-VN', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    });
+  }
+
+  // Yesterday
+  const yesterday = new Date(now);
+  yesterday.setDate(yesterday.getDate() - 1);
+  if (date.toDateString() === yesterday.toDateString()) {
+    return `Hôm qua ${date.toLocaleTimeString('vi-VN', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    })}`;
+  }
+
+  // This week (within 7 days)
+  if (diff < 7 * 24 * 60 * 60 * 1000) {
+    const dayNames = ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy'];
+    return `${dayNames[date.getDay()]} ${date.toLocaleTimeString('vi-VN', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    })}`;
+  }
+
+  // More than a week ago
+  return date.toLocaleDateString('vi-VN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
 };
 
 export function ChatList({ messages, selectedUser }: ChatListProps) {
@@ -63,10 +97,8 @@ export function ChatList({ messages, selectedUser }: ChatListProps) {
     typingUsers,
   } = useChatStore();
 
-  // Simplified user ID detection - only run once if currentUserId is not set
   useEffect(() => {
     if (!currentUserId) {
-      // Try localStorage first - this should be sufficient since auth already sets it
       try {
         const userData = localStorage.getItem("user");
         if (userData) {
@@ -122,13 +154,13 @@ export function ChatList({ messages, selectedUser }: ChatListProps) {
 
     const getTypingText = () => {
       if (currentChatTypingUsers.length === 1) {
-        return `${currentChatTypingUsers[0].name} is typing...`;
+        return `${currentChatTypingUsers[0].name} đang nhập...`;
       } else if (currentChatTypingUsers.length === 2) {
-        return `${currentChatTypingUsers[0].name} and ${currentChatTypingUsers[1].name} are typing...`;
+        return `${currentChatTypingUsers[0].name} và ${currentChatTypingUsers[1].name} đang nhập...`;
       } else {
-        return `${currentChatTypingUsers[0].name} and ${
+        return `${currentChatTypingUsers[0].name} và ${
           currentChatTypingUsers.length - 1
-        } others are typing...`;
+        } người khác đang nhập...`;
       }
     };
 
@@ -185,10 +217,10 @@ export function ChatList({ messages, selectedUser }: ChatListProps) {
       <ChatMessageList
         isLoading={isLoading || isSwitchingChat}
         isEmpty={!hasMessages && !isLoading && !isSwitchingChat}
-        emptyStateMessage="Start your conversation"
+        emptyStateMessage="Bắt đầu trò chuyện"
         emptyStateAction={
           <p className="text-xs text-muted-foreground">
-            Send a message to {selectedUser.name} to get started
+            Gửi tin nhắn đến {selectedUser.name} để bắt đầu trò chuyện
           </p>
         }
       >
@@ -275,8 +307,6 @@ export function ChatList({ messages, selectedUser }: ChatListProps) {
                 </motion.div>
               );
             })}
-
-            {/* Show typing indicator */}
             <TypingIndicator />
           </AnimatePresence>
         )}

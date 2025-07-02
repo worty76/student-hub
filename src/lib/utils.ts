@@ -68,10 +68,10 @@ export const timeAgo = (date: Date | string) => {
   const now = new Date();
   const diffInHours = Math.floor((now.getTime() - targetDate.getTime()) / (1000 * 60 * 60));
   
-  if (diffInHours < 1) return 'Just now';
-  if (diffInHours < 24) return `${diffInHours}h ago`;
-  if (diffInHours < 168) return `${Math.floor(diffInHours / 24)}d ago`;
-  return `${Math.floor(diffInHours / 168)}w ago`;
+  if (diffInHours < 1) return 'Vừa xong';
+  if (diffInHours < 24) return `${diffInHours} giờ trước`;
+  if (diffInHours < 168) return `${Math.floor(diffInHours / 24)} ngày trước`;
+  return `${Math.floor(diffInHours / 168)} tuần trước`;
 };
 
 export const formatDate = {

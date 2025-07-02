@@ -84,7 +84,7 @@ export function SendMessageButton({
       
       if (!newAuth || !user || !newToken) {
         console.log('Authentication failed after initialization, redirecting to login');
-        toast.error('Please log in to send messages');
+        toast.error('Vui lòng đăng nhập để gửi tin nhắn');
         router.push('/login');
         return;
       }
@@ -95,13 +95,13 @@ export function SendMessageButton({
 
     if (!finalUser || !finalToken) {
       console.log('Final auth check failed, redirecting to login');
-      toast.error('Please log in to send messages');
+      toast.error('Vui lòng đăng nhập để gửi tin nhắn');
       router.push('/login');
       return;
     }
 
     if (finalUser._id === receiverId) {
-      toast.error('You cannot send a message to yourself');
+      toast.error('Bạn không thể gửi tin nhắn cho chính mình');
       return;
     }
 
@@ -148,11 +148,11 @@ export function SendMessageButton({
       
       // Redirect to messages page with the new chat
       router.push(`/messages?chat=${newChat._id}`);
-      toast.success(`Started new conversation with ${receiverName}`);
+      toast.success(`Bắt đầu cuộc trò chuyện mới với ${receiverName}`);
 
     } catch (error) {
       console.error('Failed to create chat:', error); // Debug log
-      const errorMessage = error instanceof Error ? error.message : 'Failed to start conversation. Please try again.';
+      const errorMessage = error instanceof Error ? error.message : 'Lỗi khi bắt đầu cuộc trò chuyện. Vui lòng thử lại.';
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -172,7 +172,7 @@ export function SendMessageButton({
       ) : (
         <MessageCircle className="w-4 h-4 mr-2" />
       )}
-      {children || (isLoading ? 'Starting chat...' : 'Send Message')}
+      {children || (isLoading ? 'Bắt đầu cuộc trò chuyện...' : 'Gửi tin nhắn')}
     </Button>
   );
 } 

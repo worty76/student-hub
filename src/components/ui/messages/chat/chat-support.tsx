@@ -30,7 +30,11 @@ const initialChatSupportMessages: Message[] = [
     id: "1",
     content: "Hello! How can I help you today?",
     sender: "ai",
-    timestamp: new Date().toLocaleTimeString(),
+    timestamp: new Date().toLocaleTimeString('vi-VN', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    }),
   },
 ];
 
@@ -55,7 +59,11 @@ export default function ChatSupport() {
         id: Date.now().toString(),
         content: inputMessage,
         sender: "user",
-        timestamp: new Date().toLocaleTimeString(),
+        timestamp: new Date().toLocaleTimeString('vi-VN', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        }),
       };
       setMessages([...messages, newMessage]);
       setInputMessage("");
@@ -77,12 +85,8 @@ export default function ChatSupport() {
     >
       <ExpandableChatHeader>
         <div className="flex-col text-center justify-center flex">
-          <h1 className="text-xl font-semibold">Chat with our AI ✨</h1>
-          <p>Ask any question for our AI to answer</p>
-          <div className="flex gap-2 items-center pt-2">
-            <Button variant="secondary">New Chat</Button>
-            <Button variant="secondary">See FAQ</Button>
-          </div>
+          <h1 className="text-xl font-semibold">Chat với AI của chúng tôi ✨</h1>
+          <p>Hỏi bất kỳ câu hỏi nào để AI của chúng tôi trả lời</p>
         </div>
       </ExpandableChatHeader>
       <ExpandableChatBody>
@@ -146,7 +150,7 @@ export default function ChatSupport() {
             onKeyDown={onKeyDown}
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
-            placeholder="Type a message..."
+            placeholder="Nhập tin nhắn..."
           />
           <Button
             disabled={!inputMessage.trim()}

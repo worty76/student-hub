@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://be-student-hub-production.up.railway.app/api';
 
 export interface FavoriteProduct {
   _id: string;
@@ -9,12 +9,16 @@ export interface FavoriteProduct {
   category: string;
   condition: string;
   status: string;
-  seller: string;
-  location: string;
+  seller: {
+    _id: string;
+    name: string;
+  };
+  location?: string;
   views: number;
   favorites: number;
   createdAt: string;
   updatedAt: string;
+  __v?: number;
 }
 
 export interface FavoriteResponse {
@@ -55,7 +59,6 @@ export class FavoritesService {
         }
       }
 
-      // Success (200)
       return {
         success: true,
         message: 'Sản phẩm đã được thêm vào danh sách yêu thích',

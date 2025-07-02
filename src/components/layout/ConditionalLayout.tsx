@@ -17,9 +17,20 @@ export function ConditionalLayout({ children }: ConditionalLayoutProps) {
     '/admin/',
   ];
   
+  // Define routes where only footer should be hidden
+  const hideFooterOnlyRoutes = [
+    '/messages',
+    '/messages/',
+  ];
+  
   // Check if current path starts with admin routes
   const shouldHideHeaderFooter = hideHeaderFooterRoutes.some(route => 
     pathname === route || pathname.startsWith('/admin/')
+  );
+
+  // Check if current path is messages route
+  const shouldHideFooterOnly = hideFooterOnlyRoutes.some(route => 
+    pathname === route || pathname.startsWith('/messages')
   );
 
   if (shouldHideHeaderFooter) {
@@ -28,6 +39,18 @@ export function ConditionalLayout({ children }: ConditionalLayoutProps) {
       <div className="h-screen bg-background overflow-hidden">
         {children}
       </div>
+    );
+  }
+
+  if (shouldHideFooterOnly) {
+    // Layout with header but without footer (for messages page)
+    return (
+      <>
+        <Header />
+        <main className="flex-1">
+          {children}
+        </main>
+      </>
     );
   }
 

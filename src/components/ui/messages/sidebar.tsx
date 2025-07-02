@@ -3,7 +3,7 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarImage } from "./ui/avatar";
-import { MessageSquare, SquarePen, MoreHorizontal } from "lucide-react";
+import { MessageSquare } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Tooltip,
@@ -67,7 +67,7 @@ export function Sidebar({
               />
             </div>
             <span className="text-sm text-muted-foreground font-medium">
-              Loading chats...
+              Đang tải cuộc trò chuyện...
             </span>
           </motion.div>
         </div>
@@ -92,23 +92,15 @@ export function Sidebar({
               </div>
               <div>
                 <h2 className="font-semibold text-base text-foreground">
-                  Messages
+                  Tin nhắn
                 </h2>
                 <p className="text-xs text-muted-foreground">
-                  {chats.length} conversation{chats.length !== 1 ? "s" : ""}
+                  {chats.length} cuộc trò chuyện{chats.length !== 1 ? "s" : ""}
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-1">
-              <button className="inline-flex items-center justify-center w-8 h-8 rounded-md transition-colors hover:bg-accent hover:text-accent-foreground text-muted-foreground">
-                <SquarePen className="w-4 h-4" />
-              </button>
 
-              <button className="inline-flex items-center justify-center w-8 h-8 rounded-md transition-colors hover:bg-accent hover:text-accent-foreground text-muted-foreground">
-                <MoreHorizontal className="w-4 h-4" />
-              </button>
-            </div>
           </div>
         </motion.div>
       )}
@@ -129,7 +121,7 @@ export function Sidebar({
                 className="flex flex-col items-center justify-center h-32 text-center px-4"
               >
                 <p className="text-sm text-muted-foreground mb-2">
-                  No conversations yet
+                  Chưa có cuộc trò chuyện
                 </p>
               </motion.div>
             ) : (

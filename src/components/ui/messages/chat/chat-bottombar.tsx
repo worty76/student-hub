@@ -1,8 +1,6 @@
 import {
   FileImage,
-  Mic,
   Paperclip,
-  PlusCircle,
   SendHorizontal,
   ThumbsUp,
   Smile,
@@ -28,7 +26,7 @@ export default function ChatBottombar({ isMobile }: ChatBottombarProps) {
   const [isTyping, setIsTyping] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
+  console.log(isMobile);
   // Use the real API methods from the store
   const {
     sendMessage: sendMessageAPI,
@@ -165,7 +163,7 @@ export default function ChatBottombar({ isMobile }: ChatBottombarProps) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="border-t border-border/50 bg-background/95 backdrop-blur-sm"
+      className="border-t border-blue-200/50 bg-gradient-to-r from-blue-50/95 to-indigo-50/95 backdrop-blur-md shadow-lg"
     >
       {/* Error state */}
       <AnimatePresence>
@@ -174,19 +172,21 @@ export default function ChatBottombar({ isMobile }: ChatBottombarProps) {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="px-4 py-2 bg-destructive/10 border-b border-destructive/20"
+            className="px-4 py-3 bg-gradient-to-r from-red-50 to-orange-50 border-b border-red-200/50 shadow-sm"
           >
-            <div className="flex items-center gap-2 text-sm text-destructive">
-              <X className="w-4 h-4" />
-              <span>Failed to send message. Please try again.</span>
+            <div className="flex items-center gap-3 text-sm">
+              <div className="w-8 h-8 bg-gradient-to-r from-red-500 to-orange-500 rounded-full flex items-center justify-center shadow-sm">
+                <X className="w-4 h-4 text-white" />
+              </div>
+              <span className="text-red-700 font-medium">Không thể gửi tin nhắn. Vui lòng thử lại.</span>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <div className="px-4 py-3 flex justify-between w-full items-center gap-3">
+      <div className="px-6 py-4 flex justify-between w-full items-center gap-4">
         {/* Left side actions */}
-        <div className="flex items-center">
+        {/* <div className="flex items-center">
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -244,7 +244,7 @@ export default function ChatBottombar({ isMobile }: ChatBottombarProps) {
               ))}
             </motion.div>
           )}
-        </div>
+        </div> */}
 
         {/* Message input area */}
         <div className="flex-1 relative">
@@ -256,10 +256,10 @@ export default function ChatBottombar({ isMobile }: ChatBottombarProps) {
               onChange={handleInputChange}
               placeholder={
                 selectedChat
-                  ? "Type a message..."
-                  : "Select a chat to start messaging"
+                  ? "Nhập tin nhắn..."
+                  : "Chọn một cuộc trò chuyện để bắt đầu trò chuyện"
               }
-              className="min-h-[44px] max-h-32 pr-24 rounded-2xl border-border/50 bg-muted/30 focus:bg-background transition-colors resize-none"
+              className="min-h-[48px] max-h-32 pr-24 rounded-2xl border border-blue-200/50 bg-white/80 hover:bg-white/90 focus:bg-white focus:border-blue-400/60 focus:ring-2 focus:ring-blue-200/50 transition-all duration-200 resize-none shadow-sm placeholder:text-gray-500"
               disabled={isLoading || !selectedChat}
             />
 
@@ -270,7 +270,7 @@ export default function ChatBottombar({ isMobile }: ChatBottombarProps) {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 text-muted-foreground hover:text-foreground transition-colors"
+                    className="h-9 w-9 rounded-xl text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200"
                     disabled={isLoading}
                   >
                     <Smile size={18} />
@@ -278,7 +278,7 @@ export default function ChatBottombar({ isMobile }: ChatBottombarProps) {
                 </PopoverTrigger>
                 <PopoverContent
                   side="top"
-                  className="w-auto p-0 border-border/50 shadow-xl"
+                  className="w-auto p-0 border-blue-200/50 shadow-xl rounded-2xl bg-white/95 backdrop-blur-sm"
                 >
                   <EmojiPicker
                     onChange={(emoji) => {
@@ -298,7 +298,7 @@ export default function ChatBottombar({ isMobile }: ChatBottombarProps) {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="absolute right-2 top-1 text-xs text-muted-foreground/70"
+                className="absolute right-3 top-2 px-2 py-1 bg-blue-100/80 rounded-lg text-xs text-blue-700 font-medium shadow-sm"
               >
                 {message.length}/1000
               </motion.div>
@@ -321,7 +321,7 @@ export default function ChatBottombar({ isMobile }: ChatBottombarProps) {
                   onClick={handleSend}
                   disabled={isLoading || !selectedChat}
                   size="icon"
-                  className="h-10 w-10 shrink-0 rounded-full shadow-lg bg-primary hover:bg-primary/90 transition-all duration-200 hover:scale-105"
+                  className="h-11 w-11 shrink-0 rounded-full shadow-lg bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 hover:scale-105 hover:shadow-xl"
                 >
                   {isLoading ? (
                     <motion.div
@@ -331,7 +331,7 @@ export default function ChatBottombar({ isMobile }: ChatBottombarProps) {
                         repeat: Infinity,
                         ease: "linear",
                       }}
-                      className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full"
+                      className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full"
                     />
                   ) : (
                     <SendHorizontal size={18} />
@@ -351,7 +351,7 @@ export default function ChatBottombar({ isMobile }: ChatBottombarProps) {
                   disabled={isLoading || !selectedChat}
                   variant="ghost"
                   size="icon"
-                  className="h-10 w-10 shrink-0 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-200 hover:scale-105"
+                  className="h-11 w-11 shrink-0 rounded-full text-gray-500 hover:text-blue-600 hover:bg-blue-50 border border-gray-200 hover:border-blue-300 transition-all duration-200 hover:scale-105 shadow-sm hover:shadow-md"
                 >
                   <ThumbsUp size={18} />
                 </Button>
@@ -368,10 +368,27 @@ export default function ChatBottombar({ isMobile }: ChatBottombarProps) {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="px-4 pb-2"
+            className="px-6 pb-3"
           >
-            <div className="text-xs text-muted-foreground/70">
-              You are typing...
+            <div className="flex items-center gap-2 text-xs">
+              <div className="flex space-x-1">
+                <motion.div
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 0.6, repeat: Infinity, delay: 0 }}
+                  className="w-1.5 h-1.5 bg-blue-500 rounded-full"
+                />
+                <motion.div
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 0.6, repeat: Infinity, delay: 0.1 }}
+                  className="w-1.5 h-1.5 bg-blue-500 rounded-full"
+                />
+                <motion.div
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 0.6, repeat: Infinity, delay: 0.2 }}
+                  className="w-1.5 h-1.5 bg-blue-500 rounded-full"
+                />
+              </div>
+              <span className="text-blue-600 font-medium">Đang nhập...</span>
             </div>
           </motion.div>
         )}

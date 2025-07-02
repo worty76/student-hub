@@ -48,7 +48,7 @@ const ChatMessageList = React.forwardRef<HTMLDivElement, ChatMessageListProps>(
           {emptyStateMessage}
         </h3>
         <p className="text-sm text-muted-foreground/70 mb-4 max-w-sm">
-          Start a conversation by sending a message below.
+          Bắt đầu trò chuyện bằng cách gửi tin nhắn dưới đây.
         </p>
         {emptyStateAction}
       </motion.div>
@@ -78,7 +78,7 @@ const ChatMessageList = React.forwardRef<HTMLDivElement, ChatMessageListProps>(
             transition={{ duration: 0.6, repeat: Infinity, delay: 0.4 }}
           />
         </div>
-        <p className="text-sm text-muted-foreground">Loading messages...</p>
+        <p className="text-sm text-muted-foreground">Đang tải tin nhắn...</p>
       </motion.div>
     );
 
@@ -139,7 +139,7 @@ const ChatMessageList = React.forwardRef<HTMLDivElement, ChatMessageListProps>(
                 aria-label="Scroll to bottom"
               >
                 <ArrowDown className="h-3 w-3" />
-                <span className="text-xs">New messages</span>
+                <span className="text-xs">Tin nhắn mới</span>
               </Button>
             </motion.div>
           )}

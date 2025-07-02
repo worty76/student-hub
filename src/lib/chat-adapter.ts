@@ -7,10 +7,10 @@ export function convertNewMessageToOld(newMessage: NewMessage): OldMessage {
     avatar: newMessage.sender.avatar,
     name: newMessage.sender.name,
     message: newMessage.content,
-    timestamp: new Date(newMessage.createdAt).toLocaleTimeString('en-US', {
+    timestamp: new Date(newMessage.createdAt).toLocaleTimeString('vi-VN', {
       hour: '2-digit',
       minute: '2-digit',
-      hour12: true
+      hour12: false
     }),
     role: newMessage.role as "user" | "ai" | undefined,
     isLoading: newMessage.isLoading,
