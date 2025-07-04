@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 // import { BannerSlider } from './BannerSlider';
 // import { FeaturedCategories } from './FeaturedCategories';
 import { SuggestedListings } from './SuggestedListings';
+import { CategoriesList } from './CategoriesList';
 // import { bannerSlides } from '@/constants/marketplace-data';
 import { 
   GraduationCap, 
@@ -274,6 +275,9 @@ export function Homepage() {
           </motion.div>
         </div>
       </section>
+
+      {/* Categories Section */}
+      <CategoriesList />
 
       {/* Banner Slider */}
       <section className="container mx-auto px-4 py-8">

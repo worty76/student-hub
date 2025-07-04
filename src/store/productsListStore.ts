@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { Product, ProductsQueryParams, Pagination } from '@/types/product';
-import { productService } from '@/services/product.service';
+import { ProductService } from '@/services/product.service';
 
 interface ProductsListState {
   // Data state
@@ -24,6 +24,8 @@ interface ProductsListState {
 interface ProductsListActions {
   // Fetch products
   fetchAllProducts: () => Promise<void>;
+  fetchProductsByCategory: (category: string) => Promise<void>;
+  fetchProductsWithParams: (params?: Partial<ProductsQueryParams>) => Promise<void>;
   
   // Pagination actions
   nextPage: () => void;
@@ -72,13 +74,77 @@ export const useProductsListStore = create<ProductsListStore>((set, get) => ({
     set({ isLoading: true, error: null });
 
     try {
-      const products = await productService.getAllProducts();
+      const products = await ProductService.getAllProducts();
       
       set({
         allProducts: products,
         isLoading: false,
         lastFetchTime: Date.now(),
         error: null,
+      });
+      
+      // Apply filters and pagination after fetching
+      get().applyFiltersAndPagination();
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Lỗi khi tải sản phẩm';
+      set({
+        isLoading: false,
+        error: errorMessage,
+        allProducts: [],
+        filteredProducts: [],
+        displayedProducts: [],
+        pagination: null,
+      });
+    }
+  },
+
+  fetchProductsByCategory: async (category: string) => {
+    set({ isLoading: true, error: null });
+
+    try {
+      const products = await ProductService.getProductsByCategory(category);
+      
+      set({
+        allProducts: products,
+        isLoading: false,
+        lastFetchTime: Date.now(),
+        error: null,
+        currentParams: { ...get().currentParams, category, page: 1 },
+      });
+      
+      // Apply filters and pagination after fetching
+      get().applyFiltersAndPagination();
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Lỗi khi tải sản phẩm theo danh mục';
+      set({
+        isLoading: false,
+        error: errorMessage,
+        allProducts: [],
+        filteredProducts: [],
+        displayedProducts: [],
+        pagination: null,
+      });
+    }
+  },
+
+  fetchProductsWithParams: async (params?: Partial<ProductsQueryParams>) => {
+    set({ isLoading: true, error: null });
+
+    try {
+      let products: Product[];
+      
+      if (params?.category) {
+        products = await ProductService.getProductsByCategory(params.category);
+      } else {
+        products = await ProductService.getAllProducts();
+      }
+      
+      set({
+        allProducts: products,
+        isLoading: false,
+        lastFetchTime: Date.now(),
+        error: null,
+        currentParams: { ...get().currentParams, ...params, page: 1 },
       });
       
       // Apply filters and pagination after fetching

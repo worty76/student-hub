@@ -32,28 +32,44 @@ export const bannerSlides: BannerSlide[] = [
 
 export const categories: Category[] = [
   {
-    id: 'household',
-    name: 'Household Items',
-    icon: '🏠',
-    description: 'Furniture, appliances, and home essentials',
-    productCount: 1247,
-    image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&q=80'
-  },
-  {
-    id: 'study',
-    name: 'Study Items',
+    id: 'books',
+    name: 'Sách & Giáo Trình',
     icon: '📚',
-    description: 'Books, laptops, stationery, and learning materials',
-    productCount: 892,
+    description: 'Sách giáo khoa, tài liệu học tập, sách tham khảo và tiểu thuyết',
+    productCount: 1580,
     image: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&q=80'
   },
   {
-    id: 'moving',
-    name: 'Moving/Room clearing',
-    icon: '📦',
-    description: 'Bulk items, furniture sets, and quick sales',
-    productCount: 356,
-    image: 'https://images.unsplash.com/photo-1591528287446-43c9c0e1075e?w=400&q=80'
+    id: 'electronics',
+    name: 'Đồ Điện Tử',
+    icon: '💻',
+    description: 'Laptop, điện thoại, tai nghe, máy tính bảng và phụ kiện công nghệ',
+    productCount: 892,
+    image: 'https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=400&q=80'
+  },
+  {
+    id: 'clothing',
+    name: 'Quần Áo & Phụ Kiện',
+    icon: '👕',
+    description: 'Áo quần, giày dép, túi xách và phụ kiện thời trang sinh viên',
+    productCount: 1247,
+    image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&q=80'
+  },
+  {
+    id: 'furniture',
+    name: 'Nội Thất & Đồ Dùng',
+    icon: '🪑',
+    description: 'Bàn ghế, giường tủ, đồ trang trí và đồ dùng gia đình',
+    productCount: 673,
+    image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&q=80'
+  },
+  {
+    id: 'sports',
+    name: 'Thể Thao & Giải Trí',
+    icon: '⚽',
+    description: 'Dụng cụ thể thao, xe đạp, đồ chơi và thiết bị giải trí',
+    productCount: 428,
+    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&q=80'
   }
 ];
 
