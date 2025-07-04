@@ -36,6 +36,39 @@ export class ProductService {
     }
   }
 
+  static async getProductsByCategory(category: string): Promise<Product[]> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/products?category=${encodeURIComponent(category)}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('Không tìm thấy sản phẩm nào trong danh mục này');
+        }
+        throw new Error(`Lỗi khi tải sản phẩm: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.products && Array.isArray(data.products)) {
+        return data.products;
+      } else if (Array.isArray(data)) {
+        return data;
+      } else {
+        throw new Error('Invalid response format');
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Lỗi khi tải sản phẩm theo danh mục');
+    }
+  }
+
   static async createProduct(token: string, productData: CreateProductRequest): Promise<CreateProductResponse> {
     try {
       const formData = new FormData();

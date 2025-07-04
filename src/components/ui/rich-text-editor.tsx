@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useCallback, useState } from 'react';
+import React, { useRef, useCallback, useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { 
   Bold, 
@@ -35,6 +35,19 @@ export function RichTextEditor({
 }: RichTextEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
   const [activeFormats, setActiveFormats] = useState<Set<string>>(new Set());
+  const isUpdatingRef = useRef(false);
+
+  // Update editor content when value prop changes (but not when user is typing)
+  useEffect(() => {
+    if (editorRef.current && !isUpdatingRef.current) {
+      const currentContent = editorRef.current.innerHTML;
+      if (value !== currentContent) {
+        isUpdatingRef.current = true;
+        editorRef.current.innerHTML = value || '';
+        isUpdatingRef.current = false;
+      }
+    }
+  }, [value]);
 
   const updateActiveFormats = useCallback(() => {
     const formats = new Set<string>();
@@ -62,14 +75,18 @@ export function RichTextEditor({
     updateActiveFormats();
     
     // Trigger onChange
-    if (editorRef.current && onChange) {
+    if (editorRef.current && onChange && !isUpdatingRef.current) {
+      isUpdatingRef.current = true;
       onChange(editorRef.current.innerHTML);
+      isUpdatingRef.current = false;
     }
   }, [disabled, onChange, updateActiveFormats]);
 
   const handleInput = useCallback(() => {
-    if (editorRef.current && onChange) {
+    if (editorRef.current && onChange && !isUpdatingRef.current) {
+      isUpdatingRef.current = true;
       onChange(editorRef.current.innerHTML);
+      isUpdatingRef.current = false;
     }
     updateActiveFormats();
   }, [onChange, updateActiveFormats]);
@@ -247,8 +264,7 @@ export function RichTextEditor({
             "focus:ring-0 focus:outline-none",
             disabled && "cursor-not-allowed"
           )}
-          style={{ minHeight }}
-          dangerouslySetInnerHTML={{ __html: value }}
+          style={{ minHeight, direction: 'ltr' }}
           suppressContentEditableWarning
         />
         

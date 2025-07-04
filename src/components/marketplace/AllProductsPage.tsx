@@ -1,8 +1,27 @@
 'use client';
 
+import { useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { ProductsList } from './ProductsList';
+import { CategoryHeader } from './CategoryHeader';
+import { useProductsListStore } from '@/store/productsListStore';
+import { ProductsQueryParams } from '@/types/product';
 
 export function AllProductsPage() {
+  const searchParams = useSearchParams();
+  const category = searchParams.get('category');
+  const { fetchProductsWithParams } = useProductsListStore();
+
+  useEffect(() => {
+    // Fetch products based on URL parameters
+    const params: ProductsQueryParams = {};
+    if (category) {
+      params.category = category;
+    }
+    
+    fetchProductsWithParams(params);
+  }, [category, fetchProductsWithParams]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
       {/* Background decoration */}
@@ -12,14 +31,7 @@ export function AllProductsPage() {
         {/* Header section with gradient */}
         <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
-            <div className="text-center">
-              <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
-                Khám Phá Sản Phẩm
-              </h1>
-              <p className="text-xl text-blue-100 max-w-2xl mx-auto">
-                Tìm những món đồ tuyệt vời từ cộng đồng sinh viên
-              </p>
-            </div>
+            <CategoryHeader category={category} />
           </div>
         </div>
 

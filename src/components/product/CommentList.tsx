@@ -306,6 +306,12 @@ export default function CommentList({ }: CommentListProps) {
                     </Button>
                   )}
                   
+                  <DeleteCommentButton
+                    commentId={comment._id}
+                    userId={comment.userInfo?._id || comment.user}
+                    size="md"
+                  />
+                  
                   {hasReplies && (
                     <Button
                       variant="ghost"

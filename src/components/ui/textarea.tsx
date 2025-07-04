@@ -16,6 +16,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             error && "border-red-500 focus-visible:ring-red-500",
             className
           )}
+          style={{ direction: 'ltr', ...props.style }}
           ref={ref}
           {...props}
         />

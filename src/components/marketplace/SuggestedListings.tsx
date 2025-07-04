@@ -37,8 +37,11 @@ export function SuggestedListings({ products: initialProducts }: SuggestedListin
     try {
       const allProducts = await ProductService.getAllProducts();
       
+      // Filter out sold products and products without location
       const productsWithLocation = allProducts.filter(product => 
-        product.location && product.location.trim() !== ''
+        product.status !== 'sold' && 
+        product.location && 
+        product.location.trim() !== ''
       );
       
       let sortedProducts = productsWithLocation;
