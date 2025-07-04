@@ -49,7 +49,7 @@ export function ProductList({
   showViewMore = true,
   compactView = false,
   defaultCategory = 'all',
-  defaultStatus = 'all',
+  defaultStatus = 'available', // Default to hiding sold products
   className = ''
 }: ProductListProps) {
   const router = useRouter();
@@ -70,7 +70,7 @@ export function ProductList({
     price: apiProduct.price,
     image: apiProduct.images && apiProduct.images.length > 0 ? apiProduct.images[0] : '',
     location: apiProduct.location,
-    status: 'newly-posted' as const, // Map API status to marketplace status
+    status: apiProduct.status === 'pending' ? 'urgent' : 'newly-posted', // Only available and pending products reach here
     category: apiProduct.category,
     description: apiProduct.description,
     seller: {
@@ -90,7 +90,9 @@ export function ProductList({
         setError(null);
         try {
           const apiProducts = await ProductService.getAllProducts();
-          const convertedProducts = apiProducts.map(convertApiProduct);
+          // Filter out sold products before conversion
+          const availableProducts = apiProducts.filter(product => product.status !== 'sold');
+          const convertedProducts = availableProducts.map(convertApiProduct);
           setRealProducts(convertedProducts);
         } catch (err) {
           setError('Failed to load products');

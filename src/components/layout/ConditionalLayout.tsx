@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation';
 import { Header } from '@/components/navigation/Header';
 import { Footer } from '@/components/navigation/Footer';
+import { StickyAdBanner } from '@/components/ui/StickyAdBanner';
 
 interface ConditionalLayoutProps {
   children: React.ReactNode;
@@ -47,9 +48,10 @@ export function ConditionalLayout({ children }: ConditionalLayoutProps) {
     return (
       <>
         <Header />
-        <main className="flex-1">
+        <main className="flex-1 pb-20">
           {children}
         </main>
+        <StickyAdBanner />
       </>
     );
   }
@@ -58,10 +60,11 @@ export function ConditionalLayout({ children }: ConditionalLayoutProps) {
   return (
     <>
       <Header />
-      <main className="flex-1">
+      <main className="flex-1 pb-20">
         {children}
       </main>
       <Footer />
+      <StickyAdBanner />
     </>
   );
 }

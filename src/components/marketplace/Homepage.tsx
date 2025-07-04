@@ -2,10 +2,10 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { BannerSlider } from './BannerSlider';
+// import { BannerSlider } from './BannerSlider';
 // import { FeaturedCategories } from './FeaturedCategories';
 import { SuggestedListings } from './SuggestedListings';
-import { bannerSlides } from '@/constants/marketplace-data';
+// import { bannerSlides } from '@/constants/marketplace-data';
 import { 
   GraduationCap, 
   ShoppingBag, 
@@ -283,7 +283,7 @@ export function Homepage() {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <BannerSlider slides={bannerSlides} autoPlayInterval={6000} />
+          {/* <BannerSlider slides={bannerSlides} autoPlayInterval={6000} /> */}
         </motion.div>
       </section>
 

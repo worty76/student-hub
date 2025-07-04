@@ -57,6 +57,7 @@ const initialState: ProductsListState = {
     limit: 12,
     sortBy: 'createdAt',
     sortOrder: 'desc',
+    status: 'available', // Default to only show available products (hide sold products)
   },
   isLoading: false,
   error: null,
@@ -252,6 +253,7 @@ export const useProductsListStore = create<ProductsListStore>((set, get) => ({
       limit: 12,
       sortBy: 'createdAt' as const,
       sortOrder: 'desc' as const,
+      status: 'available' as const, // Always default to hiding sold products
     };
     
     set({ currentParams: defaultParams });

@@ -81,8 +81,3 @@ To access the admin dashboard:
 ## License
 
 This project is licensed under the MIT License.
-
-Demo Login:
-Admin: admin@example.com / admin123
-Seller: seller@example.com / seller123
-User: user@example.com / user123
