@@ -21,7 +21,9 @@ import {
   Package,
   ChevronLeft,
   ChevronRight,
-  Filter
+  Filter,
+  Check,
+  X
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -45,6 +47,9 @@ import {
 } from '@/components/ui/table';
 import { Product, getCategoryLabel, getStatusLabel } from '@/types/product';
 import { DeleteProductButton } from './DeleteProductButton';
+import { useAdminStore } from '@/store/adminStore';
+import { useAuthStore } from '@/store/authStore';
+import { toast } from '@/components/ui/use-toast';
 
 // Tiện ích định dạng ngày tháng
 const formatDate = {
@@ -89,6 +94,49 @@ export function AdminProductsDataTable({ data, isLoading = false }: AdminProduct
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [globalFilter, setGlobalFilter] = React.useState('');
+  
+  const { token } = useAuthStore();
+  const { approveProduct, rejectProduct } = useAdminStore();
+
+  const handleApprove = async (productId: string) => {
+    if (!token) return;
+    
+    try {
+      await approveProduct(token, productId);
+      toast({
+        title: "Thành công",
+        description: "Sản phẩm đã được phê duyệt",
+        variant: "default",
+      });
+    } catch (error) {
+      console.error('Error approving product:', error);
+      toast({
+        title: "Lỗi",
+        description: "Không thể phê duyệt sản phẩm",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleReject = async (productId: string) => {
+    if (!token) return;
+    
+    try {
+      await rejectProduct(token, productId, "Không phù hợp với quy định");
+      toast({
+        title: "Thành công",
+        description: "Sản phẩm đã được từ chối",
+        variant: "default",
+      });
+    } catch (error) {
+      console.error('Error rejecting product:', error);
+      toast({
+        title: "Lỗi",
+        description: "Không thể từ chối sản phẩm",
+        variant: "destructive",
+      });
+    }
+  };
 
   const getStatusBadgeColor = (status: string) => {
     switch (status) {
@@ -351,6 +399,8 @@ export function AdminProductsDataTable({ data, isLoading = false }: AdminProduct
       header: 'Thao tác',
       cell: ({ row }) => {
         const product = row.original;
+        const isPending = product.status === 'pending';
+        
         return (
           <div className="flex items-center gap-2">
             <Button
@@ -362,6 +412,31 @@ export function AdminProductsDataTable({ data, isLoading = false }: AdminProduct
               <Eye className="h-4 w-4 mr-1" />
               Xem
             </Button>
+            
+            {isPending && (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleApprove(product._id)}
+                  className="cursor-pointer hover:bg-green-50 text-green-600 border-green-200"
+                >
+                  <Check className="h-4 w-4 mr-1" />
+                  Duyệt
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleReject(product._id)}
+                  className="cursor-pointer hover:bg-red-50 text-red-600 border-red-200"
+                >
+                  <X className="h-4 w-4 mr-1" />
+                  Từ chối
+                </Button>
+              </>
+            )}
+            
             <DeleteProductButton
               productId={product._id}
               productTitle={product.title}
