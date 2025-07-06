@@ -54,6 +54,7 @@ export default function ReportUserButton({
   const [errors, setErrors] = useState<{ reason?: string; description?: string }>({});
   const [reportSuccess, setReportSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  console.log(successMessage);
 
   const validateForm = (): boolean => {
     const newErrors: { reason?: string; description?: string } = {};
@@ -208,7 +209,7 @@ export default function ReportUserButton({
                   Báo cáo thành công!
                 </DialogTitle>
                 <DialogDescription className="text-lg">
-                  {successMessage}
+                  Chúng tôi đã nhận được báo cáo của bạn và sẽ xem xét sớm nhất có thể.
                 </DialogDescription>
               </div>
             </DialogHeader>

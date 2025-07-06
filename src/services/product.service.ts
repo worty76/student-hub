@@ -406,6 +406,8 @@ export class ProductService {
 
   static async reportProduct(productId: string, token: string, reportData: ReportProductRequest): Promise<ReportProductResponse> {
     try {
+      console.log(`Reporting product with ID ${productId}`, reportData);
+      
       const response = await fetch(`${API_BASE_URL}/products/${productId}/report`, {
         method: 'POST',
         headers: {
@@ -416,6 +418,7 @@ export class ProductService {
       });
 
       const data = await response.json();
+      console.log('Report API response:', response.status, data);
 
       if (!response.ok) {
         const error: ReportProductError = {
@@ -429,7 +432,9 @@ export class ProductService {
         }
         
         if (response.status === 400) {
-          error.message = 'Dữ liệu nhập không hợp lệ';
+          // Enhanced error message by including the server's response
+          error.message = `Dữ liệu nhập không hợp lệ: ${data.details || data.message || ''}`;
+          console.error('Validation error details:', data);
           throw error;
         }
         

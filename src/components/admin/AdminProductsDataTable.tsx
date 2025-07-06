@@ -644,7 +644,7 @@ export function AdminProductsDataTable({ data, isLoading = false }: AdminProduct
 
       {/* Bảng dữ liệu */}
       <div className="rounded-md border bg-white">
-        <ScrollArea className="max-w-400 whitespace-nowrap">
+        <ScrollArea className="w-full whitespace-nowrap">
           <div className="w-full">
           <Table>
             <TableHeader>
