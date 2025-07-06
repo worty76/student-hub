@@ -25,6 +25,7 @@ import { ProductFavoriteButton } from './ProductFavoriteButton';
 import ProductComments from './ProductComments';
 import BuyProductButton from './BuyProductButton';
 import ReportProductButton from './ReportProductButton';
+import { PayWithMomoButton } from './PayWithMomoButton';
 import { formatDate, formatPrice, getStatusColor, getConditionColor } from '@/lib/utils';
 
 interface ProductDetailsProps {
@@ -427,6 +428,11 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
                         isAvailable={currentProduct.status === 'available'}
                         sellerName={typeof currentProduct.seller === 'object' ? currentProduct.seller.name :  currentProduct.seller}
                         className='bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0'
+                      />
+                      {/* MoMo Button - Alternative payment method */}
+                      <PayWithMomoButton
+                        productId={currentProduct._id}
+                        className='bg-[#ae2070] hover:bg-[#8e1a5c] py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300'
                       />
                       <Button 
                         className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300" 
