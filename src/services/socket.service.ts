@@ -92,8 +92,28 @@ class SocketService {
       });
 
       // Real-time event listeners
+      // Keep track of the last few messages to prevent duplicates
+      const recentMessages = new Set();
+      
       this.socket.on("newMessage", (data) => {
         console.log("Received new message:", data);
+        
+        // Create a unique key for this message
+        const messageKey = `${data.message._id}:${data.chatId}`;
+        
+        // Check if we've already processed this message recently
+        if (recentMessages.has(messageKey)) {
+          console.log("Skipping duplicate message:", messageKey);
+          return;
+        }
+        
+        // Add to recent messages and remove after a delay
+        recentMessages.add(messageKey);
+        setTimeout(() => {
+          recentMessages.delete(messageKey);
+        }, 5000); // Clear after 5 seconds
+        
+        // Process the message with all handlers
         this.messageHandlers.forEach((handler) => {
           handler(data.message, data.chatId);
         });
