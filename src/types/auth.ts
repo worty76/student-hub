@@ -60,6 +60,25 @@ export interface LoginResponse {
   user: User;
 }
 
+export interface ForgetPasswordRequest {
+  email: string;
+}
+
+export interface ForgetPasswordResponse {
+  message: string;
+  resetToken: string;
+  email: string;
+}
+
+export interface ResetPasswordRequest {
+  token: string;
+  newPassword: string;
+}
+
+export interface ResetPasswordResponse {
+  message: string;
+}
+
 // Report User Types
 export interface ReportUserRequest {
   reason: 'inappropriate' | 'spam' | 'fraud' | 'offensive' | 'other';

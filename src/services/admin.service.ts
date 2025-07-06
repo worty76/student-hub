@@ -323,6 +323,158 @@ export class AdminService {
       throw new AdminApiError('Failed to fetch product reports', 500);
     }
   }
+
+  static async getPendingProducts(token: string, params?: ProductsQueryParams): Promise<ProductsResponse> {
+    try {
+      const queryParams = new URLSearchParams();
+      
+      if (params?.page) queryParams.append('page', params.page.toString());
+      if (params?.limit) queryParams.append('limit', params.limit.toString());
+      if (params?.sortBy) queryParams.append('sortBy', params.sortBy);
+      if (params?.sortOrder) queryParams.append('sortOrder', params.sortOrder);
+
+      const url = `${API_BASE_URL}/products/admin/pending${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+      
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        
+        if (response.status === 401) {
+          throw new AdminApiError('Unauthorized', 401);
+        }
+        
+        if (response.status === 403) {
+          throw new AdminApiError('Forbidden – Admin access required', 403);
+        }
+        
+        throw new AdminApiError(
+          errorData.message || `Error fetching pending products: ${response.statusText}`,
+          response.status
+        );
+      }
+
+      const data = await response.json();
+      console.log('Admin Pending Products API response:', data);
+      
+      return data;
+    } catch (error) {
+      if (error instanceof AdminApiError) {
+        throw error;
+      }
+      
+      if (error instanceof Error) {
+        throw new AdminApiError(error.message, 500);
+      }
+      
+      throw new AdminApiError('Failed to fetch pending products', 500);
+    }
+  }
+
+  static async approveProduct(token: string, productId: string): Promise<void> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/products/admin/${productId}/approve`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        
+        if (response.status === 401) {
+          throw new AdminApiError('Unauthorized', 401);
+        }
+        
+        if (response.status === 403) {
+          throw new AdminApiError('Forbidden – Admin access required', 403);
+        }
+        
+        if (response.status === 404) {
+          throw new AdminApiError('Product not found', 404);
+        }
+        
+        if (response.status === 400) {
+          throw new AdminApiError('Product is not pending approval', 400);
+        }
+        
+        throw new AdminApiError(
+          errorData.message || `Error approving product: ${response.statusText}`,
+          response.status
+        );
+      }
+
+      console.log('Product approved successfully');
+    } catch (error) {
+      if (error instanceof AdminApiError) {
+        throw error;
+      }
+      
+      if (error instanceof Error) {
+        throw new AdminApiError(error.message, 500);
+      }
+      
+      throw new AdminApiError('Failed to approve product', 500);
+    }
+  }
+
+  static async rejectProduct(token: string, productId: string, reason?: string): Promise<void> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/products/admin/${productId}/reject`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ reason }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        
+        if (response.status === 401) {
+          throw new AdminApiError('Unauthorized', 401);
+        }
+        
+        if (response.status === 403) {
+          throw new AdminApiError('Forbidden – Admin access required', 403);
+        }
+        
+        if (response.status === 404) {
+          throw new AdminApiError('Product not found', 404);
+        }
+        
+        if (response.status === 400) {
+          throw new AdminApiError('Product is not pending approval', 400);
+        }
+        
+        throw new AdminApiError(
+          errorData.message || `Error rejecting product: ${response.statusText}`,
+          response.status
+        );
+      }
+
+      console.log('Product rejected successfully');
+    } catch (error) {
+      if (error instanceof AdminApiError) {
+        throw error;
+      }
+      
+      if (error instanceof Error) {
+        throw new AdminApiError(error.message, 500);
+      }
+      
+      throw new AdminApiError('Failed to reject product', 500);
+    }
+  }
 }
 
 export class AdminApiError extends Error {
