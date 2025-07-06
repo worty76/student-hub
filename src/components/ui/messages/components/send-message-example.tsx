@@ -23,7 +23,7 @@ export function SendMessageExample() {
       }
       
       // Test API connectivity first
-      const testResponse = await fetch(process.env.NEXT_PUBLIC_API_URL || 'https://be-student-hub-production.up.railway.app/api');
+      const testResponse = await fetch(process.env.NEXT_PUBLIC_API_URL || 'https://be-student-hub.onrender.com/api');
       console.log('API base connectivity test:', testResponse.status);
       
       // Test with a sample user ID (replace with a real one for testing)

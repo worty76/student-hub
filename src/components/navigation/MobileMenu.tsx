@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
 import { Button } from '@/components/ui/button';
 import { SearchBar } from './SearchBar';
 import { ROUTES } from '@/constants/navigation';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, LogOut } from 'lucide-react';
 
 interface MobileMenuProps {
   navLinks: Array<{ href: string; label: string; active: boolean }>;
@@ -15,8 +15,9 @@ interface MobileMenuProps {
 
 export function MobileMenu({ navLinks }: MobileMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, logout } = useAuthStore();
   const pathname = usePathname();
+  const router = useRouter();
 
   // Close menu when route changes
   useEffect(() => {
@@ -24,6 +25,16 @@ export function MobileMenu({ navLinks }: MobileMenuProps) {
   }, [pathname]);
 
   const toggleMenu = () => setIsOpen(!isOpen);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setIsOpen(false);
+      router.push(ROUTES.home);
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
 
   return (
     <>
@@ -95,6 +106,20 @@ export function MobileMenu({ navLinks }: MobileMenuProps) {
                       Sign Up
                     </Button>
                   </Link>
+                </div>
+              )}
+
+              {/* Logout button for authenticated users */}
+              {isAuthenticated && (
+                <div className="mt-4">
+                  <Button 
+                    variant="outline" 
+                    className="w-full flex items-center justify-center text-red-600 border-red-100 hover:bg-red-50"
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Đăng xuất
+                  </Button>
                 </div>
               )}
             </div>

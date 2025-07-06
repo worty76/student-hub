@@ -7,7 +7,7 @@ import { useAuthStore } from '@/store/authStore';
 import { Button } from '@/components/ui/button';
 import { UserMenu } from './UserMenu';
 // import { SearchBar } from './SearchBar';
-import { MobileMenu } from './MobileMenu';
+// import { MobileMenu } from './MobileMenu';
 import { APP_CONFIG, ROUTES, NAVIGATION_LINKS } from '@/constants/navigation';
 import { ShoppingBag } from 'lucide-react';
 
@@ -81,7 +81,7 @@ export function Header() {
             )}
 
             {/* Mobile Menu */}
-            <MobileMenu navLinks={navLinks} />
+            {/* <MobileMenu navLinks={navLinks} /> */}
           </div>
         </div>
       </div>

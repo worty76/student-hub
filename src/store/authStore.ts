@@ -44,8 +44,12 @@ export const useAuthStore = create<AuthStore>()(
           localStorage.removeItem('token');
           localStorage.removeItem('user');
           
+          const errorMessage = error instanceof Error 
+            ? error.message 
+            : 'Đăng nhập thất bại';
+            
           set({ 
-            error: error instanceof Error ? error.message : 'Đăng nhập thất bại', 
+            error: errorMessage, 
             isLoading: false,
             isAuthenticated: false,
             user: null,
@@ -111,7 +115,7 @@ export const useAuthStore = create<AuthStore>()(
             token: null,
             isAuthenticated: false, 
             error: null, 
-            isLoading: false 
+            isLoading: false,
           });
         }
       },

@@ -66,8 +66,8 @@ export function ProductsList({ className }: ProductsListProps) {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        <div className="lg:col-span-1">
+      <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
+        <div className="xl:col-span-1">
           <ProductFilters
             onFiltersChange={handleFiltersChange}
             currentParams={currentParams}

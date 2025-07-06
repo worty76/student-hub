@@ -6,11 +6,12 @@ import { ProductCard } from './ProductCard';
 import { Product } from '@/types/marketplace';
 import { categories } from '@/constants/marketplace-data';
 import { ProductService } from '@/services/product.service';
-import { Product as ApiProduct } from '@/types/product';
+import { Product as ApiProduct, ProductsQueryParams, Pagination as PaginationType } from '@/types/product';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { Pagination } from './Pagination';
 import { 
   Search, 
   Grid3X3, 
@@ -29,9 +30,12 @@ interface ProductListProps {
   showFilters?: boolean;
   showViewToggle?: boolean;
   showViewMore?: boolean;
+  showPagination?: boolean;
   compactView?: boolean;
   defaultCategory?: string;
   defaultStatus?: string;
+  defaultPage?: number;
+  defaultLimit?: number;
   className?: string;
 }
 
@@ -47,9 +51,12 @@ export function ProductList({
   showFilters = true,
   showViewToggle = true,
   showViewMore = true,
+  showPagination = true,
   compactView = false,
   defaultCategory = 'all',
   defaultStatus = 'available', // Default to hiding sold products
+  defaultPage = 1,
+  defaultLimit = 12,
   className = ''
 }: ProductListProps) {
   const router = useRouter();
@@ -59,9 +66,17 @@ export function ProductList({
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(defaultCategory);
-
   const [selectedStatus, setSelectedStatus] = useState(defaultStatus);
   const [sortBy, setSortBy] = useState<SortOption>('newest');
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(defaultPage);
+  const [pagination, setPagination] = useState<PaginationType>({
+    total: 0,
+    page: defaultPage,
+    limit: defaultLimit,
+    pages: 0
+  });
 
   // Convert API product to marketplace product format
   const convertApiProduct = (apiProduct: ApiProduct): Product => ({
@@ -82,18 +97,45 @@ export function ProductList({
     condition: apiProduct.condition === 'new' ? 'like-new' : apiProduct.condition
   });
 
-  // Fetch real products if not provided
+  // Fetch real products with pagination
   useEffect(() => {
     if (!providedProducts) {
       const fetchRealProducts = async () => {
         setIsLoading(true);
         setError(null);
         try {
-          const apiProducts = await ProductService.getAllProducts();
-          // Filter out sold products before conversion
-          const availableProducts = apiProducts.filter(product => product.status !== 'sold');
-          const convertedProducts = availableProducts.map(convertApiProduct);
+          // Create query params for pagination
+          const params: ProductsQueryParams = {
+            page: currentPage,
+            limit: defaultLimit,
+            sortBy: 'createdAt',
+            sortOrder: 'desc',
+          };
+
+          // Add filters if they're not set to 'all'
+          if (selectedCategory !== 'all') params.category = selectedCategory;
+          if (selectedStatus !== 'all') params.status = selectedStatus;
+          if (searchTerm) params.search = searchTerm;
+
+          // Add sort params
+          if (sortBy === 'price-low') {
+            params.sortBy = 'price';
+            params.sortOrder = 'asc';
+          } else if (sortBy === 'price-high') {
+            params.sortBy = 'price';
+            params.sortOrder = 'desc';
+          } else if (sortBy === 'popular') {
+            params.sortBy = 'views';
+            params.sortOrder = 'desc';
+          } else {
+            params.sortBy = 'createdAt';
+            params.sortOrder = 'desc';
+          }
+
+          const result = await ProductService.getProductsWithPagination(params);
+          const convertedProducts = result.products.map(convertApiProduct);
           setRealProducts(convertedProducts);
+          setPagination(result.pagination);
         } catch (err) {
           setError('Failed to load products');
           console.error('Error fetching products:', err);
@@ -104,13 +146,17 @@ export function ProductList({
 
       fetchRealProducts();
     }
-  }, [providedProducts]);
+  }, [providedProducts, currentPage, selectedCategory, selectedStatus, sortBy, searchTerm, defaultLimit]);
 
   // Use provided products or fetched real products
   const products = providedProducts || realProducts;
 
-  // Filter and sort products
+  // For provided products, we still need to do client-side filtering
   const filteredAndSortedProducts = useMemo(() => {
+    // If we're using server pagination, don't filter again client-side
+    if (!providedProducts) return products;
+    
+    // Client-side filtering only for provided products
     const filtered = products.filter(product => {
       // Search filter
       if (searchTerm && !product.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
@@ -122,8 +168,6 @@ export function ProductList({
       if (selectedCategory !== 'all' && product.category !== selectedCategory) {
         return false;
       }
-
-
 
       // Status filter
       if (selectedStatus !== 'all' && product.status !== selectedStatus) {
@@ -150,15 +194,24 @@ export function ProductList({
     });
 
     return filtered;
-  }, [products, searchTerm, selectedCategory, selectedStatus, sortBy]);
+  }, [products, searchTerm, selectedCategory, selectedStatus, sortBy, providedProducts]);
 
-  const displayedProducts = maxItems ? filteredAndSortedProducts.slice(0, maxItems) : filteredAndSortedProducts;
+  const displayedProducts = maxItems && providedProducts 
+    ? filteredAndSortedProducts.slice(0, maxItems) 
+    : (providedProducts ? filteredAndSortedProducts : products);
 
   const resetFilters = () => {
     setSearchTerm('');
     setSelectedCategory('all');
     setSelectedStatus('all');
     setSortBy('newest');
+    setCurrentPage(1); // Reset to first page when filters change
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // Scroll to top when page changes
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const hasActiveFilters = searchTerm !== '' || selectedCategory !== 'all' || 
@@ -176,7 +229,7 @@ export function ProductList({
   };
 
   // Show loading state when fetching products (only if no products provided)
-  if (!providedProducts && isLoading) {
+  if (!providedProducts && isLoading && currentPage === 1) {
     return (
       <div className={`bg-white ${className}`}>
         {(title || subtitle) && (
@@ -330,8 +383,6 @@ export function ProductList({
                   </SelectContent>
                 </Select>
 
-
-
                 <Select value={selectedStatus} onValueChange={setSelectedStatus}>
                   <SelectTrigger className="w-40">
                     <SelectValue placeholder="Status" />
@@ -396,7 +447,11 @@ export function ProductList({
       )}
 
       {/* Products Grid/List */}
-      {displayedProducts.length > 0 ? (
+      {isLoading && currentPage > 1 ? (
+        <div className="flex justify-center py-8">
+          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        </div>
+      ) : displayedProducts.length > 0 ? (
         <div className={
           viewMode === 'grid' 
             ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'
@@ -421,8 +476,20 @@ export function ProductList({
         </div>
       )}
 
-      {/* View More Button */}
-      {showViewMore && maxItems && filteredAndSortedProducts.length > maxItems && (
+      {/* Pagination */}
+      {!providedProducts && showPagination && displayedProducts.length > 0 && (
+        <div className="mt-8">
+          <Pagination 
+            pagination={pagination}
+            onPageChange={handlePageChange}
+            isLoading={isLoading}
+            className="justify-center"
+          />
+        </div>
+      )}
+
+      {/* View More Button - Only show for compact/limited views */}
+      {showViewMore && maxItems && providedProducts && filteredAndSortedProducts.length > maxItems && (
         <div className="text-center mt-8">
           <Button onClick={handleViewMore} variant="outline" size="lg">
             View All Products ({filteredAndSortedProducts.length - maxItems} more)
