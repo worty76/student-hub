@@ -76,6 +76,11 @@ interface AdminStore extends AdminState {
   clearProductsError: () => void;
   generateProductsStats: () => void;
   
+  // Product approval actions
+  fetchPendingProducts: (token: string, params?: ProductsQueryParams) => Promise<void>;
+  approveProduct: (token: string, productId: string) => Promise<void>;
+  rejectProduct: (token: string, productId: string, reason?: string) => Promise<void>;
+  
   // Product Reports actions
   fetchAllProductReports: (token: string, params?: ProductReportsQueryParams) => Promise<void>;
   setReportsPage: (page: number) => void;
@@ -395,6 +400,108 @@ export const useAdminStore = create<AdminStore>((set, get) => ({
     } catch (error) {
       console.error('Error generating products stats:', error);
       set({ productsStatsLoading: false });
+    }
+  },
+
+  // Product approval actions implementation
+  fetchPendingProducts: async (token: string, params?: ProductsQueryParams) => {
+    set({ productsLoading: true, productsError: null });
+    try {
+      const response = await AdminService.getPendingProducts(token, params);
+      set({ 
+        products: response.products, 
+        productsPagination: response.pagination,
+        productsLoading: false, 
+        productsError: null,
+        currentProductsPage: response.pagination.page 
+      });
+      get().generateProductsStats(); // Regenerate stats for pending products
+    } catch (error) {
+      if (error instanceof AdminApiError) {
+        if (error.status === 401) {
+          set({ 
+            productsError: 'Unauthorized - Please login again', 
+            productsLoading: false,
+            products: []
+          });
+        } else if (error.status === 403) {
+          set({ 
+            productsError: 'Forbidden – Admin access required', 
+            productsLoading: false,
+            products: []
+          });
+        } else {
+          set({ 
+            productsError: error.message, 
+            productsLoading: false,
+            products: []
+          });
+        }
+      } else {
+        set({ 
+          productsError: 'Failed to load pending products', 
+          productsLoading: false,
+          products: []
+        });
+      }
+    }
+  },
+
+  approveProduct: async (token: string, productId: string) => {
+    set({ productsError: null });
+    try {
+      await AdminService.approveProduct(token, productId);
+      // Remove from pending list and add to approved list
+      const { products } = get();
+      const updatedProducts = products.filter(p => p._id !== productId);
+      set({ products: updatedProducts });
+      get().generateProductsStats(); // Regenerate stats
+    } catch (error) {
+      if (error instanceof AdminApiError) {
+        let errorMessage = '';
+        if (error.status === 401) {
+          errorMessage = 'Phiên đăng nhập đã hết hạn';
+        } else if (error.status === 403) {
+          errorMessage = 'Forbidden – Admin access required';
+        } else if (error.status === 404) {
+          errorMessage = 'Product not found';
+        } else {
+          errorMessage = error.message;
+        }
+        set({ productsError: errorMessage });
+      } else {
+        set({ productsError: 'Lỗi phê duyệt sản phẩm' });
+      }
+      throw error; // Re-throw to allow component to handle it
+    }
+  },
+
+  rejectProduct: async (token: string, productId: string, reason?: string) => {
+    set({ productsError: null });
+    try {
+      await AdminService.rejectProduct(token, productId, reason);
+      // Remove from pending list
+      const { products } = get();
+      const updatedProducts = products.filter(p => p._id !== productId);
+      set({ products: updatedProducts });
+      get().generateProductsStats(); // Regenerate stats
+    } catch (error) {
+      if (error instanceof AdminApiError) {
+        let errorMessage = '';
+        if (error.status === 401) {
+          errorMessage = 'Phiên đăng nhập đã hết hạn';
+        } else if (error.status === 403) {
+          errorMessage = 'Forbidden – Admin access required';
+        } else if (error.status === 404) {
+          errorMessage = 'Product not found';
+        } else {
+          errorMessage = error.message;
+        }
+        set({ productsError: errorMessage });
+      } else {
+        set({ productsError: 'Lỗi từ chối sản phẩm' });
+      }
+      throw error; // Re-throw to allow component to handle it
     }
   },
 

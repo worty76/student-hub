@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { Eye, EyeOff, Loader2, Mail, Lock } from 'lucide-react';
+import Link from 'next/link';
 
 import { useAuthStore } from '@/store/authStore';
 import { Button } from '@/components/ui/button';
@@ -138,12 +139,12 @@ export function LoginForm() {
 
             {/* Forgot password link */}
             <div className="text-center">
-              <a 
-                href="#" 
+              <Link 
+                href="/auth/forget-password" 
                 className="text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200 hover:underline"
               >
                 Quên mật khẩu?
-              </a>
+              </Link>
             </div>
           </form>
         </Form>

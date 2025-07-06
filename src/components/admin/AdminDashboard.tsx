@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { AdminOverview } from './AdminOverview';
 import { AdminUserManagement } from './AdminUserManagement';
 import { AdminAllProducts } from './AdminAllProducts';
+import { AdminPendingProducts } from './AdminPendingProducts';
 import { AdminReports } from './AdminReports';
 import { AdminSettings } from './AdminSettings';
 import { Button } from '@/components/ui/button';
@@ -11,13 +12,14 @@ import {
   LayoutDashboard, 
   Users, 
   Package, 
+  Clock,
   FileText, 
   Settings,
   Menu,
   X
 } from 'lucide-react';
 
-type AdminTab = 'overview' | 'users' | 'products' | 'reports' | 'settings';
+type AdminTab = 'overview' | 'users' | 'products' | 'pending-products' | 'reports' | 'settings';
 
 export function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<AdminTab>('overview');
@@ -27,6 +29,7 @@ export function AdminDashboard() {
     { id: 'overview' as AdminTab, label: 'Tổng quan', icon: LayoutDashboard },
     { id: 'users' as AdminTab, label: 'Quản lý người dùng', icon: Users },
     { id: 'products' as AdminTab, label: 'Quản lý sản phẩm', icon: Package },
+    { id: 'pending-products' as AdminTab, label: 'Sản phẩm chờ duyệt', icon: Clock },
     { id: 'reports' as AdminTab, label: 'Báo cáo', icon: FileText },
     { id: 'settings' as AdminTab, label: 'Cài đặt', icon: Settings },
   ];
@@ -39,6 +42,8 @@ export function AdminDashboard() {
         return <AdminUserManagement />;
       case 'products':
         return <AdminAllProducts />;
+      case 'pending-products':
+        return <AdminPendingProducts />;
       case 'reports':
         return <AdminReports />;
       case 'settings':

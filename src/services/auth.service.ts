@@ -1,4 +1,4 @@
-import { User, LoginCredentials, LoginResponse, RegisterRequest, RegisterResponse } from '@/types/auth';
+import { User, LoginCredentials, LoginResponse, RegisterRequest, RegisterResponse, ForgetPasswordRequest, ForgetPasswordResponse, ResetPasswordRequest, ResetPasswordResponse } from '@/types/auth';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
@@ -52,6 +52,54 @@ export class AuthService {
         throw error;
       }
       throw new Error('Lỗi đã xảy ra khi đăng ký');
+    }
+  }
+
+  static async forgetPassword(data: ForgetPasswordRequest): Promise<ForgetPasswordResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/users/forget-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Không thể gửi yêu cầu đặt lại mật khẩu');
+      }
+
+      return await response.json();
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Lỗi đã xảy ra khi gửi yêu cầu đặt lại mật khẩu');
+    }
+  }
+
+  static async resetPassword(data: ResetPasswordRequest): Promise<ResetPasswordResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/users/reset-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Không thể đặt lại mật khẩu');
+      }
+
+      return await response.json();
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Lỗi đã xảy ra khi đặt lại mật khẩu');
     }
   }
 
@@ -112,4 +160,6 @@ export const authService = {
   refreshToken: AuthService.refreshToken,
   isValidEmail: AuthService.isValidEmail,
   isValidPassword: AuthService.isValidPassword,
+  forgetPassword: AuthService.forgetPassword,
+  resetPassword: AuthService.resetPassword,
 }; 
