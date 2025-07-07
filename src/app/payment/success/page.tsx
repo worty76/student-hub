@@ -4,7 +4,7 @@ import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, Home, ShoppingBag, Loader2 } from 'lucide-react';
+import { CheckCircle, Home, Loader2 } from 'lucide-react';
 
 function PaymentSuccessContent() {
   const [paymentDetails, setPaymentDetails] = useState<Record<string, string>>({});
@@ -20,10 +20,10 @@ function PaymentSuccessContent() {
     setPaymentDetails(params);
   }, [searchParams]);
 
-  const handleViewOrderHistory = () => {
-    // Redirect to orders page if you have one
-    router.push('/orders');
-  };
+  // const handleViewOrderHistory = () => {
+  //   // Redirect to orders page if you have one
+  //   router.push('/orders');
+  // };
 
   const handleReturnHome = () => {
     router.push('/');
@@ -82,24 +82,16 @@ function PaymentSuccessContent() {
                 </div>
               </div>
 
-              {/* Next Steps */}
-              <div className="bg-blue-50 rounded-xl p-6">
-                <h3 className="text-xl font-bold text-gray-800 mb-2">Bước tiếp theo</h3>
-                <p className="text-gray-600 mb-4">
-                  Bạn sẽ nhận được email xác nhận đơn hàng. Người bán sẽ liên hệ với bạn để bàn giao sản phẩm.
-                </p>
-              </div>
-
               {/* Actions */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
-                <Button
+                {/* <Button
                   size="lg"
                   className="py-6 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0"
                   onClick={handleViewOrderHistory}
                 >
                   <ShoppingBag className="h-5 w-5 mr-2" />
                   Xem lịch sử đơn hàng
-                </Button>
+                </Button> */}
                 <Button
                   size="lg"
                   variant="outline"

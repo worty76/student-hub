@@ -13,14 +13,12 @@ function PaymentPageContent() {
     const resultCode = searchParams.get('resultCode');
     
     if (resultCode === '0' || resultCode === '00' || resultCode === '0000') {
-      // Payment successful, redirect to success page with all params
       const queryString = Array.from(searchParams.entries())
         .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
         .join('&');
         
       router.push(`/payment/success?${queryString}`);
     } else {
-      // Payment failed or was cancelled, redirect to homepage
       router.push('/');
     }
   }, [router, searchParams]);
