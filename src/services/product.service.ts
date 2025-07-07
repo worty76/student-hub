@@ -1,4 +1,4 @@
-import { CreateProductRequest, CreateProductResponse, EditProductRequest, EditProductResponse, DeleteProductResponse, Product, BuyProductRequest, BuyProductResponse, BuyProductError, ReportProductRequest, ReportProductResponse, ReportProductError } from '@/types/product';
+import { CreateProductRequest, CreateProductResponse, EditProductRequest, EditProductResponse, DeleteProductResponse, Product, BuyProductRequest, BuyProductResponse, BuyProductError, ReportProductRequest, ReportProductResponse, ReportProductError, ProductsQueryParams, ProductsResponse } from '@/types/product';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
@@ -406,6 +406,8 @@ export class ProductService {
 
   static async reportProduct(productId: string, token: string, reportData: ReportProductRequest): Promise<ReportProductResponse> {
     try {
+      console.log(`Reporting product with ID ${productId}`, reportData);
+      
       const response = await fetch(`${API_BASE_URL}/products/${productId}/report`, {
         method: 'POST',
         headers: {
@@ -416,6 +418,7 @@ export class ProductService {
       });
 
       const data = await response.json();
+      console.log('Report API response:', response.status, data);
 
       if (!response.ok) {
         const error: ReportProductError = {
@@ -429,7 +432,9 @@ export class ProductService {
         }
         
         if (response.status === 400) {
-          error.message = 'Dữ liệu nhập không hợp lệ';
+          // Enhanced error message by including the server's response
+          error.message = `Dữ liệu nhập không hợp lệ: ${data.details || data.message || ''}`;
+          console.error('Validation error details:', data);
           throw error;
         }
         
@@ -453,6 +458,85 @@ export class ProductService {
       throw new Error('Lỗi khi báo cáo sản phẩm');
     }
   }
+
+  static async getProductsWithPagination(params: ProductsQueryParams = {}): Promise<ProductsResponse> {
+    try {
+      // Build query string from params
+      const queryParams = new URLSearchParams();
+      
+      if (params.page) queryParams.set('page', params.page.toString());
+      if (params.limit) queryParams.set('limit', params.limit.toString());
+      if (params.category) queryParams.set('category', params.category);
+      if (params.condition) queryParams.set('condition', params.condition);
+      if (params.status) queryParams.set('status', params.status);
+      if (params.minPrice) queryParams.set('minPrice', params.minPrice.toString());
+      if (params.maxPrice) queryParams.set('maxPrice', params.maxPrice.toString());
+      if (params.location) queryParams.set('location', params.location);
+      if (params.search) queryParams.set('search', params.search);
+      if (params.sortBy) queryParams.set('sortBy', params.sortBy);
+      if (params.sortOrder) queryParams.set('sortOrder', params.sortOrder);
+
+      const queryString = queryParams.toString();
+      const url = `${API_BASE_URL}/products${queryString ? `?${queryString}` : ''}`;
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('Không tìm thấy sản phẩm nào');
+        }
+        throw new Error(`Lỗi khi tải sản phẩm: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      
+      // Handle different API response formats
+      if (data.products && Array.isArray(data.products)) {
+        // If API returns proper pagination format
+        return {
+          products: data.products,
+          pagination: data.pagination || {
+            total: data.products.length,
+            page: params.page || 1,
+            limit: params.limit || 10,
+            pages: Math.ceil((data.products.length) / (params.limit || 10))
+          }
+        };
+      } else if (Array.isArray(data)) {
+        // If API returns just an array of products, create pagination info
+        const products = data;
+        const total = products.length;
+        const limit = params.limit || 10;
+        const page = params.page || 1;
+        const pages = Math.ceil(total / limit);
+        
+        // Manual pagination if API doesn't support it
+        const paginatedProducts = products.slice((page - 1) * limit, page * limit);
+        
+        return {
+          products: paginatedProducts,
+          pagination: {
+            total,
+            page,
+            limit,
+            pages
+          }
+        };
+      } else {
+        throw new Error('Invalid response format');
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Lỗi khi tải sản phẩm');
+    }
+  }
 }
 
 export const productService = {
@@ -465,4 +549,5 @@ export const productService = {
   getUserProductsByUserId: ProductService.getUserProductsByUserId,
   buyProduct: ProductService.buyProduct,
   reportProduct: ProductService.reportProduct,
+  getProductsWithPagination: ProductService.getProductsWithPagination,
 }; 

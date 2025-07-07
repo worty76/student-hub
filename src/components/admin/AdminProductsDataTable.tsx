@@ -50,6 +50,7 @@ import { DeleteProductButton } from './DeleteProductButton';
 import { useAdminStore } from '@/store/adminStore';
 import { useAuthStore } from '@/store/authStore';
 import { toast } from '@/components/ui/use-toast';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 // Tiện ích định dạng ngày tháng
 const formatDate = {
@@ -317,9 +318,21 @@ export function AdminProductsDataTable({ data, isLoading = false }: AdminProduct
       header: 'Địa điểm',
       cell: ({ row }) => {
         const location = row.getValue('location') as string;
+        
+        if (!location) return <span className="text-sm text-gray-600">Chưa xác định</span>;
+        
+        // Truncate text to 30 characters and add ellipsis if needed
+        const maxLength = 30;
+        const displayText = location.length > maxLength 
+          ? location.substring(0, maxLength) + '...'
+          : location;
+        
         return (
-          <span className="text-sm text-gray-600">
-            {location || 'Chưa xác định'}
+          <span 
+            className="text-sm text-gray-600" 
+            title={location} // Show full location on hover
+          >
+            {displayText}
           </span>
         );
       },
@@ -402,7 +415,8 @@ export function AdminProductsDataTable({ data, isLoading = false }: AdminProduct
         const isPending = product.status === 'pending';
         
         return (
-          <div className="flex items-center gap-2">
+          <div>
+          <div className="flex items-center gap-2 mb-2">
             <Button
               variant="outline"
               size="sm"
@@ -413,6 +427,16 @@ export function AdminProductsDataTable({ data, isLoading = false }: AdminProduct
               Xem
             </Button>
             
+            <DeleteProductButton
+              productId={product._id}
+              productTitle={product.title}
+              variant="ghost"
+              size="sm"
+              iconOnly={true}
+              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+            />
+          </div>
+                      
             {isPending && (
               <>
                 <Button
@@ -436,15 +460,6 @@ export function AdminProductsDataTable({ data, isLoading = false }: AdminProduct
                 </Button>
               </>
             )}
-            
-            <DeleteProductButton
-              productId={product._id}
-              productTitle={product.title}
-              variant="ghost"
-              size="sm"
-              iconOnly={true}
-              className="text-red-600 hover:text-red-700 hover:bg-red-50"
-            />
           </div>
         );
       },
@@ -473,7 +488,7 @@ export function AdminProductsDataTable({ data, isLoading = false }: AdminProduct
     },
     initialState: {
       pagination: {
-        pageSize: 20,
+        pageSize: 7,
       },
     },
   });
@@ -629,55 +644,60 @@ export function AdminProductsDataTable({ data, isLoading = false }: AdminProduct
 
       {/* Bảng dữ liệu */}
       <div className="rounded-md border bg-white">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                  className="hover:bg-gray-50"
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
+        <ScrollArea className="w-full whitespace-nowrap">
+          <div className="w-full">
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </TableHead>
+                    );
+                  })}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  Không có sản phẩm nào.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && 'selected'}
+                    className="hover:bg-gray-50"
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    Không có sản phẩm nào.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+          </div>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
       </div>
 
       {/* Phân trang */}

@@ -42,9 +42,6 @@ interface ProductsListActions {
   
   // Utility
   refreshProducts: () => Promise<void>;
-  
-  // Internal methods
-  applyFiltersAndPagination: () => void;
 }
 
 type ProductsListStore = ProductsListState & ProductsListActions;
@@ -57,8 +54,8 @@ const initialState: ProductsListState = {
   currentParams: {
     page: 1,
     limit: 12,
-    sortBy: 'createdAt',
-    sortOrder: 'desc',
+    sortBy: 'createdAt' as const,
+    sortOrder: 'desc' as const,
     status: 'available', // Default to only show available products (hide sold products)
   },
   isLoading: false,
@@ -74,17 +71,17 @@ export const useProductsListStore = create<ProductsListStore>((set, get) => ({
     set({ isLoading: true, error: null });
 
     try {
-      const products = await ProductService.getAllProducts();
+      // Use paginated API instead
+      const result = await ProductService.getProductsWithPagination(get().currentParams);
       
       set({
-        allProducts: products,
+        allProducts: result.products,
+        displayedProducts: result.products,
+        pagination: result.pagination,
         isLoading: false,
         lastFetchTime: Date.now(),
         error: null,
       });
-      
-      // Apply filters and pagination after fetching
-      get().applyFiltersAndPagination();
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Lỗi khi tải sản phẩm';
       set({
@@ -102,18 +99,24 @@ export const useProductsListStore = create<ProductsListStore>((set, get) => ({
     set({ isLoading: true, error: null });
 
     try {
-      const products = await ProductService.getProductsByCategory(category);
+      // Use paginated API with category filter
+      const params = { 
+        ...get().currentParams, 
+        category, 
+        page: 1 
+      };
+      
+      const result = await ProductService.getProductsWithPagination(params);
       
       set({
-        allProducts: products,
+        allProducts: result.products,
+        displayedProducts: result.products,
+        pagination: result.pagination,
         isLoading: false,
         lastFetchTime: Date.now(),
         error: null,
-        currentParams: { ...get().currentParams, category, page: 1 },
+        currentParams: params,
       });
-      
-      // Apply filters and pagination after fetching
-      get().applyFiltersAndPagination();
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Lỗi khi tải sản phẩm theo danh mục';
       set({
@@ -131,24 +134,18 @@ export const useProductsListStore = create<ProductsListStore>((set, get) => ({
     set({ isLoading: true, error: null });
 
     try {
-      let products: Product[];
-      
-      if (params?.category) {
-        products = await ProductService.getProductsByCategory(params.category);
-      } else {
-        products = await ProductService.getAllProducts();
-      }
+      const newParams = { ...get().currentParams, ...params, page: 1 };
+      const result = await ProductService.getProductsWithPagination(newParams);
       
       set({
-        allProducts: products,
+        allProducts: result.products,
+        displayedProducts: result.products,
+        pagination: result.pagination,
         isLoading: false,
         lastFetchTime: Date.now(),
         error: null,
-        currentParams: { ...get().currentParams, ...params, page: 1 },
+        currentParams: newParams,
       });
-      
-      // Apply filters and pagination after fetching
-      get().applyFiltersAndPagination();
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Lỗi khi tải sản phẩm';
       set({
@@ -162,155 +159,50 @@ export const useProductsListStore = create<ProductsListStore>((set, get) => ({
     }
   },
 
-  applyFiltersAndPagination: () => {
-    const { allProducts, currentParams } = get();
-    
-    if (allProducts.length === 0) {
-      set({
-        filteredProducts: [],
-        displayedProducts: [],
-        pagination: null,
-      });
-      return;
-    }
-
-    let filtered = [...allProducts];
-
-    // Apply search filter
-    if (currentParams.search) {
-      const searchTerm = currentParams.search.toLowerCase();
-      filtered = filtered.filter(product => 
-        product.title.toLowerCase().includes(searchTerm) ||
-        product.description?.toLowerCase().includes(searchTerm) ||
-        product.location?.toLowerCase().includes(searchTerm)
-      );
-    }
-
-    // Apply category filter
-    if (currentParams.category) {
-      filtered = filtered.filter(product => product.category === currentParams.category);
-    }
-
-    // Apply condition filter
-    if (currentParams.condition) {
-      filtered = filtered.filter(product => product.condition === currentParams.condition);
-    }
-
-    // Apply status filter
-    if (currentParams.status) {
-      filtered = filtered.filter(product => product.status === currentParams.status);
-    }
-
-    // Apply price range filter
-    if (currentParams.minPrice !== undefined) {
-      filtered = filtered.filter(product => product.price >= currentParams.minPrice!);
-    }
-    if (currentParams.maxPrice !== undefined) {
-      filtered = filtered.filter(product => product.price <= currentParams.maxPrice!);
-    }
-
-    // Apply location filter
-    if (currentParams.location) {
-      const locationTerm = currentParams.location.toLowerCase();
-      filtered = filtered.filter(product => 
-        product.location?.toLowerCase().includes(locationTerm)
-      );
-    }
-
-    // Apply sorting
-    filtered.sort((a, b) => {
-      const { sortBy = 'createdAt', sortOrder = 'desc' } = currentParams;
-      let aValue: number, bValue: number;
-
-      switch (sortBy) {
-        case 'price':
-          aValue = a.price;
-          bValue = b.price;
-          break;
-        case 'views':
-          aValue = a.views || 0;
-          bValue = b.views || 0;
-          break;
-        case 'favorites':
-          aValue = a.favorites || 0;
-          bValue = b.favorites || 0;
-          break;
-        case 'createdAt':
-        default:
-          aValue = new Date(a.createdAt || 0).getTime();
-          bValue = new Date(b.createdAt || 0).getTime();
-          break;
-      }
-
-      if (sortOrder === 'asc') {
-        return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
-      } else {
-        return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
-      }
-    });
-
-    // Calculate pagination
-    const { page = 1, limit = 12 } = currentParams;
-    const total = filtered.length;
-    const pages = Math.ceil(total / limit);
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + limit;
-    const displayedProducts = filtered.slice(startIndex, endIndex);
-
-    const pagination: Pagination = {
-      total,
-      page,
-      limit,
-      pages,
-    };
-
-    set({
-      filteredProducts: filtered,
-      displayedProducts,
-      pagination,
-    });
-  },
-
   nextPage: () => {
-    const { pagination, currentParams } = get();
-    if (pagination && pagination.page < pagination.pages) {
-      set({
-        currentParams: { ...currentParams, page: pagination.page + 1 }
-      });
-      get().applyFiltersAndPagination();
+    const { currentParams, pagination } = get();
+    if (pagination && currentParams.page && currentParams.page < pagination.pages) {
+      const newPage = currentParams.page + 1;
+      get().goToPage(newPage);
     }
   },
 
   previousPage: () => {
-    const { pagination, currentParams } = get();
-    if (pagination && pagination.page > 1) {
-      set({
-        currentParams: { ...currentParams, page: pagination.page - 1 }
-      });
-      get().applyFiltersAndPagination();
+    const { currentParams } = get();
+    if (currentParams.page && currentParams.page > 1) {
+      const newPage = currentParams.page - 1;
+      get().goToPage(newPage);
     }
   },
 
-  goToPage: (page: number) => {
-    const { pagination, currentParams } = get();
-    if (pagination && page >= 1 && page <= pagination.pages && page !== pagination.page) {
+  goToPage: async (page: number) => {
+    set({ isLoading: true });
+    
+    try {
+      const newParams = { ...get().currentParams, page };
+      const result = await ProductService.getProductsWithPagination(newParams);
+      
       set({
-        currentParams: { ...currentParams, page }
+        allProducts: result.products,
+        displayedProducts: result.products,
+        pagination: result.pagination,
+        isLoading: false,
+        currentParams: newParams,
+        error: null,
       });
-      get().applyFiltersAndPagination();
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Lỗi khi tải trang sản phẩm';
+      set({
+        isLoading: false,
+        error: errorMessage,
+      });
     }
   },
 
   updateFilters: (params: Partial<ProductsQueryParams>) => {
-    const { currentParams } = get();
-    const newParams = {
-      ...currentParams,
-      ...params,
-      page: 1, // Reset to first page when filters change
-    };
-    
-    set({ currentParams: newParams });
-    get().applyFiltersAndPagination();
+    // When updating filters, always reset to page 1
+    const newParams = { ...get().currentParams, ...params, page: 1 };
+    get().fetchProductsWithParams(newParams);
   },
 
   clearFilters: () => {
@@ -319,11 +211,9 @@ export const useProductsListStore = create<ProductsListStore>((set, get) => ({
       limit: 12,
       sortBy: 'createdAt' as const,
       sortOrder: 'desc' as const,
-      status: 'available' as const, // Always default to hiding sold products
+      status: 'available',
     };
-    
-    set({ currentParams: defaultParams });
-    get().applyFiltersAndPagination();
+    get().fetchProductsWithParams(defaultParams);
   },
 
   clearError: () => {
@@ -335,6 +225,7 @@ export const useProductsListStore = create<ProductsListStore>((set, get) => ({
   },
 
   refreshProducts: async () => {
-    await get().fetchAllProducts();
-  },
+    const { currentParams } = get();
+    await get().fetchProductsWithParams(currentParams);
+  }
 })); 

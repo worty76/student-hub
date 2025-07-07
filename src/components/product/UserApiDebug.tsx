@@ -79,7 +79,7 @@ export default function UserApiDebug() {
       const productId = window.location.pathname.split('/').pop();
       addResult(`🆔 Product ID: ${productId}`);
       
-      const response = await fetch(`https://be-student-hub-production.up.railway.app/api/comments/product/${productId}`, {
+      const response = await fetch(`https://be-student-hub.onrender.com/api/comments/product/${productId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -117,7 +117,7 @@ export default function UserApiDebug() {
     addResult(`📡 Testing user endpoint directly: /users/${testId}`);
     
     try {
-      const response = await fetch(`https://be-student-hub-production.up.railway.app/api/users/${testId}`, {
+      const response = await fetch(`https://be-student-hub.onrender.com/api/users/${testId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

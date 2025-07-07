@@ -54,18 +54,28 @@ export default function ReportProductButton({
   const [errors, setErrors] = useState<{ reason?: string; description?: string }>({});
   const [reportSuccess, setReportSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  console.log(successMessage);
 
   const validateForm = (): boolean => {
     const newErrors: { reason?: string; description?: string } = {};
     
+    // Validate reason is a valid enum value
     if (!reason) {
       newErrors.reason = 'Vui lòng chọn lý do báo cáo';
+    } else {
+      const validReasons = ['inappropriate', 'spam', 'fraud', 'offensive', 'other'];
+      if (!validReasons.includes(reason)) {
+        newErrors.reason = 'Lý do báo cáo không hợp lệ';
+      }
     }
     
+    // Validate description - ensure it meets requirements
     if (!description.trim()) {
       newErrors.description = 'Mô tả chi tiết bắt buộc điền';
     } else if (description.trim().length < 10) {
       newErrors.description = 'Mô tả phải có ít nhất 10 ký tự';
+    } else if (description.trim().length > 500) {
+      newErrors.description = 'Mô tả không được vượt quá 500 ký tự';
     }
     
     setErrors(newErrors);
@@ -89,83 +99,113 @@ export default function ReportProductButton({
   const handleConfirmReport = async () => {
     if (!validateForm() || !token) return;
 
+    // Create a flag to track component mount state
+    let isMounted = true;
     setIsLoading(true);
     setErrors({});
+    
+    // Cleanup function to prevent state updates after unmount
+    const cleanup = () => {
+      isMounted = false;
+    };
 
     try {
+      // Create report data and validate types explicitly
       const reportData: ReportProductRequest = {
-        reason: reason as ReportProductRequest['reason'],
+        reason: reason as 'inappropriate' | 'spam' | 'fraud' | 'offensive' | 'other',
         description: description.trim()
       };
+      
+      console.log('Sending report data:', reportData);
 
       const response = await ProductService.reportProduct(productId, token, reportData);
 
-      if (response.success) {
+      if (response.success && isMounted) {
         // Show success state in modal
         setReportSuccess(true);
         setSuccessMessage(response.message);
         setIsLoading(false);
         
         // Auto-close dialog and navigate after 2 seconds
-        setTimeout(() => {
-          setIsOpen(false);
-          setReportSuccess(false);
-          setReason('');
-          setDescription('');
-          setSuccessMessage('');
-          
-          // Show toast notification
-          toast({
-            title: "Báo cáo thành công!",
-            description: response.message,
-          });
+        const timer = setTimeout(() => {
+          // Only update state if component is still mounted
+          if (isMounted) {
+            setIsOpen(false);
+            setReportSuccess(false);
+            setReason('');
+            setDescription('');
+            setSuccessMessage('');
+            
+            // Show toast notification
+            toast({
+              title: "Báo cáo thành công!",
+              description: response.message,
+            });
+          }
         }, 2000);
+        
+        // Clear the timeout if component unmounts
+        return () => {
+          clearTimeout(timer);
+          cleanup();
+        };
       }
     } catch (error) {
       console.error('Report product error:', error);
       
-      if (error && typeof error === 'object' && 'code' in error) {
-        const reportError = error as ReportProductError;
-        
-        switch (reportError.code) {
-          case 401:
-            toast({
-              variant: "destructive",
-              title: "Không được phép",
-              description: "Xin hãy đăng nhập lại để tiếp tục"
-            });
-            router.push('/auth/login');
-            break;
-          case 400:
-            toast({
-              variant: "destructive",
-              title: "Báo cáo thất bại",
-              description: "Dữ liệu nhập không hợp lệ"
-            });
-            break;
-          case 404:
-            toast({
-              variant: "destructive",
-              title: "Sản phẩm không tồn tại",
-              description: "Sản phẩm bạn đang cố báo cáo không còn tồn tại"
-            });
-            break;
-          default:
-            toast({
-              variant: "destructive",
-              title: "Báo cáo thất bại",
-              description: reportError.message || "Đã xảy ra lỗi không xác định"
-            });
+      // Improved error handling to avoid empty object errors
+      let errorMessage = "Đã xảy ra lỗi không xác định. Xin hãy thử lại.";
+      let errorCode = 0;
+      
+      if (error) {
+        // Check if error is a specific ReportProductError with code property
+        if (typeof error === 'object' && error !== null && 'code' in error && typeof (error as ReportProductError).code === 'number') {
+          const reportError = error as ReportProductError;
+          errorCode = reportError.code;
+          errorMessage = reportError.message || errorMessage;
+        } 
+        // Check if it's a standard Error object
+        else if (error instanceof Error) {
+          errorMessage = error.message;
         }
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Báo cáo thất bại",
-          description: "Đã xảy ra lỗi không xác định. Xin hãy thử lại."
-        });
+      }
+      
+      // Handle specific error codes
+      switch (errorCode) {
+        case 401:
+          toast({
+            variant: "destructive",
+            title: "Không được phép",
+            description: "Xin hãy đăng nhập lại để tiếp tục"
+          });
+          router.push('/auth/login');
+          break;
+        case 400:
+          toast({
+            variant: "destructive",
+            title: "Báo cáo thất bại",
+            description: errorMessage
+          });
+          break;
+        case 404:
+          toast({
+            variant: "destructive",
+            title: "Sản phẩm không tồn tại",
+            description: "Sản phẩm bạn đang cố báo cáo không còn tồn tại"
+          });
+          break;
+        default:
+          toast({
+            variant: "destructive",
+            title: "Báo cáo thất bại",
+            description: errorMessage
+          });
       }
     } finally {
-      setIsLoading(false);
+      // Only update loading state if component is still mounted
+      if (isMounted) {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -207,7 +247,7 @@ export default function ReportProductButton({
                   Báo cáo thành công!
                 </DialogTitle>
                 <DialogDescription className="text-lg">
-                  {successMessage}
+                  Chúng tôi đã nhận được báo cáo của bạn và sẽ xem xét sớm nhất có thể.
                 </DialogDescription>
               </div>
             </DialogHeader>

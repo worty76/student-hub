@@ -60,7 +60,7 @@ export function ConditionalLayout({ children }: ConditionalLayoutProps) {
   return (
     <>
       <Header />
-      <main className="flex-1 pb-20">
+      <main className="flex-1">
         {children}
       </main>
       <Footer />

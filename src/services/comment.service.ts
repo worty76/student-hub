@@ -1,6 +1,6 @@
 import { CreateCommentRequest, CreateCommentResponse, CreateReplyRequest, CreateReplyResponse, EditCommentRequest, EditCommentResponse, DeleteCommentResponse, LikeCommentResponse, Comment } from '@/types/comment';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://be-student-hub-production.up.railway.app/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://be-student-hub.onrender.com/api';
 
 export class CommentService {
   static async createComment(token: string, commentData: CreateCommentRequest): Promise<CreateCommentResponse> {

@@ -49,23 +49,23 @@ export function Homepage() {
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-purple-700">
         <div className="absolute inset-0 bg-black/10"></div>
-        <div className="relative container mx-auto px-4 py-20">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="relative container mx-auto px-6 py-28">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
             {/* Hero Content */}
             <motion.div 
-              className="text-white space-y-8"
+              className="text-white space-y-10"
               initial="initial"
               animate="animate"
               variants={staggerContainer}
             >
               <motion.div variants={fadeInUp} className="flex items-center space-x-3">
-                <MapPin className="h-6 w-6 text-blue-200" />
-                <span className="text-blue-200 font-medium">Chuyên dành cho sinh viên Đà Nẵng</span>
+                <MapPin className="h-7 w-7 text-blue-200" />
+                <span className="text-blue-200 font-medium text-lg">Chuyên dành cho sinh viên Đà Nẵng</span>
               </motion.div>
               
               <motion.h1 
                 variants={fadeInUp}
-                className="text-4xl md:text-6xl font-bold leading-tight"
+                className="text-5xl md:text-7xl font-bold leading-tight"
               >
                 Kết Nối Sinh Viên
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-orange-300">
@@ -75,7 +75,7 @@ export function Homepage() {
               
               <motion.p 
                 variants={fadeInUp}
-                className="text-xl md:text-2xl text-blue-100 leading-relaxed"
+                className="text-xl md:text-3xl text-blue-100 leading-relaxed"
               >
                 Nền tảng mua bán đồ cũ tin cậy dành riêng cho cộng đồng sinh viên các trường đại học tại Đà Nẵng. 
                 Tìm kiếm, chia sẻ và trao đổi những món đồ yêu thích với giá sinh viên!
@@ -83,15 +83,15 @@ export function Homepage() {
               
               <motion.div 
                 variants={fadeInUp}
-                className="flex flex-col sm:flex-row gap-4"
+                className="flex flex-col sm:flex-row gap-6"
               >
                 <Link href="/products">
                   <motion.button 
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="bg-white text-blue-600 px-8 py-4 rounded-full font-semibold text-lg hover:bg-gray-100 transition-all duration-300 shadow-lg cursor-pointer w-full sm:w-auto"
+                    className="bg-white text-blue-600 px-10 py-5 rounded-full font-semibold text-xl hover:bg-gray-100 transition-all duration-300 shadow-lg cursor-pointer w-full sm:w-auto"
                   >
-                    <ShoppingBag className="inline h-5 w-5 mr-2" />
+                    <ShoppingBag className="inline h-6 w-6 mr-2" />
                     Khám Phá Ngay
                   </motion.button>
                 </Link>
@@ -99,9 +99,9 @@ export function Homepage() {
                   <motion.button 
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-blue-600 transition-all duration-300 cursor-pointer w-full sm:w-auto"
+                    className="border-2 border-white text-white px-10 py-5 rounded-full font-semibold text-xl hover:bg-white hover:text-blue-600 transition-all duration-300 cursor-pointer w-full sm:w-auto"
                   >
-                    <Users className="inline h-5 w-5 mr-2" />
+                    <Users className="inline h-6 w-6 mr-2" />
                     Tham Gia Miễn Phí
                   </motion.button>
                 </Link>
@@ -115,39 +115,39 @@ export function Homepage() {
               transition={{ duration: 0.8, ease: "easeOut" }}
               className="relative"
             >
-              <div className="relative z-10 bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20">
-                <div className="grid grid-cols-2 gap-4">
+              <div className="relative z-10 bg-white/10 backdrop-blur-lg rounded-3xl p-10 border border-white/20 shadow-xl">
+                <div className="grid grid-cols-2 gap-6">
                   <motion.div 
                     whileHover={{ scale: 1.05 }}
-                    className="bg-white/20 rounded-2xl p-4 text-center"
+                    className="bg-white/20 rounded-2xl p-6 text-center"
                   >
-                    <GraduationCap className="h-8 w-8 text-yellow-300 mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-white">12+</div>
-                    <div className="text-blue-200 text-sm">Trường ĐH</div>
+                    <GraduationCap className="h-10 w-10 text-yellow-300 mx-auto mb-3" />
+                    <div className="text-3xl font-bold text-white">12+</div>
+                    <div className="text-blue-200 text-base">Trường ĐH</div>
                   </motion.div>
                   <motion.div 
                     whileHover={{ scale: 1.05 }}
-                    className="bg-white/20 rounded-2xl p-4 text-center"
+                    className="bg-white/20 rounded-2xl p-6 text-center"
                   >
-                    <Users className="h-8 w-8 text-green-300 mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-white">5K+</div>
-                    <div className="text-blue-200 text-sm">Sinh Viên</div>
+                    <Users className="h-10 w-10 text-green-300 mx-auto mb-3" />
+                    <div className="text-3xl font-bold text-white">5K+</div>
+                    <div className="text-blue-200 text-base">Sinh Viên</div>
                   </motion.div>
                   <motion.div 
                     whileHover={{ scale: 1.05 }}
-                    className="bg-white/20 rounded-2xl p-4 text-center"
+                    className="bg-white/20 rounded-2xl p-6 text-center"
                   >
-                    <ShoppingBag className="h-8 w-8 text-purple-300 mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-white">2.5K+</div>
-                    <div className="text-blue-200 text-sm">Sản Phẩm</div>
+                    <ShoppingBag className="h-10 w-10 text-purple-300 mx-auto mb-3" />
+                    <div className="text-3xl font-bold text-white">2.5K+</div>
+                    <div className="text-blue-200 text-base">Sản Phẩm</div>
                   </motion.div>
                   <motion.div 
                     whileHover={{ scale: 1.05 }}
-                    className="bg-white/20 rounded-2xl p-4 text-center"
+                    className="bg-white/20 rounded-2xl p-6 text-center"
                   >
-                    <Heart className="h-8 w-8 text-red-300 mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-white">98%</div>
-                    <div className="text-blue-200 text-sm">Hài Lòng</div>
+                    <Heart className="h-10 w-10 text-red-300 mx-auto mb-3" />
+                    <div className="text-3xl font-bold text-white">98%</div>
+                    <div className="text-blue-200 text-base">Hài Lòng</div>
                   </motion.div>
                 </div>
               </div>

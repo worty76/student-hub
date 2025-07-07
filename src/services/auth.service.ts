@@ -18,7 +18,11 @@ export class AuthService {
         if (response.status === 401) {
           throw new Error('Tài khoản hoặc mật khẩu không chính xác');
         }
-        throw new Error(`Đăng nhập thất bại: ${response.statusText}`);
+        if (response.status === 400) {
+          throw new Error('Email hoặc mật khẩu không chính xác');
+        }
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `Đăng nhập thất bại: ${response.statusText}`);
       }
 
       const data: LoginResponse = await response.json();

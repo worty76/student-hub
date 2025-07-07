@@ -21,20 +21,6 @@ The admin dashboard provides comprehensive statistics and analytics for the plat
 - **Loading States**: Smooth loading indicators while fetching data
 - **Responsive Design**: Clean and modern UI that works on all devices
 
-### API Integration:
-- **Endpoint**: `https://be-student-hub-production.up.railway.app/api/users/admin/dashboard`
-- **Authentication**: Requires admin auth token in Bearer format
-- **Response Handling**: 
-  - 200: Success with dashboard data
-  - 401: Unauthorized - redirects to login
-  - 403: Forbidden - shows admin access required message
-
-### Data Visualization:
-- **User Growth Chart**: Line chart showing user registration trends over time
-- **Product Categories**: Pie chart displaying product distribution across categories
-- **Sales Overview**: Bar chart showing daily/weekly sales performance
-- **Revenue Trends**: Line chart tracking revenue growth
-
 ### State Management:
 Uses Zustand for efficient state management with proper error handling and loading states.
 

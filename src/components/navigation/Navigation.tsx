@@ -10,9 +10,13 @@ export function Navigation() {
   const { user, isAuthenticated, logout } = useAuthStore();
   const router = useRouter();
 
-  const handleLogout = () => {
-    logout();
-    router.push('/auth/login');
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.push('/');
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
   };
 
   if (!isAuthenticated || !user) {
