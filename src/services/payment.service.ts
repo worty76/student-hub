@@ -40,6 +40,62 @@ export interface ProductPurchaseResponse {
   };
 }
 
+export interface PurchaseHistoryItem {
+  orderId: string;
+  transactionId: string;
+  amount: number;
+  paymentMethod: string;
+  shippingAddress: string;
+  purchaseDate: string;
+  product: {
+    _id: string;
+    title: string;
+    description: string;
+    price: number;
+    images: string[];
+    category: string;
+    condition: string;
+    status: string;
+    location: string;
+    seller: {
+      _id: string;
+      name: string;
+      email: string;
+      avatar: string;
+    };
+  };
+}
+
+export interface PurchaseHistoryPagination {
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  itemsPerPage: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+}
+
+export interface PurchaseHistoryResponse {
+  success: boolean;
+  data: {
+    purchases: PurchaseHistoryItem[];
+    pagination: PurchaseHistoryPagination;
+  };
+}
+
+export interface PurchaseHistoryParams {
+  page?: number;
+  limit?: number;
+  status?: string;
+  category?: string;
+  sortBy?: string;
+  sortOrder?: string;
+  minAmount?: number;
+  maxAmount?: number;
+  startDate?: string;
+  endDate?: string;
+}
+
 export class PaymentService {
   static async createMomoPayment(token: string, productId: string): Promise<MomoPaymentResponse> {
     try {
@@ -162,10 +218,52 @@ export class PaymentService {
       throw new Error('Có lỗi xảy ra khi xử lý thanh toán VNPAY');
     }
   }
+
+  static async getPurchaseHistory(token: string, params: PurchaseHistoryParams = {}): Promise<PurchaseHistoryResponse> {
+    try {
+      const queryParams = new URLSearchParams();
+      
+      // Add parameters to query string
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+          queryParams.append(key, value.toString());
+        }
+      });
+
+      const queryString = queryParams.toString();
+      const url = `${API_BASE_URL}/payments/purchases${queryString ? `?${queryString}` : ''}`;
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+        }
+        
+        throw new Error(data.message || 'Có lỗi xảy ra khi tải lịch sử mua hàng');
+      }
+
+      return data as PurchaseHistoryResponse;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Có lỗi xảy ra khi tải lịch sử mua hàng');
+    }
+  }
 }
 
 export const paymentService = {
   createMomoPayment: PaymentService.createMomoPayment,
   createVNPayPayment: PaymentService.createVNPayPayment,
   purchaseWithVNPay: PaymentService.purchaseWithVNPay,
+  getPurchaseHistory: PaymentService.getPurchaseHistory,
 }; 
