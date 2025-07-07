@@ -4,8 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { ProductsQueryParams, PRODUCT_CATEGORIES, PRODUCT_CONDITIONS, PRODUCT_STATUS } from '@/types/product';
-import { Search, X, Filter, Tag, MapPin, DollarSign, Star, Calendar, TrendingUp, ChevronDown, ChevronUp } from 'lucide-react';
+import { ProductsQueryParams, PRODUCT_CATEGORIES, PRODUCT_CONDITIONS } from '@/types/product';
+import { Search, X, Filter, Tag, DollarSign, Star, Calendar, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface ProductFiltersProps {
   onFiltersChange: (params: Partial<ProductsQueryParams>) => void;
@@ -17,11 +17,15 @@ interface ProductFiltersProps {
 export function ProductFilters({ onFiltersChange, currentParams, isLoading = false, className }: ProductFiltersProps) {
   const [searchTerm, setSearchTerm] = useState(currentParams.search || '');
   const [isExpanded, setIsExpanded] = useState(false);
+  const [priceMin, setPriceMin] = useState<string>(currentParams.minPrice?.toString() || '');
+  const [priceMax, setPriceMax] = useState<string>(currentParams.maxPrice?.toString() || '');
 
   // Update search term when currentParams changes
   useEffect(() => {
     setSearchTerm(currentParams.search || '');
-  }, [currentParams.search]);
+    setPriceMin(currentParams.minPrice?.toString() || '');
+    setPriceMax(currentParams.maxPrice?.toString() || '');
+  }, [currentParams.search, currentParams.minPrice, currentParams.maxPrice]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,11 +33,47 @@ export function ProductFilters({ onFiltersChange, currentParams, isLoading = fal
   };
 
   const handleFilterChange = (key: keyof ProductsQueryParams, value: string | number | undefined) => {
+    // Add console log to debug filter changes
+    console.log(`Filter changed: ${key} = ${value}`);
+    
+    // If the key is status, category, or condition, properly format the value
+    if ((key === 'status' || key === 'category' || key === 'condition') && value === 'all') {
+      onFiltersChange({ [key]: undefined });
+      return;
+    }
+    
+    // For price filters, ensure we're passing numbers
+    if (key === 'minPrice' || key === 'maxPrice') {
+      const numValue = value ? Number(value) : undefined;
+      onFiltersChange({ [key]: numValue });
+      return;
+    }
+    
+    // For other string filters like location, ensure we pass undefined if empty
+    if (typeof value === 'string' && value.trim() === '') {
+      onFiltersChange({ [key]: undefined });
+      return;
+    }
+    
+    // Otherwise apply the filter normally
     onFiltersChange({ [key]: value });
   };
 
+  const handlePriceChange = () => {
+    const minPriceValue = priceMin ? Number(priceMin) : undefined;
+    const maxPriceValue = priceMax ? Number(priceMax) : undefined;
+    
+    onFiltersChange({ 
+      minPrice: minPriceValue, 
+      maxPrice: maxPriceValue 
+    });
+  };
+
   const clearAllFilters = () => {
+    console.log('Clearing all filters');
     setSearchTerm('');
+    setPriceMin('');
+    setPriceMax('');
     onFiltersChange({
       search: undefined,
       category: undefined,
@@ -65,11 +105,11 @@ export function ProductFilters({ onFiltersChange, currentParams, isLoading = fal
     <Card className={`${className} bg-gradient-to-br from-white to-blue-50 border-2 border-blue-200 shadow-md overflow-hidden`}>
       {/* Filter Header - Always Visible */}
       <div 
-        className="flex items-center justify-between p-4 cursor-pointer lg:cursor-default"
+        className="flex items-center justify-between cursor-pointer lg:cursor-default ps-4"
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        <CardTitle className="text-lg flex items-center gap-2 font-bold">
-          <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+        <CardTitle className="ps-2 text-lg flex items-center gap-2 font-bold">
+          <div className="bg-white/20 rounded-lg backdrop-blur-sm">
             <Filter className="h-5 w-5" />
           </div>
           <span>Tìm kiếm & Bộ lọc</span>
@@ -174,7 +214,10 @@ export function ProductFilters({ onFiltersChange, currentParams, isLoading = fal
               </label>
               <Select
                 value={currentParams.category || 'all'}
-                onValueChange={(value) => handleFilterChange('category', value === 'all' ? undefined : value)}
+                onValueChange={(value) => {
+                  console.log('Changing category to:', value);
+                  handleFilterChange('category', value === 'all' ? undefined : value);
+                }}
                 disabled={isLoading}
               >
                 <SelectTrigger className="border-purple-300 focus:border-purple-500 bg-white/80">
@@ -199,7 +242,10 @@ export function ProductFilters({ onFiltersChange, currentParams, isLoading = fal
               </label>
               <Select
                 value={currentParams.condition || 'all'}
-                onValueChange={(value) => handleFilterChange('condition', value === 'all' ? undefined : value)}
+                onValueChange={(value) => {
+                  console.log('Changing condition to:', value);
+                  handleFilterChange('condition', value === 'all' ? undefined : value);
+                }}
                 disabled={isLoading}
               >
                 <SelectTrigger className="border-green-300 focus:border-green-500 bg-white/80">
@@ -216,31 +262,6 @@ export function ProductFilters({ onFiltersChange, currentParams, isLoading = fal
               </Select>
             </div>
 
-            {/* Status */}
-            <div className="bg-gradient-to-r from-orange-50 to-yellow-50 p-3 rounded-xl border border-orange-200">
-              <label className="text-sm font-bold text-orange-800 mb-2 flex items-center gap-2">
-                <TrendingUp className="h-4 w-4" />
-                Trạng thái
-              </label>
-              <Select
-                value={currentParams.status || 'all'}
-                onValueChange={(value) => handleFilterChange('status', value === 'all' ? undefined : value)}
-                disabled={isLoading}
-              >
-                <SelectTrigger className="border-orange-300 focus:border-orange-500 bg-white/80">
-                  <SelectValue placeholder="Tất cả trạng thái" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tất cả trạng thái</SelectItem>
-                  {PRODUCT_STATUS.map((status) => (
-                    <SelectItem key={status.value} value={status.value}>
-                      {status.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
             {/* Price Range */}
             <div className="bg-gradient-to-r from-indigo-50 to-blue-50 p-3 rounded-xl border border-indigo-200">
               <label className="text-sm font-bold text-indigo-800 flex items-center gap-2 mb-2">
@@ -251,36 +272,22 @@ export function ProductFilters({ onFiltersChange, currentParams, isLoading = fal
                 <Input
                   type="number"
                   placeholder="Tối thiểu"
-                  value={currentParams.minPrice || ''}
-                  onChange={(e) => handleFilterChange('minPrice', e.target.value ? Number(e.target.value) : undefined)}
+                  value={priceMin}
+                  onChange={(e) => setPriceMin(e.target.value)}
+                  onBlur={handlePriceChange}
                   disabled={isLoading}
                   className="border-indigo-300 focus:border-indigo-500 bg-white/80 text-sm"
                 />
                 <Input
                   type="number"
                   placeholder="Tối đa"
-                  value={currentParams.maxPrice || ''}
-                  onChange={(e) => handleFilterChange('maxPrice', e.target.value ? Number(e.target.value) : undefined)}
+                  value={priceMax}
+                  onChange={(e) => setPriceMax(e.target.value)}
+                  onBlur={handlePriceChange}
                   disabled={isLoading}
                   className="border-indigo-300 focus:border-indigo-500 bg-white/80 text-sm"
                 />
               </div>
-            </div>
-
-            {/* Location */}
-            <div className="bg-gradient-to-r from-red-50 to-pink-50 p-3 rounded-xl border border-red-200">
-              <label className="text-sm font-bold text-red-800 mb-2 flex items-center gap-2">
-                <MapPin className="h-4 w-4" />
-                Địa điểm
-              </label>
-              <Input
-                type="text"
-                placeholder="Địa điểm"
-                value={currentParams.location || ''}
-                onChange={(e) => handleFilterChange('location', e.target.value || undefined)}
-                disabled={isLoading}
-                className="border-red-300 focus:border-red-500 bg-white/80"
-              />
             </div>
 
             {/* Sort */}
@@ -292,7 +299,10 @@ export function ProductFilters({ onFiltersChange, currentParams, isLoading = fal
               <div className="grid grid-cols-2 gap-2">
                 <Select
                   value={currentParams.sortBy || 'createdAt'}
-                  onValueChange={(value) => handleFilterChange('sortBy', value as 'price' | 'createdAt' | 'views' | 'favorites')}
+                  onValueChange={(value) => {
+                    console.log('Changing sort field to:', value);
+                    handleFilterChange('sortBy', value as 'price' | 'createdAt' | 'views' | 'favorites');
+                  }}
                   disabled={isLoading}
                 >
                   <SelectTrigger className="border-teal-300 focus:border-teal-500 bg-white/80">
@@ -308,7 +318,10 @@ export function ProductFilters({ onFiltersChange, currentParams, isLoading = fal
                 
                 <Select
                   value={currentParams.sortOrder || 'desc'}
-                  onValueChange={(value) => handleFilterChange('sortOrder', value as 'asc' | 'desc')}
+                  onValueChange={(value) => {
+                    console.log('Changing sort order to:', value);
+                    handleFilterChange('sortOrder', value as 'asc' | 'desc');
+                  }}
                   disabled={isLoading}
                 >
                   <SelectTrigger className="border-teal-300 focus:border-teal-500 bg-white/80">

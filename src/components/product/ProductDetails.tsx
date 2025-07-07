@@ -18,14 +18,15 @@ import {
   User, 
   Heart, 
   Eye, 
-  Tag, 
-  DollarSign
+  Tag
 } from 'lucide-react';
-import { ProductFavoriteButton } from './ProductFavoriteButton';
-import ProductComments from './ProductComments';
-import BuyProductButton from './BuyProductButton';
-import ReportProductButton from './ReportProductButton';
-import { PayWithMomoButton } from './PayWithMomoButton';
+import { 
+  ProductFavoriteButton,
+  BuyProductButton,
+  PurchaseWithVNPayButton,
+  ProductComments,
+  ReportProductButton
+} from '@/components/product';
 import { formatDate, formatPrice, getStatusColor, getConditionColor } from '@/lib/utils';
 
 interface ProductDetailsProps {
@@ -178,20 +179,21 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-7xl mx-auto">
           {/* Header with back button */}
-          <div className="mb-8">
+          <div className="mb-4">
             <Button 
               onClick={() => router.back()}
-              className="bg-white/80 backdrop-blur-sm hover:bg-white border border-gray-200 text-gray-700 hover:text-gray-900 font-medium px-6 py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
+              size="sm"
+              className="bg-white/80 backdrop-blur-sm hover:bg-white border border-gray-200 text-gray-700 hover:text-gray-900 font-medium px-3 py-1 rounded-lg shadow-sm hover:shadow-md transition-all duration-300"
             >
-              <ChevronLeft className="h-5 w-5 mr-2" />
+              <ChevronLeft className="h-4 w-4 mr-1" />
               Quay lại
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
             {/* Image Carousel */}
-            <div className="space-y-6">
-              <Card className="overflow-hidden shadow-2xl border-0 bg-white/80 backdrop-blur-sm">
+            <div className="space-y-3">
+              <Card className="overflow-hidden shadow-lg border-0 bg-white/80 backdrop-blur-sm">
                 <CardContent className="p-0">
                   <div className="relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100">
                     {currentProduct.images && currentProduct.images.length > 0 ? (
@@ -217,17 +219,17 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
                           <>
                             <Button
                               size="sm"
-                              className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/90 backdrop-blur-sm hover:bg-white border-0 text-gray-700 w-12 h-12 rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
+                              className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/90 backdrop-blur-sm hover:bg-white border-0 text-gray-700 w-8 h-8 rounded-full shadow-md hover:shadow-lg transition-all duration-300"
                               onClick={handlePreviousImage}
                             >
-                              <ChevronLeft className="h-5 w-5" />
+                              <ChevronLeft className="h-4 w-4" />
                             </Button>
                             <Button
                               size="sm"
-                              className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/90 backdrop-blur-sm hover:bg-white border-0 text-gray-700 w-12 h-12 rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
+                              className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/90 backdrop-blur-sm hover:bg-white border-0 text-gray-700 w-8 h-8 rounded-full shadow-md hover:shadow-lg transition-all duration-300"
                               onClick={handleNextImage}
                             >
-                              <ChevronRight className="h-5 w-5" />
+                              <ChevronRight className="h-4 w-4" />
                             </Button>
                             
                             {/* Image counter */}
@@ -250,14 +252,14 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
 
               {/* Thumbnail images */}
               {currentProduct.images && currentProduct.images.length > 1 && (
-                <div className="flex space-x-3 overflow-x-auto pb-2">
+                <div className="flex space-x-2 overflow-x-auto pb-1">
                   {currentProduct.images.map((image, index) => (
                     <div
                       key={index}
-                      className={`flex-shrink-0 relative w-24 h-24 rounded-xl overflow-hidden cursor-pointer border-3 transition-all duration-300 hover:scale-105 ${
+                      className={`flex-shrink-0 relative w-16 h-16 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-300 hover:scale-105 ${
                         index === currentImageIndex 
-                          ? 'border-blue-500 ring-4 ring-blue-200 shadow-lg' 
-                          : 'border-gray-200 hover:border-gray-300 shadow-md hover:shadow-lg'
+                          ? 'border-blue-500 ring-2 ring-blue-200 shadow-md' 
+                          : 'border-gray-200 hover:border-gray-300 shadow-sm hover:shadow-md'
                       }`}
                       onClick={() => setCurrentImageIndex(index)}
                     >
@@ -290,28 +292,27 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
             </div>
 
             {/* Product Information */}
-            <div className="space-y-6">
+            <div className="space-y-3">
               {/* Title and Price */}
-              <Card className="shadow-2xl border-0 bg-white/80 backdrop-blur-sm">
+              <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
                 <CardHeader className="pb-4">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <CardTitle className="text-3xl font-bold mb-4 text-gray-800 leading-tight">
+                      <CardTitle className="text-2xl font-bold mb-2 text-gray-800 leading-tight">
                         {currentProduct.title}
                       </CardTitle>
-                      <div className="flex items-center space-x-3 mb-6">
-                        <Badge className={`${getStatusColor(currentProduct.status)} px-4 py-2 text-sm font-semibold rounded-full`}>
+                      <div className="flex items-center space-x-2 mb-3">
+                        <Badge className={`${getStatusColor(currentProduct.status)} px-2 py-1 text-xs font-medium rounded-full`}>
                           {getStatusLabel(currentProduct.status)}
                         </Badge>
-                        <Badge className={`${getConditionColor(currentProduct.condition)} px-4 py-2 text-sm font-semibold rounded-full`}>
+                        <Badge className={`${getConditionColor(currentProduct.condition)} px-2 py-1 text-xs font-medium rounded-full`}>
                           {getConditionLabel(currentProduct.condition)}
                         </Badge>
                       </div>
                     </div>
                   </div>
-                  <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white p-6 rounded-2xl shadow-lg">
-                    <div className="text-4xl font-bold flex items-center">
-                      <DollarSign className="h-8 w-8 mr-2" />
+                  <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white p-3 rounded-xl shadow-md">
+                    <div className="text-2xl font-bold flex items-center">
                       {formatPrice(currentProduct.price)}
                     </div>
                   </div>
@@ -319,60 +320,58 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
                 <CardContent>
                   <div className="flex items-center space-x-6 text-sm text-gray-600">
                     {currentProduct.views !== undefined && (
-                      <div className="flex items-center bg-blue-50 px-4 py-2 rounded-full">
-                        <Eye className="h-4 w-4 mr-2 text-blue-500" />
-                        <span className="font-medium">{currentProduct.views} lượt xem</span>
+                      <div className="flex items-center bg-blue-50 px-2 py-1 rounded-full">
+                        <Eye className="h-3 w-3 mr-1 text-blue-500" />
+                        <span className="font-medium text-xs">{currentProduct.views} lượt xem</span>
                       </div>
                     )}
                     {currentProduct.favorites !== undefined && (
-                      <div className="flex items-center bg-pink-50 px-4 py-2 rounded-full">
-                        <Heart className="h-4 w-4 mr-2 text-pink-500" />
-                        <span className="font-medium">{currentProduct.favorites} yêu thích</span>
+                      <div className="flex items-center bg-pink-50 px-2 py-1 rounded-full">
+                        <Heart className="h-3 w-3 mr-1 text-pink-500" />
+                        <span className="font-medium text-xs">{currentProduct.favorites} yêu thích</span>
                       </div>
                     )}
                   </div>
                 </CardContent>
               </Card>
 
-
-
               {/* Product Details */}
               <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-                <CardHeader className="pb-4">
-                  <CardTitle className="text-xl font-bold text-gray-800 flex items-center">
-                    <Tag className="h-5 w-5 mr-2 text-purple-500" />
+                <CardHeader className="pb-2 pt-3">
+                  <CardTitle className="text-lg font-bold text-gray-800 flex items-center">
+                    <Tag className="h-4 w-4 mr-1 text-purple-500" />
                     Thông tin chi tiết
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 gap-4">
-                    <div className="flex items-center space-x-3 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl">
-                      <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
-                        <Tag className="h-5 w-5 text-white" />
+                    <div className="flex items-center space-x-2 p-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg">
+                      <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
+                        <Tag className="h-4 w-4 text-white" />
                       </div>
                       <div>
-                        <span className="font-semibold text-gray-700">Danh mục:</span>
-                        <span className="ml-2 text-gray-600">{getCategoryLabel(currentProduct.category)}</span>
+                        <span className="font-medium text-sm text-gray-700">Danh mục:</span>
+                        <span className="ml-1 text-sm text-gray-600">{getCategoryLabel(currentProduct.category)}</span>
                       </div>
                     </div>
                     
-                    <div className="flex items-center space-x-3 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl">
-                      <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center">
-                        <MapPin className="h-5 w-5 text-white" />
+                    <div className="flex items-center space-x-2 p-2 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg">
+                      <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center">
+                        <MapPin className="h-4 w-4 text-white" />
                       </div>
                       <div>
-                        <span className="font-semibold text-gray-700">Địa điểm:</span>
-                        <span className="ml-2 text-gray-600">{currentProduct.location}</span>
+                        <span className="font-medium text-sm text-gray-700">Địa điểm:</span>
+                        <span className="ml-1 text-sm text-gray-600">{currentProduct.location}</span>
                       </div>
                     </div>
                     
-                    <div className="flex items-center space-x-3 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl">
-                      <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full flex items-center justify-center">
-                        <User className="h-5 w-5 text-white" />
+                    <div className="flex items-center space-x-2 p-2 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg">
+                      <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full flex items-center justify-center">
+                        <User className="h-4 w-4 text-white" />
                       </div>
                       <div>
-                        <span className="font-semibold text-gray-700">Người bán:</span>
-                        <span className="ml-2 text-gray-600">{typeof currentProduct.seller === 'object' ? currentProduct.seller.name : currentProduct.seller}</span>
+                        <span className="font-medium text-sm text-gray-700">Người bán:</span>
+                        <span className="ml-1 text-sm text-gray-600">{typeof currentProduct.seller === 'object' ? currentProduct.seller.name : currentProduct.seller}</span>
                       </div>
                     </div>
                   </div>
@@ -381,32 +380,32 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
 
               {/* Timestamps */}
               <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-                <CardHeader className="pb-4">
-                  <CardTitle className="text-xl font-bold text-gray-800 flex items-center">
-                    <Calendar className="h-5 w-5 mr-2 text-orange-500" />
+                <CardHeader className="pb-2 pt-3">
+                  <CardTitle className="text-lg font-bold text-gray-800 flex items-center">
+                    <Calendar className="h-4 w-4 mr-1 text-orange-500" />
                     Thời gian
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="flex items-center space-x-3 p-4 bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl">
-                      <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-amber-600 rounded-full flex items-center justify-center">
-                        <Calendar className="h-5 w-5 text-white" />
+                    <div className="flex items-center space-x-2 p-2 bg-gradient-to-r from-orange-50 to-amber-50 rounded-lg">
+                      <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-amber-600 rounded-full flex items-center justify-center">
+                        <Calendar className="h-4 w-4 text-white" />
                       </div>
                       <div>
-                        <span className="font-semibold text-gray-700">Ngày đăng:</span>
-                        <span className="ml-2 text-gray-600">{formatDate.dateTime(currentProduct.createdAt || '')}</span>
+                        <span className="font-medium text-sm text-gray-700">Ngày đăng:</span>
+                        <span className="ml-1 text-sm text-gray-600">{formatDate.dateTime(currentProduct.createdAt || '')}</span>
                       </div>
                     </div>
                     
                     {currentProduct.updatedAt && currentProduct.updatedAt !== currentProduct.createdAt && (
-                      <div className="flex items-center space-x-3 p-4 bg-gradient-to-r from-teal-50 to-cyan-50 rounded-xl">
-                        <div className="w-10 h-10 bg-gradient-to-r from-teal-500 to-cyan-600 rounded-full flex items-center justify-center">
-                          <Calendar className="h-5 w-5 text-white" />
+                      <div className="flex items-center space-x-2 p-2 bg-gradient-to-r from-teal-50 to-cyan-50 rounded-lg">
+                        <div className="w-8 h-8 bg-gradient-to-r from-teal-500 to-cyan-600 rounded-full flex items-center justify-center">
+                          <Calendar className="h-4 w-4 text-white" />
                         </div>
                         <div>
-                          <span className="font-semibold text-gray-700">Cập nhật lần cuối:</span>
-                          <span className="ml-2 text-gray-600">{formatDate.dateTime(currentProduct.updatedAt || '')}</span>
+                          <span className="font-medium text-sm text-gray-700">Cập nhật lần cuối:</span>
+                          <span className="ml-1 text-sm text-gray-600">{formatDate.dateTime(currentProduct.updatedAt || '')}</span>
                         </div>
                       </div>
                     )}
@@ -416,7 +415,7 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
 
               {/* Action Buttons */}
               <Card className="shadow-2xl border-0 bg-gradient-to-r from-white/90 to-white/80 backdrop-blur-sm">
-                <CardContent className="pt-8 pb-8">
+                <CardContent className="pt-4 pb-4">
                   <div className="space-y-4">
                     {/* Secondary actions */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -430,21 +429,21 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
                         className='bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0'
                       />
                       {/* MoMo Button - Alternative payment method */}
-                      <PayWithMomoButton
+                      <PurchaseWithVNPayButton
                         productId={currentProduct._id}
-                        className='bg-[#ae2070] hover:bg-[#8e1a5c] py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300'
+                        className='bg-gradient-to-r from-[#0066b3] to-[#004c99] hover:from-[#004c99] hover:to-[#003b85] hover:shadow-xl transition-all duration-300 border-0'
                       />
                       <Button 
-                        className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300" 
+                        className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-medium hover:shadow-lg transition-all duration-300 px-3" 
                         size="lg"
                         onClick={handleViewSellerProfile}
                       >
-                        <User className="h-5 w-5 mr-2" />
-                        Xem trang cá nhân người bán
+                        <User className="h-3 w-3 mr-1" />
+                        Xem trang người bán
                       </Button>
                       <ProductFavoriteButton 
                         productId={currentProduct._id} 
-                        className="py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                        className="shadow-lg hover:shadow-xl transition-all duration-300"
                       />
                       <ReportProductButton
                         productId={currentProduct._id}
@@ -458,8 +457,8 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
             </div>
           </div>
 
-          <div className="mt-12">
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl border-0 p-8">
+          <div className="mt-6">
+            <div className="bg-white/80 backdrop-blur-sm rounded-lg shadow-lg border-0 p-4">
               <ProductComments productId={currentProduct._id} />
             </div>
           </div>

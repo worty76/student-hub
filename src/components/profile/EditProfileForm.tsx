@@ -87,12 +87,43 @@ export const EditProfileForm: React.FC<EditProfileFormProps> = ({
     try {
       // Convert File to data URL if avatar is a File
       let avatarData = data.avatar;
+      
+      // Debug avatar data
+      console.log("Avatar data type:", typeof data.avatar, data.avatar instanceof File);
+      
       if (data.avatar instanceof File) {
-        avatarData = await new Promise<string>((resolve) => {
-          const reader = new FileReader();
-          reader.onload = (e) => resolve(e.target?.result as string || '');
-          reader.readAsDataURL(data.avatar as File);
-        });
+        console.log("Avatar file:", data.avatar.name, data.avatar.type, data.avatar.size);
+        
+        try {
+          avatarData = await new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              const result = e.target?.result as string || '';
+              console.log("FileReader success, data length:", result.length);
+              resolve(result);
+            };
+            reader.onerror = (error) => {
+              console.error("FileReader error:", error);
+              reject(error);
+            };
+            reader.readAsDataURL(data.avatar as File);
+          });
+        } catch (fileError) {
+          console.error("Error reading file:", fileError);
+          toast({
+            title: "Lỗi khi xử lý ảnh",
+            description: "Không thể đọc file ảnh, vui lòng thử lại với ảnh khác.",
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+
+      console.log("Final avatar data type:", typeof avatarData);
+      
+      // Only send the first 100 characters of avatar data to console to avoid flooding
+      if (typeof avatarData === 'string' && avatarData.length > 100) {
+        console.log("Avatar data preview:", avatarData.substring(0, 100) + "...");
       }
 
       const profileData = {
@@ -125,6 +156,7 @@ export const EditProfileForm: React.FC<EditProfileFormProps> = ({
         });
       }
     } catch (error) {
+      console.error("Profile update error:", error);
       if (error instanceof Error && error.message.includes('Unauthorized')) {
         toast({
           title: "Phiên đăng nhập hết hạn",
@@ -284,10 +316,24 @@ export const EditProfileForm: React.FC<EditProfileFormProps> = ({
                   </FormLabel>
                   <FormControl>
                     <div className="relative">
+                      {field.value && typeof field.value === 'string' && field.value.startsWith('http') && (
+                        <div className="mb-2 relative w-24 h-24 overflow-hidden rounded-lg border-2 border-indigo-200">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img 
+                            src={field.value}
+                            alt="Current avatar"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
                       <FileUpload
                         value={field.value ? [field.value] : []}
                         onChange={(files) => {
                           const file = files[0];
+                          console.log("File selected:", file);
+                          if (file instanceof File) {
+                            console.log("File details:", file.name, file.size, file.type);
+                          }
                           field.onChange(file || '');
                         }}
                         accept="image/*"

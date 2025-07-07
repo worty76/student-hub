@@ -687,10 +687,10 @@ function ProductPreview({
 
   const getConditionColor = (condition: ProductDetail['condition']) => {
     const colors = {
-      'like-new': 'bg-green-100 text-green-800',
-      'good': 'bg-blue-100 text-blue-800',
-      'fair': 'bg-yellow-100 text-yellow-800',
-      'poor': 'bg-red-100 text-red-800'
+      'like-new': 'bg-green-100 text-green-800 hover:bg-green-200',
+      'good': 'bg-blue-100 text-blue-800 hover:bg-blue-200',
+      'fair': 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',
+      'poor': 'bg-red-100 text-red-800 hover:bg-red-200'
     };
     return colors[condition];
   };

@@ -229,10 +229,10 @@ export default function ReportProductButton({
         <Button
           onClick={handleReportClick}
           variant="outline"
-          size="sm"
+          size="lg"
           className={className}
         >
-          <Flag className="h-4 w-4 mr-2" />
+          <Flag className="h-5 w-5 mr-2" />
           Báo cáo
         </Button>
       </DialogTrigger>

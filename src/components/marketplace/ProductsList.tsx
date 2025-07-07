@@ -32,10 +32,12 @@ export function ProductsList({ className }: ProductsListProps) {
   }, [fetchAllProducts]);
 
   const handleFiltersChange = (newParams: Parameters<typeof updateFilters>[0]) => {
+    console.log('ProductsList received filter change:', newParams);
     updateFilters(newParams);
   };
 
   const handlePageChange = (page: number) => {
+    console.log('ProductsList page change:', page);
     goToPage(page);
   };
 

@@ -464,20 +464,28 @@ export class ProductService {
       // Build query string from params
       const queryParams = new URLSearchParams();
       
+      // Pagination parameters
       if (params.page) queryParams.set('page', params.page.toString());
       if (params.limit) queryParams.set('limit', params.limit.toString());
+      
+      // Filter parameters
       if (params.category) queryParams.set('category', params.category);
       if (params.condition) queryParams.set('condition', params.condition);
       if (params.status) queryParams.set('status', params.status);
-      if (params.minPrice) queryParams.set('minPrice', params.minPrice.toString());
-      if (params.maxPrice) queryParams.set('maxPrice', params.maxPrice.toString());
+      if (params.minPrice !== undefined) queryParams.set('minPrice', params.minPrice.toString());
+      if (params.maxPrice !== undefined) queryParams.set('maxPrice', params.maxPrice.toString());
       if (params.location) queryParams.set('location', params.location);
       if (params.search) queryParams.set('search', params.search);
-      if (params.sortBy) queryParams.set('sortBy', params.sortBy);
-      if (params.sortOrder) queryParams.set('sortOrder', params.sortOrder);
+      
+      // Map sortBy to sort and sortOrder to order according to API documentation
+      if (params.sortBy) queryParams.set('sort', params.sortBy);
+      if (params.sortOrder) queryParams.set('order', params.sortOrder);
 
       const queryString = queryParams.toString();
       const url = `${API_BASE_URL}/products${queryString ? `?${queryString}` : ''}`;
+      
+      console.log('Fetching products with URL:', url);
+      console.log('Query parameters:', Object.fromEntries(queryParams.entries()));
 
       const response = await fetch(url, {
         method: 'GET',
@@ -494,6 +502,7 @@ export class ProductService {
       }
 
       const data = await response.json();
+      console.log('Products API response:', data);
       
       // Handle different API response formats
       if (data.products && Array.isArray(data.products)) {
