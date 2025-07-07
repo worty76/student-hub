@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
 import { Button } from '@/components/ui/button';
 import { SearchBar } from './SearchBar';
+import { LogoutButton } from '@/components/auth/LogoutButton';
 import { ROUTES } from '@/constants/navigation';
-import { Menu, X, LogOut } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 
 interface MobileMenuProps {
   navLinks: Array<{ href: string; label: string; active: boolean }>;
@@ -15,9 +16,8 @@ interface MobileMenuProps {
 
 export function MobileMenu({ navLinks }: MobileMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const { isAuthenticated, logout } = useAuthStore();
+  const { isAuthenticated } = useAuthStore();
   const pathname = usePathname();
-  const router = useRouter();
 
   // Close menu when route changes
   useEffect(() => {
@@ -25,15 +25,9 @@ export function MobileMenu({ navLinks }: MobileMenuProps) {
   }, [pathname]);
 
   const toggleMenu = () => setIsOpen(!isOpen);
-
-  const handleLogout = async () => {
-    try {
-      await logout();
-      setIsOpen(false);
-      router.push(ROUTES.home);
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
+  
+  const handleMenuClose = () => {
+    setIsOpen(false);
   };
 
   return (
@@ -98,12 +92,12 @@ export function MobileMenu({ navLinks }: MobileMenuProps) {
                 <div className="mt-4 space-y-2">
                   <Link href={ROUTES.login} onClick={() => setIsOpen(false)}>
                     <Button variant="outline" className="w-full">
-                      Sign In
+                      Đăng nhập
                     </Button>
                   </Link>
                   <Link href={ROUTES.register} onClick={() => setIsOpen(false)}>
                     <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                      Sign Up
+                      Đăng ký
                     </Button>
                   </Link>
                 </div>
@@ -112,14 +106,14 @@ export function MobileMenu({ navLinks }: MobileMenuProps) {
               {/* Logout button for authenticated users */}
               {isAuthenticated && (
                 <div className="mt-4">
-                  <Button 
+                  <LogoutButton
                     variant="outline" 
-                    className="w-full flex items-center justify-center text-red-600 border-red-100 hover:bg-red-50"
-                    onClick={handleLogout}
+                    className="w-full text-red-600 border-red-100 hover:bg-red-50"
+                    redirectPath={ROUTES.home}
+                    onMenuToggle={handleMenuClose}
                   >
-                    <LogOut className="h-4 w-4 mr-2" />
                     Đăng xuất
-                  </Button>
+                  </LogoutButton>
                 </div>
               )}
             </div>

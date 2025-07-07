@@ -66,12 +66,10 @@ export function StickyAdBanner() {
   const isHomePage = pathname === '/' || pathname === '/page';
   
   useEffect(() => {
-    // Check if user has dismissed the banner recently
     const dismissed = localStorage.getItem('stickyAdDismissed');
     const dismissedTime = dismissed ? parseInt(dismissed) : 0;
     const now = Date.now();
     
-    // Show banner again after 24 hours
     if (now - dismissedTime > 24 * 60 * 60 * 1000) {
       setIsVisible(true);
     } else {
@@ -237,13 +235,13 @@ export function StickyAdBanner() {
                     </button> */}
 
                     {/* Close Button */}
-                    <button
+                    {/* <button
                       onClick={handleClose}
                       className={`p-2.5 rounded-full bg-white/30 ${ad.textColor} hover:bg-white/40 transition-all duration-300 shadow-md hover:shadow-lg`}
                       aria-label="Đóng quảng cáo"
                     >
                       <X className="w-5 h-5" />
-                    </button>
+                    </button> */}
                   </div>
                 </div>
               </div>

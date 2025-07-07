@@ -132,17 +132,34 @@ export class AuthService {
     }
   }
 
-  static async logout(): Promise<void> {
+  static async logout(): Promise<{ success: boolean; message: string }> {
     try {
-      await fetch(`${API_BASE_URL}/auth/logout`, {
+      // Get token from localStorage to include in request
+      const token = localStorage.getItem('token');
+      
+      const response = await fetch(`${API_BASE_URL}/users/logout`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         credentials: 'include',
       });
+
+      if (response.ok) {
+        return { success: true, message: 'Đăng xuất thành công' };
+      }
+
+      if (response.status === 401) {
+        throw new Error('Phiên đăng nhập đã hết hạn hoặc không hợp lệ');
+      }
+
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `Đăng xuất thất bại: ${response.statusText}`);
     } catch (error) {
-      console.warn('Logout API call failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Đăng xuất thất bại';
+      console.warn('Logout API call failed:', errorMessage);
+      throw error;
     }
   }
 

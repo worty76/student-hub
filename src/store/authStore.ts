@@ -1,12 +1,12 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { AuthState, LoginCredentials, RegisterCredentials } from '@/types/auth';
+import { AuthState, LoginCredentials, RegisterCredentials, LogoutResponse } from '@/types/auth';
 import { AuthService } from '@/services/auth.service';
 
 interface AuthStore extends AuthState {
   login: (credentials: LoginCredentials) => Promise<void>;
   register: (credentials: RegisterCredentials) => Promise<void>;
-  logout: () => Promise<void>;
+  logout: () => Promise<LogoutResponse>;
   clearError: () => void;
   checkAuth: () => void;
   refreshAuth: () => Promise<void>;
@@ -100,16 +100,25 @@ export const useAuthStore = create<AuthStore>()(
       },
 
       logout: async () => {
-        set({ isLoading: true });
+        set({ isLoading: true, error: null });
         try {
-          await AuthService.logout();
-        } catch (error) {
-          console.error('Đăng xuất thất bại:', error);
-        } finally {
-          // Always clear both authStore and localStorage
+          // Call logout API
+          const result = await AuthService.logout();
+          
+          // Clear localStorage
           localStorage.removeItem('token');
           localStorage.removeItem('user');
           
+          // Clear any auth cookies if they exist
+          if (typeof document !== 'undefined') {
+            document.cookie.split(";").forEach((c) => {
+              const eqPos = c.indexOf("=");
+              const name = eqPos > -1 ? c.substr(0, eqPos).trim() : c.trim();
+              document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+            });
+          }
+          
+          // Reset store state
           set({ 
             user: null, 
             token: null,
@@ -117,6 +126,25 @@ export const useAuthStore = create<AuthStore>()(
             error: null, 
             isLoading: false,
           });
+          
+          return result; // Return API response for UI feedback
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : 'Đăng xuất thất bại';
+          console.error('Logout failed:', errorMessage);
+          
+          // Still clear auth data even if API call fails
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          
+          set({ 
+            user: null, 
+            token: null,
+            isAuthenticated: false, 
+            error: errorMessage, 
+            isLoading: false,
+          });
+          
+          throw error; // Re-throw for UI error handling
         }
       },
 

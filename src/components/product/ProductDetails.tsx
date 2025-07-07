@@ -21,11 +21,13 @@ import {
   Tag, 
   DollarSign
 } from 'lucide-react';
-import { ProductFavoriteButton } from './ProductFavoriteButton';
-import ProductComments from './ProductComments';
-import BuyProductButton from './BuyProductButton';
-import ReportProductButton from './ReportProductButton';
-import { PayWithMomoButton } from './PayWithMomoButton';
+import { 
+  ProductFavoriteButton,
+  BuyProductButton,
+  PurchaseWithVNPayButton,
+  ProductComments,
+  ReportProductButton
+} from '@/components/product';
 import { formatDate, formatPrice, getStatusColor, getConditionColor } from '@/lib/utils';
 
 interface ProductDetailsProps {
@@ -334,8 +336,6 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
                 </CardContent>
               </Card>
 
-
-
               {/* Product Details */}
               <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
                 <CardHeader className="pb-4">
@@ -430,9 +430,9 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
                         className='bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0'
                       />
                       {/* MoMo Button - Alternative payment method */}
-                      <PayWithMomoButton
+                      <PurchaseWithVNPayButton
                         productId={currentProduct._id}
-                        className='bg-[#ae2070] hover:bg-[#8e1a5c] py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300'
+                        className='bg-gradient-to-r from-[#0066b3] to-[#004c99] hover:from-[#004c99] hover:to-[#003b85] py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300'
                       />
                       <Button 
                         className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300" 
