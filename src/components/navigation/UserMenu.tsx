@@ -8,7 +8,7 @@ import { useUserProfile } from '@/hooks/useUserProfile';
 import { useClickOutside } from '@/hooks/useClickOutside';
 import { LogoutButton } from '@/components/auth/LogoutButton';
 import { ROUTES } from '@/constants/navigation';
-import { ChevronDown, User, Heart, Package, MessageCircle, Shield } from 'lucide-react';
+import { ChevronDown, User, Heart, Package, MessageCircle, Shield, History } from 'lucide-react';
 
 interface UserMenuProps {
   onMenuToggle?: () => void;
@@ -130,6 +130,15 @@ export function UserMenu({ onMenuToggle }: UserMenuProps) {
           >
             <Package className="h-4 w-4 mr-3 text-gray-500" />
             Sản phẩm của tôi
+          </Link>
+
+          <Link
+            href="/purchase-history"
+            className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+            onClick={handleMenuItemClick}
+          >
+            <History className="h-4 w-4 mr-3 text-gray-500" />
+            Lịch sử mua hàng
           </Link>
           
           <Link
