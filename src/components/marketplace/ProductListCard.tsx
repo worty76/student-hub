@@ -3,8 +3,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Product, getCategoryLabel, getConditionLabel, getStatusLabel } from '@/types/product';
-import { MapPin, Eye, Heart, Calendar } from 'lucide-react';
+import { Product, getCategoryLabel, getConditionLabel, getStatusLabel, Seller } from '@/types/product';
+import { MapPin, Eye, Heart, Calendar, User2 } from 'lucide-react';
 import { formatPrice, getStatusColor, getConditionColor, formatDate } from '@/lib/utils';
 
 // Utility function to strip HTML tags from text
@@ -20,6 +20,14 @@ interface ProductListCardProps {
 
 export function ProductListCard({ product, className }: ProductListCardProps) {
   const mainImage = product.images && product.images.length > 0 ? product.images[0] : null;
+
+  // Helper function to get seller name
+  const getSellerName = (seller: string | Seller): string => {
+    if (typeof seller === 'string') {
+      return seller;
+    }
+    return seller.name;
+  };
 
   return (
     <div className={`flex flex-col h-full hover:shadow-lg transition-shadow duration-200 overflow-hidden bg-white rounded-2xl border border-gray-200 shadow-sm ${className}`}>
@@ -84,6 +92,18 @@ export function ProductListCard({ product, className }: ProductListCardProps) {
               <div className="flex items-center text-sm text-gray-600">
                 <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
                 <span className="truncate">{product.location}</span>
+              </div>
+            ) : (
+              <div className="h-5"></div>
+            )}
+          </div>
+
+          {/* Seller */}
+          <div className="mb-3">
+            {product.seller ? (
+              <div className="flex items-center text-sm text-gray-600">
+                <User2 className="h-4 w-4 mr-1 flex-shrink-0" />
+                <span className="truncate">{getSellerName(product.seller)}</span>
               </div>
             ) : (
               <div className="h-5"></div>

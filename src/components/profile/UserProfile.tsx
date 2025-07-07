@@ -23,7 +23,9 @@ import {
   Crown,
   Heart,
   Sparkles,
+  User2,
 } from "lucide-react";
+import Link from "next/link";
 
 interface UserProfileProps {
   className?: string;
@@ -124,16 +126,17 @@ export const UserProfile: React.FC<UserProfileProps> = ({ className }) => {
         </CardTitle>
         <CardAction>
           <Button
-            onClick={handleRefresh}
             variant="outline"
             size="sm"
             disabled={isLoading}
             className="hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:border-blue-300 transition-all duration-200"
           >
-            <RefreshCw
-              className={`h-4 w-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
-            />
-            Cập nhật
+            <Link href={`/users/${displayUser?._id}`} className="flex items-center">
+              <User2
+                className={`h-4 w-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
+              />
+              Trang cá nhân người dùng
+            </Link>
           </Button>
         </CardAction>
       </CardHeader>

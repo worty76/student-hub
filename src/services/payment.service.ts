@@ -23,6 +23,7 @@ export interface VNPayPaymentResponse {
 }
 
 export interface ProductPurchaseRequest {
+  shippingAddress: string;
   bankCode?: string;
   locale?: string;
 }
@@ -120,7 +121,7 @@ export class PaymentService {
     }
   }
 
-  static async purchaseWithVNPay(token: string, productId: string, purchaseData: ProductPurchaseRequest = {}): Promise<ProductPurchaseResponse> {
+  static async purchaseWithVNPay(token: string, productId: string, purchaseData: ProductPurchaseRequest): Promise<ProductPurchaseResponse> {
     try {
       const response = await fetch(`${API_BASE_URL}/products/${productId}/purchase`, {
         method: 'POST',
@@ -129,6 +130,7 @@ export class PaymentService {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          shippingAddress: purchaseData.shippingAddress,
           bankCode: purchaseData.bankCode || 'NCB',
           locale: purchaseData.locale || 'vn',
         }),
@@ -142,7 +144,7 @@ export class PaymentService {
         }
         
         if (response.status === 400) {
-          throw new Error('Yêu cầu không hợp lệ');
+          throw new Error(data.message || 'Yêu cầu không hợp lệ');
         }
         
         if (response.status === 404) {
