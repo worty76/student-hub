@@ -5,7 +5,6 @@ import { paymentService } from '@/services/payment.service';
 import { useToast } from '@/components/ui/use-toast';
 import { useAuthStore } from '@/store/authStore';
 import { CreditCard, Loader2 } from 'lucide-react';
-import Image from 'next/image';
 
 interface PurchaseWithVNPayButtonProps {
   productId: string;

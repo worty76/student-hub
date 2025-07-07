@@ -3,13 +3,12 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useClickOutside } from '@/hooks/useClickOutside';
 import { LogoutButton } from '@/components/auth/LogoutButton';
 import { ROUTES } from '@/constants/navigation';
-import { ChevronDown, User, LogOut, Heart, Package, MessageCircle, Shield } from 'lucide-react';
+import { ChevronDown, User, Heart, Package, MessageCircle, Shield } from 'lucide-react';
 
 interface UserMenuProps {
   onMenuToggle?: () => void;
@@ -19,17 +18,16 @@ export function UserMenu({ onMenuToggle }: UserMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { user } = useAuthStore();
   const { displayUser } = useUserProfile();
-  const router = useRouter();
   const menuRef = useClickOutside<HTMLDivElement>(() => setIsOpen(false));
 
   if (!user) return null;
 
   const currentUser = displayUser || user;
 
-  const handleMenuClose = () => {
-    setIsOpen(false);
-    onMenuToggle?.();
-  };
+  // const handleMenuClose = () => {
+  //   setIsOpen(false);
+  //   onMenuToggle?.();
+  // };
 
   const handleMenuItemClick = () => {
     setIsOpen(false);
@@ -174,8 +172,9 @@ export function UserMenu({ onMenuToggle }: UserMenuProps) {
               size="sm"
               className="w-full justify-start text-sm text-red-600 hover:bg-red-50 px-2"
               redirectPath={ROUTES.home}
-              children="Đăng xuất"
-            />
+            >
+              Đăng xuất
+            </LogoutButton>
           </div>
         </div>
       )}

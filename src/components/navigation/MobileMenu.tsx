@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
 import { Button } from '@/components/ui/button';
 import { SearchBar } from './SearchBar';
 import { LogoutButton } from '@/components/auth/LogoutButton';
 import { ROUTES } from '@/constants/navigation';
-import { Menu, X, LogOut } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 
 interface MobileMenuProps {
   navLinks: Array<{ href: string; label: string; active: boolean }>;
@@ -18,7 +18,6 @@ export function MobileMenu({ navLinks }: MobileMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { isAuthenticated } = useAuthStore();
   const pathname = usePathname();
-  const router = useRouter();
 
   // Close menu when route changes
   useEffect(() => {
@@ -93,12 +92,12 @@ export function MobileMenu({ navLinks }: MobileMenuProps) {
                 <div className="mt-4 space-y-2">
                   <Link href={ROUTES.login} onClick={() => setIsOpen(false)}>
                     <Button variant="outline" className="w-full">
-                      Sign In
+                      Đăng nhập
                     </Button>
                   </Link>
                   <Link href={ROUTES.register} onClick={() => setIsOpen(false)}>
                     <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                      Sign Up
+                      Đăng ký
                     </Button>
                   </Link>
                 </div>

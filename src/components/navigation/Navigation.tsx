@@ -1,15 +1,12 @@
 'use client';
 
 import { useAuthStore } from '@/store/authStore';
-import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
-import { Home, User, LogOut, Settings, ShoppingBag, Plus, Users, BarChart3 } from 'lucide-react';
+import { Home, User, Settings, ShoppingBag, Plus, Users, BarChart3 } from 'lucide-react';
 import Link from 'next/link';
 import { LogoutButton } from '@/components/auth/LogoutButton';
 
 export function Navigation() {
   const { user, isAuthenticated } = useAuthStore();
-  const router = useRouter();
 
   if (!isAuthenticated || !user) {
     return null;
