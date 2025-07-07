@@ -125,24 +125,27 @@ const useChatStore = create<ExtendedChatState & Actions>()((set, get) => ({
 
       // Set up real-time event handlers
       const messageCleanup = socketService.onMessage((message, chatId) => {
-        const { selectedChat, messages, currentUserId } = get();
+        const { selectedChat, messages } = get();
 
         // Check if this message already exists in the messages array (by id or temp-id)
         const isDuplicate = messages.some(
-          (existingMsg) => 
+          (existingMsg) =>
             // Check if IDs match
-            existingMsg._id === message._id || 
+            existingMsg._id === message._id ||
             // Check if this is the real version of a temp message
-            (existingMsg._id.startsWith('temp-') && 
-             existingMsg.sender._id === message.sender._id && 
-             existingMsg.content === message.content &&
-             // Compare timestamps - within 5 seconds
-             Math.abs(new Date(existingMsg.createdAt).getTime() - new Date(message.createdAt).getTime()) < 5000)
+            (existingMsg._id.startsWith("temp-") &&
+              existingMsg.sender._id === message.sender._id &&
+              existingMsg.content === message.content &&
+              // Compare timestamps - within 5 seconds
+              Math.abs(
+                new Date(existingMsg.createdAt).getTime() -
+                  new Date(message.createdAt).getTime()
+              ) < 5000)
         );
 
         // Add message to current chat if it matches and isn't a duplicate
         if (selectedChat?._id === chatId && !isDuplicate) {
-          console.log('Adding new message to chat:', message._id);
+          console.log("Adding new message to chat:", message._id);
           set((state) => ({
             messages: [...state.messages, message],
           }));
@@ -457,13 +460,15 @@ const useChatStore = create<ExtendedChatState & Actions>()((set, get) => ({
       set((state) => {
         // First, check if we already have this message in the list (could have come from socket)
         const alreadyHasRealMessage = state.messages.some(
-          (msg) => msg._id === sentMessage._id && !msg._id.startsWith('temp-')
+          (msg) => msg._id === sentMessage._id && !msg._id.startsWith("temp-")
         );
 
         if (alreadyHasRealMessage) {
           // If we already have the real message, just remove the temp message
           return {
-            messages: state.messages.filter((msg) => msg._id !== tempMessage._id)
+            messages: state.messages.filter(
+              (msg) => msg._id !== tempMessage._id
+            ),
           };
         } else {
           // Otherwise replace the temp message with the real one
