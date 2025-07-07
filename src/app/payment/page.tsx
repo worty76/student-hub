@@ -9,7 +9,6 @@ function PaymentPageContent() {
   const searchParams = useSearchParams();
   
   useEffect(() => {
-    // Check if the payment was successful
     const resultCode = searchParams.get('resultCode');
     
     if (resultCode === '0' || resultCode === '00' || resultCode === '0000') {

@@ -134,7 +134,16 @@ export const useProductsListStore = create<ProductsListStore>((set, get) => ({
     set({ isLoading: true, error: null });
 
     try {
-      const newParams = { ...get().currentParams, ...params, page: 1 };
+      const newParams = { ...get().currentParams, ...params };
+      
+      // Reset to page 1 when filters change, but keep the current page if only changing pages
+      if (params && !params.page) {
+        newParams.page = 1;
+      }
+      
+      // Log parameters for debugging
+      console.log('Fetching products with params:', newParams);
+      
       const result = await ProductService.getProductsWithPagination(newParams);
       
       set({
@@ -148,6 +157,7 @@ export const useProductsListStore = create<ProductsListStore>((set, get) => ({
       });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Lỗi khi tải sản phẩm';
+      console.error('Error fetching products:', error);
       set({
         isLoading: false,
         error: errorMessage,
@@ -200,8 +210,25 @@ export const useProductsListStore = create<ProductsListStore>((set, get) => ({
   },
 
   updateFilters: (params: Partial<ProductsQueryParams>) => {
-    // When updating filters, always reset to page 1
-    const newParams = { ...get().currentParams, ...params, page: 1 };
+    // Log the filter changes for debugging
+    console.log('Filter update:', params);
+    
+    const currentParams = get().currentParams;
+    const newParams = { ...currentParams, ...params };
+    
+    // Always reset to page 1 when filters change
+    newParams.page = 1;
+    
+    console.log('New filter params:', newParams);
+    
+    // Clean up filters to avoid sending empty values
+    Object.keys(newParams).forEach(key => {
+      const typedKey = key as keyof ProductsQueryParams;
+      if (newParams[typedKey] === '' || newParams[typedKey] === null) {
+        delete newParams[typedKey];
+      }
+    });
+    
     get().fetchProductsWithParams(newParams);
   },
 

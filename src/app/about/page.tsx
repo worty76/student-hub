@@ -429,7 +429,7 @@ export default function AboutPage() {
                 icon: MessageCircle,
                 title: "Giao Tiếp Dễ Dàng",
                 description: "Hệ thống chat tích hợp giúp kết nối nhanh chóng giữa người mua và người bán",
-                stats: "Chat realtime"
+                stats: "Giao tiếp trực tiếp"
               },
               {
                 icon: Award,

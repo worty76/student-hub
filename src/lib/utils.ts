@@ -21,11 +21,11 @@ export const getStatusColor = (status: string) => {
     case 'pending':
       return 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200';
     case 'newly-posted':
-      return 'bg-blue-100 text-blue-800';
+      return 'bg-blue-100 text-blue-800 hover:bg-blue-200';
     case 'good-price':
-      return 'bg-green-100 text-green-800';
+      return 'bg-green-100 text-green-800 hover:bg-green-200';
     case 'urgent':
-      return 'bg-red-100 text-red-800';
+      return 'bg-red-100 text-red-800 hover:bg-red-200';
     default:
       return 'bg-gray-100 text-gray-800 hover:bg-gray-200';
   }
@@ -36,15 +36,15 @@ export const getConditionColor = (condition: string) => {
     case 'new':
       return 'bg-blue-100 text-blue-800 hover:bg-blue-200';
     case 'like-new':
-      return 'bg-green-100 text-green-800';
+      return 'bg-green-100 text-green-800 hover:bg-green-200';
     case 'good':
-      return 'bg-yellow-100 text-yellow-800';
+      return 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200';
     case 'fair':
-      return 'bg-orange-100 text-orange-800';
+      return 'bg-orange-100 text-orange-800 hover:bg-orange-200';
     case 'poor':
-      return 'bg-red-100 text-red-800';
+      return 'bg-red-100 text-red-800 hover:bg-red-200';
     default:
-      return 'bg-gray-100 text-gray-800';
+      return 'bg-gray-100 text-gray-800 hover:bg-gray-200';
   }
 };
 
