@@ -5,19 +5,11 @@ import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { Home, User, LogOut, Settings, ShoppingBag, Plus, Users, BarChart3 } from 'lucide-react';
 import Link from 'next/link';
+import { LogoutButton } from '@/components/auth/LogoutButton';
 
 export function Navigation() {
-  const { user, isAuthenticated, logout } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
   const router = useRouter();
-
-  const handleLogout = async () => {
-    try {
-      await logout();
-      router.push('/');
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
-  };
 
   if (!isAuthenticated || !user) {
     return null;
@@ -96,15 +88,14 @@ export function Navigation() {
               </div>
             </div>
             
-            <Button
-              onClick={handleLogout}
+            <LogoutButton
               variant="outline"
               size="sm"
               className="flex items-center"
+              redirectPath="/"
             >
-              <LogOut className="h-4 w-4 mr-2" />
               Logout
-            </Button>
+            </LogoutButton>
           </div>
         </div>
       </div>

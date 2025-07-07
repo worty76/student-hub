@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useClickOutside } from '@/hooks/useClickOutside';
+import { LogoutButton } from '@/components/auth/LogoutButton';
 import { ROUTES } from '@/constants/navigation';
 import { ChevronDown, User, LogOut, Heart, Package, MessageCircle, Shield } from 'lucide-react';
 
@@ -16,7 +17,7 @@ interface UserMenuProps {
 
 export function UserMenu({ onMenuToggle }: UserMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const { user, logout } = useAuthStore();
+  const { user } = useAuthStore();
   const { displayUser } = useUserProfile();
   const router = useRouter();
   const menuRef = useClickOutside<HTMLDivElement>(() => setIsOpen(false));
@@ -25,15 +26,9 @@ export function UserMenu({ onMenuToggle }: UserMenuProps) {
 
   const currentUser = displayUser || user;
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      setIsOpen(false);
-      onMenuToggle?.();
-      router.push(ROUTES.home);
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
+  const handleMenuClose = () => {
+    setIsOpen(false);
+    onMenuToggle?.();
   };
 
   const handleMenuItemClick = () => {
@@ -173,13 +168,15 @@ export function UserMenu({ onMenuToggle }: UserMenuProps) {
           
           <div className="border-t my-1"></div>
           
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
-          >
-            <LogOut className="h-4 w-4 mr-3" />
-            Đăng xuất
-          </button>
+          <div className="px-2 py-1">
+            <LogoutButton
+              variant="ghost"
+              size="sm"
+              className="w-full justify-start text-sm text-red-600 hover:bg-red-50 px-2"
+              redirectPath={ROUTES.home}
+              children="Đăng xuất"
+            />
+          </div>
         </div>
       )}
     </div>
