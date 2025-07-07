@@ -517,10 +517,10 @@ export function AdminProductsDataTable({ data, isLoading = false }: AdminProduct
   }
 
   return (
-    <div className="w-full space-y-4">
+    <div className="w-full space-y-4 overflow-x-auto">
       {/* Bộ lọc và tìm kiếm */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 w-full">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 min-w-0">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:flex-1 min-w-0">
           <div className="relative w-full sm:w-80">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
@@ -599,47 +599,49 @@ export function AdminProductsDataTable({ data, isLoading = false }: AdminProduct
         </div>
 
         {/* Hiển thị cột */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm">
-              Hiển thị cột
-              <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Chọn cột hiển thị</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                const columnLabels: Record<string, string> = {
-                  'images': 'Hình ảnh',
-                  'title': 'Tên sản phẩm',
-                  'price': 'Giá bán',
-                  'category': 'Danh mục',
-                  'seller': 'Người bán',
-                  'status': 'Trạng thái',
-                  'location': 'Địa điểm',
-                  'views': 'Lượt xem',
-                  'favorites': 'Yêu thích',
-                  'createdAt': 'Ngày đăng',
-                  'actions': 'Thao tác'
-                };
-                
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                  >
-                    {columnLabels[column.id] || column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex-shrink-0">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                Hiển thị cột
+                <ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Chọn cột hiển thị</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => {
+                  const columnLabels: Record<string, string> = {
+                    'images': 'Hình ảnh',
+                    'title': 'Tên sản phẩm',
+                    'price': 'Giá bán',
+                    'category': 'Danh mục',
+                    'seller': 'Người bán',
+                    'status': 'Trạng thái',
+                    'location': 'Địa điểm',
+                    'views': 'Lượt xem',
+                    'favorites': 'Yêu thích',
+                    'createdAt': 'Ngày đăng',
+                    'actions': 'Thao tác'
+                  };
+                  
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                    >
+                      {columnLabels[column.id] || column.id}
+                    </DropdownMenuCheckboxItem>
+                  );
+                })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
       {/* Bảng dữ liệu */}
