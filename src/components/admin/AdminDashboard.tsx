@@ -55,7 +55,7 @@ export function AdminDashboard() {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform ${
+      <div className={`fixed inset-y-0 left-0 z-50 w-72 bg-white shadow-lg transform ${
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
       } transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0`}>
         <div className="flex items-center justify-between h-16 px-6 border-b">
@@ -86,8 +86,8 @@ export function AdminDashboard() {
                     : 'text-gray-700 hover:bg-gray-50'
                 }`}
               >
-                <Icon className="h-5 w-5 mr-3" />
-                {tab.label}
+                <Icon className="h-5 w-5 mr-3 flex-shrink-0" />
+                <span className="whitespace-nowrap text-sm font-medium">{tab.label}</span>
               </button>
             );
           })}
@@ -112,8 +112,10 @@ export function AdminDashboard() {
         </div>
 
         <div className="flex-1 overflow-auto">
-          <div className="p-6">
-            {renderActiveTab()}
+          <div className="p-6 max-w-full pr-8">
+            <div className="max-w-6xl mx-auto">
+              {renderActiveTab()}
+            </div>
           </div>
         </div>
       </div>
