@@ -1,12 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, Home, ShoppingBag } from 'lucide-react';
+import { CheckCircle, Home, ShoppingBag, Loader2 } from 'lucide-react';
 
-export default function PaymentSuccessPage() {
+function PaymentSuccessContent() {
   const [paymentDetails, setPaymentDetails] = useState<Record<string, string>>({});
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -115,5 +115,20 @@ export default function PaymentSuccessPage() {
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function PaymentSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+        <div className="flex flex-col items-center space-y-4">
+          <Loader2 className="h-12 w-12 text-blue-500 animate-spin" />
+          <h2 className="text-2xl font-bold text-gray-800">Đang tải thông tin thanh toán...</h2>
+        </div>
+      </div>
+    }>
+      <PaymentSuccessContent />
+    </Suspense>
   );
 } 

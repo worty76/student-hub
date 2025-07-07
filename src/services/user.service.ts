@@ -74,6 +74,81 @@ export class UserService {
 
   static async updateProfile(token: string, profileData: UpdateProfileRequest): Promise<UpdateProfileResponse> {
     try {
+      console.log("Updating profile - starting request processing");
+      
+      // Check if avatar is a data URL (from file upload)
+      const isDataUrl = typeof profileData.avatar === 'string' && 
+                        profileData.avatar.startsWith('data:image');
+      
+      // Use FormData for handling file uploads
+      if (isDataUrl) {
+        console.log("Using FormData approach for avatar upload");
+        const formData = new FormData();
+        
+        // Append text fields
+        formData.append('name', profileData.name);
+        formData.append('email', profileData.email);
+        formData.append('bio', profileData.bio || '');
+        formData.append('location', profileData.location || '');
+        formData.append('role', profileData.role);
+        
+        // Convert data URL to blob and append
+        if (isDataUrl) {
+          try {
+            // Parse the base64 string
+            const base64Response = await fetch(profileData.avatar);
+            const avatarBlob = await base64Response.blob();
+            formData.append('avatar', avatarBlob, 'avatar.jpg');
+            console.log("Avatar blob created successfully:", avatarBlob.size, "bytes");
+          } catch (blobError) {
+            console.error("Error converting data URL to blob:", blobError);
+            // Still proceed with the request, but use JSON approach
+          }
+        } else if (profileData.avatar) {
+          // If it's a URL, just pass it as a string
+          formData.append('avatar', profileData.avatar);
+        }
+        
+        // Make the FormData request
+        const response = await fetch(`${API_BASE_URL}/users/profile`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            // Don't set Content-Type here, it will be set automatically with the boundary
+          },
+          body: formData,
+        });
+
+        const data = await response.json();
+        console.log("Profile update response:", response.status, data);
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            throw new Error('Bạn không có quyền truy cập');
+          }
+          
+          if (response.status === 400) {
+            // Return validation errors
+            return {
+              success: false,
+              message: data.message || 'Lỗi khi cập nhật hồ sơ',
+              errors: data.errors || {},
+            };
+          }
+          
+          throw new Error(data.message || `Lỗi khi cập nhật hồ sơ: ${response.statusText}`);
+        }
+
+        // Success response
+        return {
+          success: true,
+          message: data.message || 'Hồ sơ đã được cập nhật thành công',
+          user: data.user || data,
+        };
+      }
+      
+      // Fallback to JSON approach for non-file updates
+      console.log("Using standard JSON approach");
       const response = await fetch(`${API_BASE_URL}/users/profile`, {
         method: 'PUT',
         headers: {
@@ -84,6 +159,7 @@ export class UserService {
       });
 
       const data = await response.json();
+      console.log("Profile update response (JSON):", response.status);
 
       if (!response.ok) {
         if (response.status === 401) {
@@ -109,6 +185,7 @@ export class UserService {
         user: data.user || data,
       };
     } catch (error) {
+      console.error("Error in updateProfile service:", error);
       if (error instanceof Error) {
         throw error;
       }
