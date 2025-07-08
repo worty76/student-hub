@@ -1,22 +1,30 @@
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { usePurchaseStore } from '@/store/purchaseStore';
-import { useAuthStore } from '@/store/authStore';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useToast } from '@/components/ui/use-toast';
-import { 
-  ShoppingBag, 
-  MapPin, 
-  CreditCard, 
-  User, 
-  Package, 
-  Eye, 
-  ChevronLeft, 
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { usePurchaseStore } from "@/store/purchaseStore";
+import { useAuthStore } from "@/store/authStore";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useToast } from "@/components/ui/use-toast";
+import {
+  ShoppingBag,
+  MapPin,
+  CreditCard,
+  User,
+  Package,
+  Eye,
+  ChevronLeft,
   ChevronRight,
   Filter,
   RefreshCw,
@@ -24,30 +32,39 @@ import {
   Clock,
   CheckCircle,
   XCircle,
-  Calendar
-} from 'lucide-react';
-import { formatPrice, formatDate, getConditionColor, getStatusColor } from '@/lib/utils';
-import { PurchaseHistoryItem } from '@/services/payment.service';
+  Calendar,
+  Edit,
+} from "lucide-react";
+import {
+  formatPrice,
+  formatDate,
+  getConditionColor,
+  getStatusColor,
+} from "@/lib/utils";
+import { PurchaseHistoryItem } from "@/services/payment.service";
+import EditPurchaseDialog from "./EditPurchaseDialog";
 
 export default function PurchaseHistory() {
   const router = useRouter();
   const { toast } = useToast();
   const { token, isAuthenticated, initializeAuth } = useAuthStore();
-  const { 
-    purchases, 
-    pagination, 
-    isLoading, 
-    error, 
+  const {
+    purchases,
+    pagination,
+    isLoading,
+    error,
     confirmingReceipt,
-    fetchPurchases, 
+    fetchPurchases,
     confirmReceipt,
-    setFilters, 
-    clearFilters, 
-    clearError 
+    setFilters,
+    clearFilters,
+    clearError,
   } = usePurchaseStore();
 
   const [showFilters, setShowFilters] = useState(false);
   const [isAuthInitialized, setIsAuthInitialized] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState<string>("");
 
   // Initialize auth on component mount
   useEffect(() => {
@@ -60,7 +77,7 @@ export default function PurchaseHistory() {
     if (!isAuthInitialized) return;
 
     if (!isAuthenticated || !token) {
-      router.push('/auth/login');
+      router.push("/auth/login");
       return;
     }
 
@@ -76,7 +93,7 @@ export default function PurchaseHistory() {
 
   const loadPurchases = async (params = {}) => {
     if (!token) return;
-    
+
     try {
       await fetchPurchases(token, params);
     } catch (error) {
@@ -104,8 +121,8 @@ export default function PurchaseHistory() {
     loadPurchases({
       page: 1,
       limit: 10,
-      sortBy: 'createdAt',
-      sortOrder: 'desc',
+      sortBy: "createdAt",
+      sortOrder: "desc",
     });
   };
 
@@ -119,7 +136,7 @@ export default function PurchaseHistory() {
 
   const handleConfirmReceipt = async (orderId: string) => {
     if (!token) return;
-    
+
     try {
       await confirmReceipt(token, orderId);
       toast({
@@ -130,13 +147,23 @@ export default function PurchaseHistory() {
     } catch (error) {
       toast({
         title: "Lỗi xác nhận",
-        description: error instanceof Error ? error.message : "Có lỗi xảy ra khi xác nhận nhận hàng.",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Có lỗi xảy ra khi xác nhận nhận hàng.",
         variant: "destructive",
       });
     }
   };
 
+  const handleEditPurchase = (orderId: string) => {
+    setSelectedOrderId(orderId);
+    setEditDialogOpen(true);
+  };
 
+  const handleEditSuccess = () => {
+    loadPurchases(); // Reload purchases after successful edit
+  };
 
   // Show loading while auth is initializing
   if (!isAuthInitialized) {
@@ -146,7 +173,9 @@ export default function PurchaseHistory() {
           <CardContent className="pt-6">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-              <h3 className="text-lg font-semibold mb-2">Đang kiểm tra đăng nhập...</h3>
+              <h3 className="text-lg font-semibold mb-2">
+                Đang kiểm tra đăng nhập...
+              </h3>
               <p className="text-gray-600">Vui lòng đợi trong giây lát</p>
             </div>
           </CardContent>
@@ -163,8 +192,10 @@ export default function PurchaseHistory() {
             <div className="text-center">
               <AlertCircle className="h-12 w-12 text-amber-500 mx-auto mb-4" />
               <h3 className="text-lg font-semibold mb-2">Yêu cầu đăng nhập</h3>
-              <p className="text-gray-600 mb-4">Vui lòng đăng nhập để xem lịch sử mua hàng</p>
-              <Button onClick={() => router.push('/auth/login')}>
+              <p className="text-gray-600 mb-4">
+                Vui lòng đăng nhập để xem lịch sử mua hàng
+              </p>
+              <Button onClick={() => router.push("/auth/login")}>
                 Đăng nhập
               </Button>
             </div>
@@ -214,9 +245,24 @@ export default function PurchaseHistory() {
 
           {/* Advanced Filters */}
           {showFilters && (
-            <div className="mt-4 pt-4 border-t grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="mt-4 pt-4 border-t grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              <Select
+                onValueChange={(value) => handleFilterChange("status", value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Trạng thái" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="completed">Đã hoàn thành</SelectItem>
+                  <SelectItem value="pending">Đang chờ</SelectItem>
+                  <SelectItem value="failed">Đã hủy</SelectItem>
+                  <SelectItem value="all">Tất cả</SelectItem>
+                </SelectContent>
+              </Select>
 
-              <Select onValueChange={(value) => handleFilterChange('category', value)}>
+              <Select
+                onValueChange={(value) => handleFilterChange("category", value)}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Danh mục" />
                 </SelectTrigger>
@@ -230,7 +276,9 @@ export default function PurchaseHistory() {
                 </SelectContent>
               </Select>
 
-              <Select onValueChange={(value) => handleFilterChange('sortBy', value)}>
+              <Select
+                onValueChange={(value) => handleFilterChange("sortBy", value)}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Sắp xếp theo" />
                 </SelectTrigger>
@@ -240,7 +288,11 @@ export default function PurchaseHistory() {
                 </SelectContent>
               </Select>
 
-              <Select onValueChange={(value) => handleFilterChange('sortOrder', value)}>
+              <Select
+                onValueChange={(value) =>
+                  handleFilterChange("sortOrder", value)
+                }
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Thứ tự" />
                 </SelectTrigger>
@@ -295,7 +347,7 @@ export default function PurchaseHistory() {
               <p className="text-gray-500 mb-6">
                 Bạn chưa thực hiện giao dịch mua hàng nào
               </p>
-              <Button onClick={() => router.push('/products')}>
+              <Button onClick={() => router.push("/products")}>
                 Khám phá sản phẩm
               </Button>
             </div>
@@ -312,6 +364,7 @@ export default function PurchaseHistory() {
               onViewProduct={handleViewProduct}
               onViewSeller={handleViewSeller}
               onConfirmReceipt={handleConfirmReceipt}
+              onEditPurchase={handleEditPurchase}
               isConfirming={confirmingReceipt === purchase.orderId}
             />
           ))}
@@ -324,10 +377,15 @@ export default function PurchaseHistory() {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-600">
-                Hiển thị {((pagination.currentPage - 1) * pagination.itemsPerPage) + 1} - {' '}
-                {Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)} trong tổng số {pagination.totalItems} đơn hàng
+                Hiển thị{" "}
+                {(pagination.currentPage - 1) * pagination.itemsPerPage + 1} -{" "}
+                {Math.min(
+                  pagination.currentPage * pagination.itemsPerPage,
+                  pagination.totalItems
+                )}{" "}
+                trong tổng số {pagination.totalItems} đơn hàng
               </div>
-              
+
               <div className="flex items-center gap-2">
                 <Button
                   variant="outline"
@@ -338,19 +396,24 @@ export default function PurchaseHistory() {
                   <ChevronLeft className="h-4 w-4" />
                   Trước
                 </Button>
-                
+
                 <div className="flex items-center gap-1">
                   {[...Array(pagination.totalPages)].map((_, i) => {
                     const page = i + 1;
                     if (
                       page === 1 ||
                       page === pagination.totalPages ||
-                      (page >= pagination.currentPage - 1 && page <= pagination.currentPage + 1)
+                      (page >= pagination.currentPage - 1 &&
+                        page <= pagination.currentPage + 1)
                     ) {
                       return (
                         <Button
                           key={page}
-                          variant={page === pagination.currentPage ? "default" : "outline"}
+                          variant={
+                            page === pagination.currentPage
+                              ? "default"
+                              : "outline"
+                          }
                           onClick={() => handlePageChange(page)}
                           className="w-10 h-10"
                         >
@@ -361,12 +424,16 @@ export default function PurchaseHistory() {
                       page === pagination.currentPage - 2 ||
                       page === pagination.currentPage + 2
                     ) {
-                      return <span key={page} className="px-2">...</span>;
+                      return (
+                        <span key={page} className="px-2">
+                          ...
+                        </span>
+                      );
                     }
                     return null;
                   })}
                 </div>
-                
+
                 <Button
                   variant="outline"
                   onClick={() => handlePageChange(pagination.currentPage + 1)}
@@ -381,6 +448,13 @@ export default function PurchaseHistory() {
           </CardContent>
         </Card>
       )}
+
+      <EditPurchaseDialog
+        isOpen={editDialogOpen}
+        onClose={() => setEditDialogOpen(false)}
+        orderId={selectedOrderId}
+        onSuccess={handleEditSuccess}
+      />
     </div>
   );
 }
@@ -391,17 +465,38 @@ interface PurchaseCardProps {
   onViewProduct: (productId: string) => void;
   onViewSeller: (sellerId: string) => void;
   onConfirmReceipt: (orderId: string) => void;
+  onEditPurchase: (orderId: string) => void;
   isConfirming: boolean;
 }
 
-function PurchaseCard({ purchase, onViewProduct, onViewSeller, onConfirmReceipt, isConfirming }: PurchaseCardProps) {
+function PurchaseCard({
+  purchase,
+  onViewProduct,
+  onViewSeller,
+  onConfirmReceipt,
+  onEditPurchase,
+  isConfirming,
+}: PurchaseCardProps) {
+  const isCanceled = purchase.paymentStatus === "failed";
+
   return (
-    <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+    <Card
+      className={`border-0 shadow-lg hover:shadow-xl transition-all duration-300 ${
+        isCanceled ? "opacity-75 bg-gray-50" : ""
+      }`}
+    >
       <CardHeader className="pb-4">
         <div className="flex justify-between items-start">
           <div className="space-y-1">
-            <CardTitle className="text-lg font-semibold text-gray-800">
+            <CardTitle
+              className={`text-lg font-semibold ${
+                isCanceled ? "text-gray-600" : "text-gray-800"
+              }`}
+            >
               Đơn hàng #{purchase.orderId}
+              {isCanceled && (
+                <span className="text-red-600 ml-2">(Đã hủy)</span>
+              )}
             </CardTitle>
             <div className="flex items-center gap-2 text-sm text-gray-500">
               <Clock className="h-4 w-4" />
@@ -413,20 +508,25 @@ function PurchaseCard({ purchase, onViewProduct, onViewSeller, onConfirmReceipt,
               {formatPrice(purchase.amount)}
             </Badge>
             <Badge
-                className={`${
-                    purchase.paymentMethod === 'vnpay'
-                    ? 'bg-blue-100 text-blue-800 hover:bg-blue-200 hover:text-blue-900'
-                    : 'bg-pink-100 text-pink-800 hover:bg-pink-200 hover:text-pink-900'
-                }`}
+              className={`${
+                purchase.paymentMethod === "vnpay"
+                  ? "bg-blue-100 text-blue-800 hover:bg-blue-200 hover:text-blue-900"
+                  : "bg-pink-100 text-pink-800 hover:bg-pink-200 hover:text-pink-900"
+              }`}
             >
-            {purchase.paymentMethod === 'cash'
-                ? 'Thanh toán khi nhận hàng'
+              {purchase.paymentMethod === "cash"
+                ? "Thanh toán khi nhận hàng"
                 : purchase.paymentMethod.toUpperCase()}
             </Badge>
+            {purchase.paymentStatus === "failed" && (
+              <Badge className="bg-red-100 text-red-800 hover:bg-red-200 hover:text-red-900">
+                ĐÃ HỦY
+              </Badge>
+            )}
           </div>
         </div>
       </CardHeader>
-      
+
       <CardContent>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Product Image */}
@@ -462,12 +562,16 @@ function PurchaseCard({ purchase, onViewProduct, onViewSeller, onConfirmReceipt,
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-gray-400" />
                   <span className="text-gray-600">Địa điểm:</span>
-                  <span className="font-medium">{purchase.product.location}</span>
+                  <span className="font-medium">
+                    {purchase.product.location}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <User className="h-4 w-4 text-gray-400" />
                   <span className="text-gray-600">Người bán:</span>
-                  <span className="font-medium">{purchase.product.seller.name}</span>
+                  <span className="font-medium">
+                    {purchase.product.seller.name}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CreditCard className="h-4 w-4 text-gray-400" />
@@ -483,30 +587,41 @@ function PurchaseCard({ purchase, onViewProduct, onViewSeller, onConfirmReceipt,
                     <XCircle className="h-4 w-4 text-red-500" />
                   )}
                   <span className="text-gray-600">Trạng thái nhận hàng:</span>
-                  <span className={`font-medium ${purchase.receivedSuccessfully ? 'text-green-600' : 'text-red-600'}`}>
-                    {purchase.receivedSuccessfully ? 'Đã nhận được hàng' : 'Chưa nhận được hàng'}
+                  <span
+                    className={`font-medium ${
+                      purchase.receivedSuccessfully
+                        ? "text-green-600"
+                        : "text-red-600"
+                    }`}
+                  >
+                    {purchase.receivedSuccessfully
+                      ? "Đã nhận được hàng"
+                      : "Chưa nhận được hàng"}
                   </span>
                 </div>
-                {purchase.receivedSuccessfully && purchase.receivedConfirmedAt && (
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-gray-400" />
-                    <span className="text-gray-600">Ngày xác nhận:</span>
-                    <span className="font-medium text-green-600">
-                      {formatDate.deadline(purchase.receivedConfirmedAt)}
-                    </span>
-                  </div>
-                )}
+                {purchase.receivedSuccessfully &&
+                  purchase.receivedConfirmedAt && (
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4 text-gray-400" />
+                      <span className="text-gray-600">Ngày xác nhận:</span>
+                      <span className="font-medium text-green-600">
+                        {formatDate.deadline(purchase.receivedConfirmedAt)}
+                      </span>
+                    </div>
+                  )}
                 {!purchase.receivedSuccessfully && (
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-gray-400" />
                     <span className="text-gray-600">Hạn nhận hàng:</span>
                     <span className="font-medium text-orange-600">
-                      {formatDate.deadline(purchase.receivedSuccessfullyDeadline)}
+                      {formatDate.deadline(
+                        purchase.receivedSuccessfullyDeadline
+                      )}
                     </span>
                   </div>
                 )}
               </div>
-              
+
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-gray-400" />
@@ -525,30 +640,28 @@ function PurchaseCard({ purchase, onViewProduct, onViewSeller, onConfirmReceipt,
               <Badge className={getStatusColor(purchase.product.status)}>
                 {purchase.product.status}
               </Badge>
-              <Badge variant="outline">
-                {purchase.product.category}
-              </Badge>
+              <Badge variant="outline">{purchase.product.category}</Badge>
             </div>
 
             <div className="flex flex-wrap gap-3 pt-2">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => onViewProduct(purchase.product._id)}
                 className="flex items-center gap-2"
               >
                 <Eye className="h-4 w-4" />
                 Xem sản phẩm
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => onViewSeller(purchase.product.seller._id)}
                 className="flex items-center gap-2"
               >
                 <User className="h-4 w-4" />
                 Xem người bán
               </Button>
-              {!purchase.receivedSuccessfully && (
-                <Button 
+              {!purchase.receivedSuccessfully && !isCanceled && (
+                <Button
                   onClick={() => onConfirmReceipt(purchase.orderId)}
                   disabled={isConfirming}
                   className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white"
@@ -566,10 +679,30 @@ function PurchaseCard({ purchase, onViewProduct, onViewSeller, onConfirmReceipt,
                   )}
                 </Button>
               )}
+              {!isCanceled && (
+                <Button
+                  variant="outline"
+                  onClick={() => onEditPurchase(purchase.orderId)}
+                  className="flex items-center gap-2"
+                >
+                  <Edit className="h-4 w-4" />
+                  Chỉnh sửa
+                </Button>
+              )}
+              {isCanceled && (
+                <Button
+                  variant="outline"
+                  disabled
+                  className="flex items-center gap-2 text-gray-400"
+                >
+                  <XCircle className="h-4 w-4" />
+                  Đơn hàng đã hủy
+                </Button>
+              )}
             </div>
           </div>
         </div>
       </CardContent>
     </Card>
   );
-} 
+}
