@@ -19,7 +19,7 @@ interface FileUploadProps {
 export function FileUpload({
   value = [],
   onChange,
-  accept = "image/*",
+  accept = "image/png,image/jpeg,image/jpg",
   maxFiles = 5,
   maxSize = 5,
   className,
@@ -30,12 +30,23 @@ export function FileUpload({
   const [uploadErrors, setUploadErrors] = useState<string[]>([]);
 
   const validateFile = (file: File): string | null => {
-    if (!file.type.startsWith("image/")) {
-      return "File phải là ảnh";
+    // Check file extension
+    const fileName = file.name.toLowerCase();
+    const validExtensions = ['.png', '.jpg', '.jpeg'];
+    const hasValidExtension = validExtensions.some(ext => fileName.endsWith(ext));
+    
+    // Check MIME type
+    const validMimeTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+    const hasValidMimeType = validMimeTypes.includes(file.type.toLowerCase());
+    
+    if (!hasValidExtension && !hasValidMimeType) {
+      return "Chỉ chấp nhận file PNG, JPG, JPEG";
     }
+    
     if (file.size > maxSize * 1024 * 1024) {
       return `Kích thước file phải nhỏ hơn ${maxSize}MB`;
     }
+    
     return null;
   };
 
@@ -196,7 +207,7 @@ export function FileUpload({
               hoặc kéo thả
             </p>
             <p className="text-xs text-gray-500 mt-1">
-              PNG, JPG, GIF tối đa {maxSize}MB (tối đa {maxFiles} file)
+              PNG, JPG, JPEG tối đa {maxSize}MB (tối đa {maxFiles} file)
             </p>
             {value.length > 0 && (
               <p className="text-xs text-gray-500 mt-1">

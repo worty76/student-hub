@@ -8,9 +8,11 @@ interface PurchaseStore {
   isLoading: boolean;
   error: string | null;
   filters: PurchaseHistoryParams;
+  confirmingReceipt: string | null; // orderId being confirmed
 
   // Actions
   fetchPurchases: (token: string, params?: PurchaseHistoryParams) => Promise<void>;
+  confirmReceipt: (token: string, orderId: string) => Promise<void>;
   setFilters: (filters: Partial<PurchaseHistoryParams>) => void;
   clearFilters: () => void;
   clearError: () => void;
@@ -22,6 +24,7 @@ const initialState = {
   pagination: null,
   isLoading: false,
   error: null,
+  confirmingReceipt: null,
   filters: {
     page: 1,
     limit: 10,
@@ -62,6 +65,48 @@ export const usePurchaseStore = create<PurchaseStore>((set, get) => ({
       set({
         error: errorMessage,
         isLoading: false,
+      });
+      
+      throw error;
+    }
+  },
+
+  confirmReceipt: async (token: string, orderId: string) => {
+    set({ confirmingReceipt: orderId, error: null });
+    
+    try {
+      const response = await paymentService.confirmReceipt(token, orderId);
+      
+      if (response.success) {
+        // Update the specific purchase in the list
+        const currentPurchases = get().purchases;
+        const updatedPurchases = currentPurchases.map(purchase => {
+          if (purchase.orderId === orderId) {
+            return {
+              ...purchase,
+              receivedSuccessfully: response.data.receivedSuccessfully,
+              receivedConfirmedAt: response.data.receivedConfirmedAt,
+            };
+          }
+          return purchase;
+        });
+        
+        set({
+          purchases: updatedPurchases,
+          confirmingReceipt: null,
+          error: null,
+        });
+      } else {
+        throw new Error('Không thể xác nhận nhận hàng');
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Có lỗi xảy ra khi xác nhận nhận hàng';
+      
+      set({
+        error: errorMessage,
+        confirmingReceipt: null,
       });
       
       throw error;

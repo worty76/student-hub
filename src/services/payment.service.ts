@@ -45,8 +45,12 @@ export interface PurchaseHistoryItem {
   transactionId: string;
   amount: number;
   paymentMethod: string;
+  paymentStatus: string;
   shippingAddress: string;
   purchaseDate: string;
+  receivedSuccessfully: boolean;
+  receivedSuccessfullyDeadline: string;
+  receivedConfirmedAt?: string;
   product: {
     _id: string;
     title: string;
@@ -94,6 +98,16 @@ export interface PurchaseHistoryParams {
   maxAmount?: number;
   startDate?: string;
   endDate?: string;
+}
+
+export interface ConfirmReceiptResponse {
+  success: boolean;
+  message: string;
+  data: {
+    orderId: string;
+    receivedSuccessfully: boolean;
+    receivedConfirmedAt: string;
+  };
 }
 
 export class PaymentService {
@@ -259,6 +273,43 @@ export class PaymentService {
       throw new Error('Có lỗi xảy ra khi tải lịch sử mua hàng');
     }
   }
+
+  static async confirmReceipt(token: string, orderId: string): Promise<ConfirmReceiptResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/payments/confirm-receipt/${orderId}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+        }
+        
+        if (response.status === 400) {
+          throw new Error(data.message || 'Đơn hàng đã được xác nhận hoặc yêu cầu không hợp lệ.');
+        }
+        
+        if (response.status === 404) {
+          throw new Error('Không tìm thấy đơn hàng.');
+        }
+        
+        throw new Error(data.message || 'Có lỗi xảy ra khi xác nhận nhận hàng');
+      }
+
+      return data as ConfirmReceiptResponse;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Có lỗi xảy ra khi xác nhận nhận hàng');
+    }
+  }
 }
 
 export const paymentService = {
@@ -266,4 +317,5 @@ export const paymentService = {
   createVNPayPayment: PaymentService.createVNPayPayment,
   purchaseWithVNPay: PaymentService.purchaseWithVNPay,
   getPurchaseHistory: PaymentService.getPurchaseHistory,
+  confirmReceipt: PaymentService.confirmReceipt,
 }; 

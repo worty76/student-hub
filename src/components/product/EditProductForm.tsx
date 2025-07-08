@@ -603,7 +603,7 @@ export function EditProductForm({
                       />
                     </FormControl>
                     <FormDescription className="text-gray-600">
-                      Tải lên tối đa 5 ảnh (PNG, JPG, GIF tối đa 5MB mỗi ảnh)
+                      Tải lên tối đa 5 ảnh (PNG, JPG, JPEG tối đa 5MB mỗi ảnh)
                     </FormDescription>
                     <FormMessage />
                   </FormItem>

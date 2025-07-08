@@ -336,7 +336,7 @@ export const EditProfileForm: React.FC<EditProfileFormProps> = ({
                           }
                           field.onChange(file || '');
                         }}
-                        accept="image/*"
+                        accept="image/png,image/jpeg,image/jpg"
                         maxFiles={1}
                         maxSize={5}
                         disabled={isUpdating}

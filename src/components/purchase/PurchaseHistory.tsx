@@ -21,7 +21,10 @@ import {
   Filter,
   RefreshCw,
   AlertCircle,
-  Clock
+  Clock,
+  CheckCircle,
+  XCircle,
+  Calendar
 } from 'lucide-react';
 import { formatPrice, formatDate, getConditionColor, getStatusColor } from '@/lib/utils';
 import { PurchaseHistoryItem } from '@/services/payment.service';
@@ -35,7 +38,9 @@ export default function PurchaseHistory() {
     pagination, 
     isLoading, 
     error, 
+    confirmingReceipt,
     fetchPurchases, 
+    confirmReceipt,
     setFilters, 
     clearFilters, 
     clearError 
@@ -110,6 +115,25 @@ export default function PurchaseHistory() {
 
   const handleViewSeller = (sellerId: string) => {
     router.push(`/users/${sellerId}`);
+  };
+
+  const handleConfirmReceipt = async (orderId: string) => {
+    if (!token) return;
+    
+    try {
+      await confirmReceipt(token, orderId);
+      toast({
+        title: "Thành công",
+        description: "Đã xác nhận nhận hàng thành công.",
+        variant: "default",
+      });
+    } catch (error) {
+      toast({
+        title: "Lỗi xác nhận",
+        description: error instanceof Error ? error.message : "Có lỗi xảy ra khi xác nhận nhận hàng.",
+        variant: "destructive",
+      });
+    }
   };
 
 
@@ -287,6 +311,8 @@ export default function PurchaseHistory() {
               purchase={purchase}
               onViewProduct={handleViewProduct}
               onViewSeller={handleViewSeller}
+              onConfirmReceipt={handleConfirmReceipt}
+              isConfirming={confirmingReceipt === purchase.orderId}
             />
           ))}
         </div>
@@ -364,9 +390,11 @@ interface PurchaseCardProps {
   purchase: PurchaseHistoryItem;
   onViewProduct: (productId: string) => void;
   onViewSeller: (sellerId: string) => void;
+  onConfirmReceipt: (orderId: string) => void;
+  isConfirming: boolean;
 }
 
-function PurchaseCard({ purchase, onViewProduct, onViewSeller }: PurchaseCardProps) {
+function PurchaseCard({ purchase, onViewProduct, onViewSeller, onConfirmReceipt, isConfirming }: PurchaseCardProps) {
   return (
     <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300">
       <CardHeader className="pb-4">
@@ -448,6 +476,35 @@ function PurchaseCard({ purchase, onViewProduct, onViewSeller }: PurchaseCardPro
                     {purchase.transactionId}
                   </span>
                 </div>
+                <div className="flex items-center gap-2">
+                  {purchase.receivedSuccessfully ? (
+                    <CheckCircle className="h-4 w-4 text-green-500" />
+                  ) : (
+                    <XCircle className="h-4 w-4 text-red-500" />
+                  )}
+                  <span className="text-gray-600">Trạng thái nhận hàng:</span>
+                  <span className={`font-medium ${purchase.receivedSuccessfully ? 'text-green-600' : 'text-red-600'}`}>
+                    {purchase.receivedSuccessfully ? 'Đã nhận được hàng' : 'Chưa nhận được hàng'}
+                  </span>
+                </div>
+                {purchase.receivedSuccessfully && purchase.receivedConfirmedAt && (
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4 text-gray-400" />
+                    <span className="text-gray-600">Ngày xác nhận:</span>
+                    <span className="font-medium text-green-600">
+                      {formatDate.deadline(purchase.receivedConfirmedAt)}
+                    </span>
+                  </div>
+                )}
+                {!purchase.receivedSuccessfully && (
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4 text-gray-400" />
+                    <span className="text-gray-600">Hạn nhận hàng:</span>
+                    <span className="font-medium text-orange-600">
+                      {formatDate.deadline(purchase.receivedSuccessfullyDeadline)}
+                    </span>
+                  </div>
+                )}
               </div>
               
               <div className="space-y-2">
@@ -473,7 +530,7 @@ function PurchaseCard({ purchase, onViewProduct, onViewSeller }: PurchaseCardPro
               </Badge>
             </div>
 
-            <div className="flex gap-3 pt-2">
+            <div className="flex flex-wrap gap-3 pt-2">
               <Button 
                 variant="outline" 
                 onClick={() => onViewProduct(purchase.product._id)}
@@ -490,6 +547,25 @@ function PurchaseCard({ purchase, onViewProduct, onViewSeller }: PurchaseCardPro
                 <User className="h-4 w-4" />
                 Xem người bán
               </Button>
+              {!purchase.receivedSuccessfully && (
+                <Button 
+                  onClick={() => onConfirmReceipt(purchase.orderId)}
+                  disabled={isConfirming}
+                  className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white"
+                >
+                  {isConfirming ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      Đang xác nhận...
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="h-4 w-4" />
+                      Xác nhận nhận hàng
+                    </>
+                  )}
+                </Button>
+              )}
             </div>
           </div>
         </div>
