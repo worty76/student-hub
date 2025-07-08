@@ -14,7 +14,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { UserX, Shield, CheckCircle, Star, Calendar, Mail } from "lucide-react";
+import { UserX, Star, Calendar, Mail } from "lucide-react";
 import { User, UserRole } from "@/types/auth";
 import { DeleteUserButton } from "./DeleteUserButton";
 
