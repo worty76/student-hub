@@ -190,30 +190,6 @@ export function UserGrid({ users, onUserAction }: UserGridProps) {
                       </AlertDialogContent>
                     </AlertDialog>
                   )}
-
-                  {user.status === "suspended" && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => onUserAction(user._id, "activate")}
-                      className="flex-1"
-                    >
-                      <CheckCircle className="h-4 w-4 mr-1" />
-                      Kích hoạt
-                    </Button>
-                  )}
-
-                  {user.role !== "admin" && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => onUserAction(user._id, "promote")}
-                      className="flex-1"
-                    >
-                      <Shield className="h-4 w-4 mr-1" />
-                      Thăng cấp
-                    </Button>
-                  )}
                 </div>
 
                 {/* Delete Button */}

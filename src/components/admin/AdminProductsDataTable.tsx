@@ -438,7 +438,7 @@ export function AdminProductsDataTable({ data, isLoading = false }: AdminProduct
           </div>
                       
             {isPending && (
-              <>
+              <div className="flex items-center gap-2">
                 <Button
                   variant="outline"
                   size="sm"
@@ -458,7 +458,7 @@ export function AdminProductsDataTable({ data, isLoading = false }: AdminProduct
                   <X className="h-4 w-4 mr-1" />
                   Từ chối
                 </Button>
-              </>
+              </div>
             )}
           </div>
         );
@@ -519,9 +519,9 @@ export function AdminProductsDataTable({ data, isLoading = false }: AdminProduct
   return (
     <div className="w-full space-y-4">
       {/* Bộ lọc và tìm kiếm */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 w-full">
-          <div className="relative w-full sm:w-80">
+      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+        <div className="flex flex-col lg:flex-row items-start lg:items-center space-y-2 lg:space-y-0 lg:space-x-2 w-full">
+          <div className="relative w-full lg:w-80">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
               placeholder="Tìm kiếm sản phẩm hoặc người bán..."
@@ -701,7 +701,7 @@ export function AdminProductsDataTable({ data, isLoading = false }: AdminProduct
       </div>
 
       {/* Phân trang */}
-      <div className="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0">
+      <div className="flex flex-col lg:flex-row items-center justify-between space-y-2 lg:space-y-0">
         <div className="text-sm text-muted-foreground">
           Hiển thị {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} đến{' '}
           {Math.min(

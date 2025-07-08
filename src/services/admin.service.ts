@@ -1,5 +1,6 @@
 import { User } from '@/types/auth';
 import { ProductsResponse, ProductsQueryParams, ProductReportsResponse, ProductReportsQueryParams } from '@/types/product';
+import { MonthlyStatistic } from '@/store/monthlyStatsStore';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
@@ -473,6 +474,75 @@ export class AdminService {
       }
       
       throw new AdminApiError('Failed to reject product', 500);
+    }
+  }
+
+  static async getMonthlyProfitStatistics(token: string, year?: number): Promise<MonthlyStatistic[]> {
+    try {
+      const queryParams = new URLSearchParams();
+      if (year) queryParams.append('year', year.toString());
+
+      const url = `${API_BASE_URL}/admin/profits/monthly${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+      
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        
+        if (response.status === 401) {
+          throw new AdminApiError('Không được xác thực', 401);
+        }
+        
+        if (response.status === 403) {
+          throw new AdminApiError('Không có quyền admin', 403);
+        }
+
+        if (response.status === 500) {
+          throw new AdminApiError('Lỗi server', 500);
+        }
+        
+        throw new AdminApiError(
+          errorData.message || `Lỗi tải dữ liệu thống kê lợi nhuận: ${response.statusText}`,
+          response.status
+        );
+      }
+
+      const data: MonthlyStatistic[] = await response.json();
+      
+      // Validate response data
+      if (!Array.isArray(data)) {
+        throw new AdminApiError('Định dạng phản hồi không hợp lệ: mong muốn mảc tháng thống kê lợi nhuận', 500);
+      }
+
+      // Ensure we have all 12 months with default values
+      const completeMonthlyStats: MonthlyStatistic[] = [];
+      for (let month = 1; month <= 12; month++) {
+        const existingData = data.find(item => item.month === month);
+        completeMonthlyStats.push(existingData || {
+          month,
+          profit: 0,
+          transactions: 0,
+          revenue: 0,
+        });
+      }
+
+      return completeMonthlyStats;
+    } catch (error) {
+      if (error instanceof AdminApiError) {
+        throw error;
+      }
+      
+      if (error instanceof Error) {
+        throw new AdminApiError(error.message, 500);
+      }
+      
+      throw new AdminApiError('Lỗi tải dữ liệu thống kê lợi nhuận', 500);
     }
   }
 }
