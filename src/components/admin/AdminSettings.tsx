@@ -30,7 +30,7 @@ export function AdminSettings() {
     siteName: 'StudentHub',
     siteDescription: 'Second-Hand Marketplace for Students',
     maxProductsPerUser: 50,
-    allowedFileTypes: ['jpg', 'jpeg', 'png', 'gif'],
+    allowedFileTypes: ['jpg', 'jpeg', 'png'],
     maxFileSize: 5, // MB
     maintenanceMode: false,
     registrationEnabled: true,
