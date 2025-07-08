@@ -10,6 +10,7 @@ import {
   Settings,
   Shield,
   DollarSign,
+  Home,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -26,6 +27,7 @@ import {
 } from "@/components/ui/sidebar"
 import { useAuthStore } from '@/store/authStore'
 import { useAdminNavigation } from '@/contexts/AdminNavigationContext'
+import Link from "next/link"
 
 type AdminTab = 'overview' | 'users' | 'products' | 'pending-products' | 'reports' | 'profits' | 'settings';
 
@@ -97,6 +99,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} activeTab={activeTab} onTabChange={setActiveTab} />
       </SidebarContent>
       <SidebarFooter>
+        <Link href="/" className="flex items-center gap-2 mb-2 font-bold hover:text-white bg-blue-500 text-white p-3 rounded-md">
+          <Home className="w-4 h-4" />
+          Chuyển đến trang chủ
+        </Link>
         <NavUser user={{
           name: user?.name || "Admin",
           email: user?.email || "admin@example.com",
