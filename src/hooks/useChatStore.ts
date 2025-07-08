@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { create } from "zustand";
 import { Chat, Message, ChatState, CreateChatRequest } from "@/types/chat";
 import { chatService } from "@/services/chat.service";

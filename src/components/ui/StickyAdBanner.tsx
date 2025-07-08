@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ExternalLink, ShoppingBag, Megaphone } from 'lucide-react';
+import { X, ExternalLink, Smartphone, Coffee, Gamepad2, Music, Zap } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 
 interface StickyAd {
@@ -22,36 +23,75 @@ interface StickyAd {
 const stickyAds: StickyAd[] = [
   {
     id: '1',
-    title: 'Khuyến Mãi - Giảm Giá 50% Tất Cả!',
-    description: 'Ưu đãi có thời hạn cho tất cả nhu yếu phẩm sinh viên',
-    backgroundColor: 'bg-gradient-to-r from-red-500 to-pink-600',
+    title: 'iPhone 15 Pro - Titan. Mạnh Mẽ. Nhẹ Nhàng.',
+    description: 'Khám phá iPhone tiên tiến nhất với thiết kế titan và chip A17 Pro',
+    image: 'https://www.apple.com/v/iphone/home/cc/images/overview/select/iphone_15__buwagff0mwwi_xlarge.png',
+    backgroundColor: 'bg-gradient-to-r from-gray-800 to-black',
     textColor: 'text-white',
-    ctaText: 'Mua Ngay',
-    ctaLink: '/products',
-    isExternal: false,
-    icon: <ShoppingBag className="h-5 w-5" />
+    ctaText: 'Mua iPhone',
+    ctaLink: 'https://www.apple.com',
+    isExternal: true,
+    icon: <Smartphone className="h-5 w-5" />
   },
   {
     id: '2',
-    title: 'Bộ Sưu Tập Laptop Mới Có Sẵn',
-    description: 'Laptop tân trang chất lượng cao dành cho sinh viên',
-    backgroundColor: 'bg-gradient-to-r from-blue-600 to-purple-700',
+    title: 'Coca-Cola - Cảm Nhận Hương Vị',
+    description: 'Giải khát với thức uống có ga nguyên bản và được yêu thích nhất',
+    image: 'https://www.coca-cola.com/content/dam/onexp/vn/vi/brands/coca-cola/vn-coca-cola.png/width1960.png',
+    backgroundColor: 'bg-gradient-to-r from-red-600 to-red-700',
     textColor: 'text-white',
-    ctaText: 'Xem Bộ Sưu Tập',
-    ctaLink: '/products',
-    isExternal: false,
-    icon: <Megaphone className="h-5 w-5" />
+    ctaText: 'Xem Coca-Cola',
+    ctaLink: 'https://www.coca-cola.com',
+    isExternal: true,
+    icon: <Coffee className="h-5 w-5" />
   },
   {
     id: '3',
-    title: 'Tham Gia Cộng Đồng Của Chúng Tôi',
-    description: 'Nhận thông báo tức thì về danh sách mới',
+    title: 'PlayStation 5 - Chơi Không Giới Hạn',
+    description: 'Đắm chìm trong thế giới cảm nhận, nhìn và nghe thực sự như thật',
+    image: 'https://gmedia.playstation.com/is/image/SIEPDC/ps5-product-thumbnail-01-en-14sep21?$facebook$',
+    backgroundColor: 'bg-gradient-to-r from-blue-500 to-purple-600',
+    textColor: 'text-white',
+    ctaText: 'Chơi PlayStation',
+    ctaLink: 'https://www.playstation.com',
+    isExternal: true,
+    icon: <Gamepad2 className="h-5 w-5" />
+  },
+  {
+    id: '4',
+    title: 'Spotify - Âm Nhạc Cho Mọi Người',
+    description: 'Nghe hàng triệu bài hát, podcast và khám phá nhạc mới',
+    image: 'https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png',
     backgroundColor: 'bg-gradient-to-r from-green-500 to-emerald-600',
     textColor: 'text-white',
-    ctaText: 'Tham Gia Ngay',
-    ctaLink: '/auth/login',
+    ctaText: 'Nghe Spotify',
+    ctaLink: 'https://www.spotify.com',
     isExternal: true,
-    icon: <ExternalLink className="h-5 w-5" />
+    icon: <Music className="h-5 w-5" />
+  },
+  {
+    id: '6',
+    title: 'Nike - Cứ Làm Đi',
+    description: 'Tìm đôi giày, quần áo và thiết bị yêu thích tiếp theo của bạn',
+    image: 'https://static.nike.com/a/images/f_auto/dpr_1.0,cs_srgb/h_500,c_limit/6ec248e4-ed58-436a-a9cb-78f1c009b1df/nike-just-do-it.jpg',
+    backgroundColor: 'bg-gradient-to-r from-orange-500 to-red-600',
+    textColor: 'text-white',
+    ctaText: 'Mua Nike',
+    ctaLink: 'https://www.nike.com',
+    isExternal: true,
+    icon: <Zap className="h-5 w-5" />
+  },
+  {
+    id: '8',
+    title: 'Samsung Galaxy S24 Ultra',
+    description: 'Galaxy AI đã có mặt. Smartphone Galaxy thông minh nhất từ trước đến nay',
+    image: 'https://images.samsung.com/is/image/samsung/p6pim/vn/2401/gallery/vn-galaxy-s24-s928-sm-s928bzkcxxv-thumb-539307321?$200_200_PNG$',
+    backgroundColor: 'bg-gradient-to-r from-purple-600 to-blue-600',
+    textColor: 'text-white',
+    ctaText: 'Khám Phá Galaxy',
+    ctaLink: 'https://www.samsung.com',
+    isExternal: true,
+    icon: <Smartphone className="h-5 w-5" />
   }
 ];
 
@@ -131,12 +171,32 @@ export function StickyAdBanner() {
               <div className="px-4 py-4 md:px-8 md:py-6">
                 <div className="flex items-center justify-between max-w-7xl mx-auto">
                   <div className="flex items-center space-x-4 flex-1 min-w-0">
+                    {/* Product Image */}
+                    {ad.image && (
+                      <motion.div
+                        key={`${ad.id}-image`}
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ duration: 0.5, delay: 0.1 }}
+                        className="flex-shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-xl overflow-hidden bg-white/10 backdrop-blur-sm"
+                      >
+                        <Image
+                          src={ad.image}
+                          alt={ad.title}
+                          width={80}
+                          height={80}
+                          className="w-full h-full object-cover rounded-xl"
+                          loading="lazy"
+                        />
+                      </motion.div>
+                    )}
+
                     {/* Icon */}
                     <motion.div
                       key={`${ad.id}-icon`}
                       initial={{ scale: 0, rotate: -180 }}
                       animate={{ scale: 1, rotate: 0 }}
-                      transition={{ duration: 0.5, delay: 0.1 }}
+                      transition={{ duration: 0.5, delay: 0.2 }}
                       className={`p-3 rounded-full bg-white/20 ${ad.textColor} flex-shrink-0`}
                     >
                       {ad.icon}
@@ -148,8 +208,8 @@ export function StickyAdBanner() {
                         key={`${ad.id}-title`}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.4, delay: 0.2 }}
-                        className={`font-bold text-base md:text-lg ${ad.textColor} truncate`}
+                        transition={{ duration: 0.4, delay: 0.3 }}
+                        className={`font-bold text-base md:text-lg ${ad.textColor} line-clamp-1`}
                       >
                         {ad.title}
                       </motion.h3>
@@ -157,8 +217,8 @@ export function StickyAdBanner() {
                         key={`${ad.id}-desc`}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.4, delay: 0.3 }}
-                        className={`text-sm md:text-base ${ad.textColor.replace('text-', 'text-').replace('-', '-200')} truncate text-white`}
+                        transition={{ duration: 0.4, delay: 0.4 }}
+                        className={`text-sm md:text-base ${ad.textColor.replace('text-', 'text-').replace('-', '-200')} line-clamp-2 text-white/90`}
                       >
                         {ad.description}
                       </motion.p>
@@ -213,7 +273,7 @@ export function StickyAdBanner() {
                               ? 'bg-white scale-125' 
                               : 'bg-white/50 hover:bg-white/75'
                           }`}
-                          aria-label={`Đến quảng cáo ${index + 1}`}
+                          aria-label={`Chuyển đến quảng cáo ${index + 1}`}
                         />
                       ))}
                     </div>
@@ -222,7 +282,7 @@ export function StickyAdBanner() {
                     {/* <button
                       onClick={handleMinimize}
                       className={`p-2 rounded-full ${ad.textColor.replace('text-', 'text-').replace('-', '-300')} hover:bg-white/20 transition-all duration-300`}
-                      aria-label="Minimize banner"
+                      aria-label="Thu nhỏ banner"
                     >
                       <motion.div
                         animate={{ rotate: isMinimized ? 180 : 0 }}
@@ -238,7 +298,7 @@ export function StickyAdBanner() {
                     {/* <button
                       onClick={handleClose}
                       className={`p-2.5 rounded-full bg-white/30 ${ad.textColor} hover:bg-white/40 transition-all duration-300 shadow-md hover:shadow-lg`}
-                      aria-label="Đóng quảng cáo"
+                      aria-label="Đóng banner quảng cáo"
                     >
                       <X className="w-5 h-5" />
                     </button> */}
@@ -250,6 +310,19 @@ export function StickyAdBanner() {
               <div className="px-4 py-3">
                 <div className="flex items-center justify-between max-w-7xl mx-auto">
                   <div className="flex items-center space-x-3">
+                    {/* Small Product Image */}
+                    {ad.image && (
+                      <div className="flex-shrink-0 w-8 h-8 rounded-lg overflow-hidden bg-white/10">
+                        <Image
+                          src={ad.image}
+                          alt={ad.title}
+                          width={32}
+                          height={32}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                      </div>
+                    )}
                     <div className={`p-1.5 rounded-full bg-white/20 ${ad.textColor}`}>
                       {ad.icon}
                     </div>
