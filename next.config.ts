@@ -27,6 +27,55 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      // Brand advertisement image domains
+      {
+        protocol: 'https',
+        hostname: 'www.apple.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.coca-cola.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'digitalassets.tesla.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'gmedia.playstation.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'storage.googleapis.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'static.nike.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'logoeps.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.samsung.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 };
