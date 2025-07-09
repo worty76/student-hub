@@ -11,7 +11,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/components/ui/use-toast';
 
 import { 
-
   ShoppingBag,
   MapPin,
   CreditCard,
@@ -440,7 +439,14 @@ interface PurchaseCardProps {
   isConfirming: boolean;
 }
 
-function PurchaseCard({ purchase, onViewProduct, onViewSeller, onConfirmReceipt, onEditPurchase, isConfirming }: PurchaseCardProps) {
+function PurchaseCard({
+  purchase,
+  onViewProduct,
+  onViewSeller,
+  onConfirmReceipt,
+  onEditPurchase,
+  isConfirming,
+}: PurchaseCardProps) {
   const isCanceled = purchase.paymentStatus === "failed";
 
   // Add null safety check
@@ -471,9 +477,11 @@ function PurchaseCard({ purchase, onViewProduct, onViewSeller, onConfirmReceipt,
       <CardHeader className="pb-3 sm:pb-4">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 sm:gap-0">
           <div className="space-y-1">
-            <CardTitle className={`text-lg font-semibold ${
+            <CardTitle
+              className={`text-lg font-semibold ${
                 isCanceled ? "text-gray-600" : "text-gray-800"
-              }`}>
+              }`}
+            >
               Đơn hàng #{purchase.orderId}
               {isCanceled && (
                 <span className="text-red-600 ml-2">(Đã hủy)</span>
@@ -565,7 +573,7 @@ function PurchaseCard({ purchase, onViewProduct, onViewSeller, onConfirmReceipt,
                   <MapPin className="h-3 w-3 sm:h-4 sm:w-4 text-gray-400 mt-0.5 flex-shrink-0" />
                   <div className="min-w-0 flex-1">
                     <span className="text-gray-600">Địa điểm:</span>
-                    <span className="font-medium ml-1 break-words">{product.location || 'Không xác định'}</span>
+                    <span className="font-medium ml-1 break-words">{purchase.product.location}</span>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
@@ -577,6 +585,7 @@ function PurchaseCard({ purchase, onViewProduct, onViewSeller, onConfirmReceipt,
                     </span>
                   </div>
                 </div>
+                {purchase.transactionId && (
                 <div className="flex items-start gap-2">
                   <CreditCard className="h-3 w-3 sm:h-4 sm:w-4 text-gray-400 mt-0.5 flex-shrink-0" />
                   <div className="min-w-0 flex-1">
@@ -588,7 +597,9 @@ function PurchaseCard({ purchase, onViewProduct, onViewSeller, onConfirmReceipt,
                     </div>
                   </div>
                 </div>
+                )}
               </div>
+              
               
               <div className="space-y-2">
                 <div className="flex items-start gap-2">
@@ -643,7 +654,7 @@ function PurchaseCard({ purchase, onViewProduct, onViewSeller, onConfirmReceipt,
             )}
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-2">
+            {/* <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-2">
               {product._id && (
                 <Button 
                   variant="outline" 
@@ -684,26 +695,84 @@ function PurchaseCard({ purchase, onViewProduct, onViewSeller, onConfirmReceipt,
                       Xác nhận nhận hàng
                     </>
                   )}
-                  {!isCanceled && (
-                  <Button
-                      variant="outline"
-                      onClick={() => onEditPurchase(purchase.orderId)}
-                      className="flex items-center gap-2"
-                    >
-                      <Edit className="h-4 w-4" />
-                      Chỉnh sửa
-                    </Button>
+                </Button>
+              )}
+              {!isCanceled && (
+                <Button
+                  variant="outline"
+                  onClick={() => onEditPurchase(purchase.orderId)}
+                  className="flex items-center gap-2"
+                >
+                  <Edit className="h-4 w-4" />
+                  Chỉnh sửa                    
+                </Button>
+              )}
+
+              {isCanceled && (
+                <Button
+                  variant="outline"
+                  disabled
+                  className="flex items-center gap-2 text-gray-400"
+                >
+                  <XCircle className="h-4 w-4" />
+                  Đơn hàng đã hủy
+                 </Button>
+              )}
+            </div> */}
+                        <div className="flex flex-wrap gap-3 pt-2">
+              <Button
+                variant="outline"
+                onClick={() => onViewProduct(purchase.product._id)}
+                className="flex items-center gap-2"
+              >
+                <Eye className="h-4 w-4" />
+                Xem sản phẩm
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => onViewSeller(purchase.product.seller._id)}
+                className="flex items-center gap-2"
+              >
+                <User className="h-4 w-4" />
+                Xem người bán
+              </Button>
+              {!purchase.receivedSuccessfully && !isCanceled && (
+                <Button
+                  onClick={() => onConfirmReceipt(purchase.orderId)}
+                  disabled={isConfirming}
+                  className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white"
+                >
+                  {isConfirming ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      Đang xác nhận...
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="h-4 w-4" />
+                      Xác nhận nhận hàng
+                    </>
                   )}
-                  {isCanceled && (
-                    <Button
-                      variant="outline"
-                      disabled
-                      className="flex items-center gap-2 text-gray-400"
-                    >
-                      <XCircle className="h-4 w-4" />
-                      Đơn hàng đã hủy
-                    </Button>
-                  )}
+                </Button>
+              )}
+              {!isCanceled && (
+                <Button
+                  variant="outline"
+                  onClick={() => onEditPurchase(purchase.orderId)}
+                  className="flex items-center gap-2"
+                >
+                  <Edit className="h-4 w-4" />
+                  Chỉnh sửa
+                </Button>
+              )}
+              {isCanceled && (
+                <Button
+                  variant="outline"
+                  disabled
+                  className="flex items-center gap-2 text-gray-400"
+                >
+                  <XCircle className="h-4 w-4" />
+                  Đơn hàng đã hủy
                 </Button>
               )}
             </div>
