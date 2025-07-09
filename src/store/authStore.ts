@@ -248,56 +248,36 @@ export const useAuthStore = create<AuthStore>()(
       },
 
       initializeAuth: () => {
-        console.log('Initializing authentication...');
         const { user: storeUser, token: storeToken } = get();
         const storedToken = localStorage.getItem('token');
         const storedUserStr = localStorage.getItem('user');
         const authStorage = localStorage.getItem('auth-storage');
         const userProfileStorage = localStorage.getItem('user-profile-storage');
         
-        console.log('Auth initialization data:', {
-          storeUser,
-          storeToken,
-          storedToken,
-          storedUserStr,
-          authStorage,
-          userProfileStorage
-        });
-        
+        console.log(authStorage, userProfileStorage);
+
         try {
           const storedUser = storedUserStr ? JSON.parse(storedUserStr) : null;
           
-          // If we have data in localStorage but not in store, update store
           if (storedToken && storedUser && (!storeUser || !storeToken)) {
             set({
               user: storedUser,
               token: storedToken,
               isAuthenticated: true
             });
-            console.log('Auth initialized from localStorage:', {
-              user: storedUser,
-              token: storedToken,
-              isAuthenticated: true
-            });
           }
-          // If we have data in store but not in localStorage, update localStorage
           else if (storeUser && storeToken && (!storedToken || !storedUser)) {
-            console.log('Syncing auth to localStorage');
             localStorage.setItem('token', storeToken);
             localStorage.setItem('user', JSON.stringify(storeUser));
             set({ isAuthenticated: true });
           }
-          // If both have data, ensure they match
           else if (storeUser && storeToken && storedToken && storedUser) {
             set({ isAuthenticated: true });
           }
-          // If neither has data, ensure clean state
           else if (!storeUser && !storeToken && !storedToken && !storedUser) {
             set({ isAuthenticated: false });
           }
-          // Handle inconsistent state by clearing everything
           else {
-            console.log('Clearing inconsistent auth state');
             localStorage.removeItem('token');
             localStorage.removeItem('user');
             localStorage.removeItem('auth-storage');
@@ -310,7 +290,6 @@ export const useAuthStore = create<AuthStore>()(
           }
         } catch (error) {
           console.error('Error initializing auth:', error);
-          // Clear everything on error
           localStorage.removeItem('token');
           localStorage.removeItem('user');
           localStorage.removeItem('auth-storage');
