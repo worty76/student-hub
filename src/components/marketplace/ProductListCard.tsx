@@ -21,7 +21,6 @@ interface ProductListCardProps {
 export function ProductListCard({ product, className }: ProductListCardProps) {
   const mainImage = product.images && product.images.length > 0 ? product.images[0] : null;
 
-  // Helper function to get seller name
   const getSellerName = (seller: string | Seller): string => {
     if (typeof seller === 'string') {
       return seller;
