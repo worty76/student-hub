@@ -1,4 +1,6 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://be-student-hub.onrender.com/api';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || "https://be-student-hub.onrender.com/api";
 
 export interface MomoPaymentRequest {
   productId: string;
@@ -111,13 +113,16 @@ export interface ConfirmReceiptResponse {
 }
 
 export class PaymentService {
-  static async createMomoPayment(token: string, productId: string): Promise<MomoPaymentResponse> {
+  static async createMomoPayment(
+    token: string,
+    productId: string
+  ): Promise<MomoPaymentResponse> {
     try {
       const response = await fetch(`${API_BASE_URL}/payments/momo/create`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ productId }),
       });
@@ -126,18 +131,18 @@ export class PaymentService {
 
       if (!response.ok) {
         if (response.status === 401) {
-          throw new Error('Vui lòng đăng nhập lại');
+          throw new Error("Vui lòng đăng nhập lại");
         }
-        
+
         if (response.status === 400) {
-          throw new Error('Yêu cầu không hợp lệ');
+          throw new Error("Yêu cầu không hợp lệ");
         }
-        
+
         if (response.status === 404) {
-          throw new Error('Sản phẩm không tồn tại');
+          throw new Error("Sản phẩm không tồn tại");
         }
-        
-        throw new Error(data.message || 'Có lỗi xảy ra khi xử lý thanh toán');
+
+        throw new Error(data.message || "Có lỗi xảy ra khi xử lý thanh toán");
       }
 
       return data as MomoPaymentResponse;
@@ -145,22 +150,25 @@ export class PaymentService {
       if (error instanceof Error) {
         throw error;
       }
-      throw new Error('Có lỗi xảy ra khi xử lý thanh toán');
+      throw new Error("Có lỗi xảy ra khi xử lý thanh toán");
     }
   }
 
-  static async createVNPayPayment(token: string, paymentData: VNPayPaymentRequest): Promise<VNPayPaymentResponse> {
+  static async createVNPayPayment(
+    token: string,
+    paymentData: VNPayPaymentRequest
+  ): Promise<VNPayPaymentResponse> {
     try {
       const response = await fetch(`${API_BASE_URL}/payments/vnpay/create`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           productId: paymentData.productId,
-          bankCode: paymentData.bankCode || 'NCB',
-          locale: paymentData.locale || 'vn',
+          bankCode: paymentData.bankCode || "NCB",
+          locale: paymentData.locale || "vn",
         }),
       });
 
@@ -168,18 +176,18 @@ export class PaymentService {
 
       if (!response.ok) {
         if (response.status === 401) {
-          throw new Error('Vui lòng đăng nhập lại');
+          throw new Error("Vui lòng đăng nhập lại");
         }
-        
+
         if (response.status === 400) {
-          throw new Error('Yêu cầu không hợp lệ');
+          throw new Error("Yêu cầu không hợp lệ");
         }
-        
+
         if (response.status === 404) {
-          throw new Error('Sản phẩm không tồn tại');
+          throw new Error("Sản phẩm không tồn tại");
         }
-        
-        throw new Error(data.message || 'Có lỗi xảy ra khi xử lý thanh toán');
+
+        throw new Error(data.message || "Có lỗi xảy ra khi xử lý thanh toán");
       }
 
       return data as VNPayPaymentResponse;
@@ -187,41 +195,48 @@ export class PaymentService {
       if (error instanceof Error) {
         throw error;
       }
-      throw new Error('Có lỗi xảy ra khi xử lý thanh toán VNPAY');
+      throw new Error("Có lỗi xảy ra khi xử lý thanh toán VNPAY");
     }
   }
 
-  static async purchaseWithVNPay(token: string, productId: string, purchaseData: ProductPurchaseRequest): Promise<ProductPurchaseResponse> {
+  static async purchaseWithVNPay(
+    token: string,
+    productId: string,
+    purchaseData: ProductPurchaseRequest
+  ): Promise<ProductPurchaseResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/products/${productId}/purchase`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          shippingAddress: purchaseData.shippingAddress,
-          bankCode: purchaseData.bankCode || 'NCB',
-          locale: purchaseData.locale || 'vn',
-        }),
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/products/${productId}/purchase`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            shippingAddress: purchaseData.shippingAddress,
+            bankCode: purchaseData.bankCode || "NCB",
+            locale: purchaseData.locale || "vn",
+          }),
+        }
+      );
 
       const data = await response.json();
 
       if (!response.ok) {
         if (response.status === 401) {
-          throw new Error('Vui lòng đăng nhập lại');
+          throw new Error("Vui lòng đăng nhập lại");
         }
-        
+
         if (response.status === 400) {
-          throw new Error(data.message || 'Yêu cầu không hợp lệ');
+          throw new Error(data.message || "Yêu cầu không hợp lệ");
         }
-        
+
         if (response.status === 404) {
-          throw new Error('Sản phẩm không tồn tại');
+          throw new Error("Sản phẩm không tồn tại");
         }
-        
-        throw new Error(data.message || 'Có lỗi xảy ra khi xử lý thanh toán');
+
+        throw new Error(data.message || "Có lỗi xảy ra khi xử lý thanh toán");
       }
 
       return data as ProductPurchaseResponse;
@@ -229,29 +244,34 @@ export class PaymentService {
       if (error instanceof Error) {
         throw error;
       }
-      throw new Error('Có lỗi xảy ra khi xử lý thanh toán VNPAY');
+      throw new Error("Có lỗi xảy ra khi xử lý thanh toán VNPAY");
     }
   }
 
-  static async getPurchaseHistory(token: string, params: PurchaseHistoryParams = {}): Promise<PurchaseHistoryResponse> {
+  static async getPurchaseHistory(
+    token: string,
+    params: PurchaseHistoryParams = {}
+  ): Promise<PurchaseHistoryResponse> {
     try {
       const queryParams = new URLSearchParams();
-      
+
       // Add parameters to query string
       Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined && value !== null && value !== '') {
+        if (value !== undefined && value !== null && value !== "") {
           queryParams.append(key, value.toString());
         }
       });
 
       const queryString = queryParams.toString();
-      const url = `${API_BASE_URL}/payments/purchases${queryString ? `?${queryString}` : ''}`;
+      const url = `${API_BASE_URL}/payments/purchases${
+        queryString ? `?${queryString}` : ""
+      }`;
 
       const response = await fetch(url, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
       });
 
@@ -259,10 +279,14 @@ export class PaymentService {
 
       if (!response.ok) {
         if (response.status === 401) {
-          throw new Error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+          throw new Error(
+            "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại."
+          );
         }
-        
-        throw new Error(data.message || 'Có lỗi xảy ra khi tải lịch sử mua hàng');
+
+        throw new Error(
+          data.message || "Có lỗi xảy ra khi tải lịch sử mua hàng"
+        );
       }
 
       return data as PurchaseHistoryResponse;
@@ -270,36 +294,47 @@ export class PaymentService {
       if (error instanceof Error) {
         throw error;
       }
-      throw new Error('Có lỗi xảy ra khi tải lịch sử mua hàng');
+      throw new Error("Có lỗi xảy ra khi tải lịch sử mua hàng");
     }
   }
 
-  static async confirmReceipt(token: string, orderId: string): Promise<ConfirmReceiptResponse> {
+  static async confirmReceipt(
+    token: string,
+    orderId: string
+  ): Promise<ConfirmReceiptResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/payments/confirm-receipt/${orderId}`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/payments/confirm-receipt/${orderId}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       const data = await response.json();
 
       if (!response.ok) {
         if (response.status === 401) {
-          throw new Error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+          throw new Error(
+            "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại."
+          );
         }
-        
+
         if (response.status === 400) {
-          throw new Error(data.message || 'Đơn hàng đã được xác nhận hoặc yêu cầu không hợp lệ.');
+          throw new Error(
+            data.message ||
+              "Đơn hàng đã được xác nhận hoặc yêu cầu không hợp lệ."
+          );
         }
-        
+
         if (response.status === 404) {
-          throw new Error('Không tìm thấy đơn hàng.');
+          throw new Error("Không tìm thấy đơn hàng.");
         }
-        
-        throw new Error(data.message || 'Có lỗi xảy ra khi xác nhận nhận hàng');
+
+        throw new Error(data.message || "Có lỗi xảy ra khi xác nhận nhận hàng");
       }
 
       return data as ConfirmReceiptResponse;
@@ -307,7 +342,7 @@ export class PaymentService {
       if (error instanceof Error) {
         throw error;
       }
-      throw new Error('Có lỗi xảy ra khi xác nhận nhận hàng');
+      throw new Error("Có lỗi xảy ra khi xác nhận nhận hàng");
     }
   }
 }
@@ -318,4 +353,116 @@ export const paymentService = {
   purchaseWithVNPay: PaymentService.purchaseWithVNPay,
   getPurchaseHistory: PaymentService.getPurchaseHistory,
   confirmReceipt: PaymentService.confirmReceipt,
-}; 
+};
+
+/**
+ * Get detailed purchase information for editing
+ */
+export const getPurchaseDetailsForEdit = async (
+  token: string,
+  orderId: string
+) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/products/purchases/${orderId}/details`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    const data = await response.json();
+    return data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data?.message || "Lỗi khi lấy thông tin đơn hàng"
+    );
+  }
+};
+
+/**
+ * Update shipping address for a purchase
+ */
+export const updatePurchaseShippingAddress = async (
+  token: string,
+  orderId: string,
+  shippingAddress: string
+) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/products/purchases/${orderId}/shipping-address`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ shippingAddress }),
+      }
+    );
+    const data = await response.json();
+    return data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data?.message || "Lỗi khi cập nhật địa chỉ giao hàng"
+    );
+  }
+};
+
+/**
+ * Add or update purchase notes
+ */
+export const updatePurchaseNotes = async (
+  token: string,
+  orderId: string,
+  notes: string,
+  noteType?: "buyer" | "seller"
+) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/products/purchases/${orderId}/notes`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ notes, noteType }),
+      }
+    );
+    const data = await response.json();
+    return data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data?.message || "Lỗi khi cập nhật ghi chú"
+    );
+  }
+};
+
+/**
+ * Cancel a purchase
+ */
+export const cancelPurchase = async (
+  token: string,
+  orderId: string,
+  reason?: string
+) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/products/purchases/${orderId}/cancel`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ reason }),
+      }
+    );
+    const data = await response.json();
+    return data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || "Lỗi khi hủy đơn hàng");
+  }
+};

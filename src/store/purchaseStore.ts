@@ -28,6 +28,7 @@ const initialState = {
   filters: {
     page: 1,
     limit: 10,
+    status: 'completed', // Explicitly filter for completed purchases only
     sortBy: 'createdAt',
     sortOrder: 'desc',
   },
@@ -47,8 +48,18 @@ export const usePurchaseStore = create<PurchaseStore>((set, get) => ({
       const response = await paymentService.getPurchaseHistory(token, finalParams);
       
       if (response.success) {
+        // Only filter out canceled/failed purchases if user hasn't explicitly requested them
+        let validPurchases = response.data.purchases;
+        
+        // If status is not explicitly set to 'failed' or 'all', filter out failed purchases
+        if (finalParams.status !== 'failed' && finalParams.status !== 'all') {
+          validPurchases = response.data.purchases.filter(purchase => 
+            purchase.paymentStatus === 'completed' || purchase.paymentStatus === 'pending'
+          );
+        }
+        
         set({
-          purchases: response.data.purchases,
+          purchases: validPurchases,
           pagination: response.data.pagination,
           filters: finalParams,
           isLoading: false,
@@ -130,6 +141,7 @@ export const usePurchaseStore = create<PurchaseStore>((set, get) => ({
       filters: {
         page: 1,
         limit: 10,
+        status: 'completed', // Keep status filter to exclude canceled purchases
         sortBy: 'createdAt',
         sortOrder: 'desc',
       },
