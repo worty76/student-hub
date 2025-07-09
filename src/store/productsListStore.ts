@@ -140,9 +140,7 @@ export const useProductsListStore = create<ProductsListStore>((set, get) => ({
       if (params && !params.page) {
         newParams.page = 1;
       }
-      
-      // Log parameters for debugging
-      console.log('Fetching products with params:', newParams);
+
       
       const result = await ProductService.getProductsWithPagination(newParams);
       

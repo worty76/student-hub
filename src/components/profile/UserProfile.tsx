@@ -108,7 +108,9 @@ export const UserProfile: React.FC<UserProfileProps> = ({ className }) => {
                 Thử lại
               </Button>
               <Button onClick={handleClearError} variant="outline">
-                Bỏ qua
+                <Link href={`/users/${displayUser?._id}`}>
+                  Trang cá nhân
+                </Link>
               </Button>
             </div>
           </div>

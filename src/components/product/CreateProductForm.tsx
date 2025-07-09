@@ -220,19 +220,20 @@ export function CreateProductForm({
 
   return (
     <div className={className}>
-      <Card className="w-full max-w-4xl mx-auto shadow-2xl border-0 bg-gradient-to-br from-white to-blue-50">
-        <div className="p-8">
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl shadow-lg">
-                <Plus className="h-7 w-7 text-white" />
+      <Card className="w-full max-w-4xl mx-auto shadow-2xl border-0 bg-gradient-to-br from-white to-blue-50 rounded-2xl">
+        <div className="p-4 sm:p-6 lg:p-8">
+          {/* Header Section - Mobile Optimized */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6 mb-6 sm:mb-8">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="p-2 sm:p-3 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl shadow-lg">
+                <Plus className="h-5 w-5 sm:h-7 sm:w-7 text-white" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
                   Tạo sản phẩm mới
                 </h1>
-                <p className="text-gray-600 flex items-center gap-2">
-                  <Sparkles className="h-4 w-4" />
+                <p className="text-sm sm:text-base text-gray-600 flex items-center gap-2">
+                  <Sparkles className="h-3 w-3 sm:h-4 sm:w-4" />
                   Chia sẻ sản phẩm của bạn với cộng đồng
                 </p>
               </div>
@@ -241,41 +242,44 @@ export function CreateProductForm({
               variant="outline" 
               onClick={handleCancel}
               disabled={isLoading}
-              className="hover:bg-gray-50 border-gray-300"
+              className="w-full sm:w-auto hover:bg-gray-50 border-gray-300 text-sm"
+              size="sm"
             >
               <X className="h-4 w-4 mr-2" />
               Hủy
             </Button>
           </div>
 
+          {/* Success Message */}
           {successMessage && (
-            <div className="mb-6 p-4 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl flex items-center gap-3 shadow-md">
+            <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl flex items-center gap-3 shadow-md">
               <div className="p-1 bg-green-100 rounded-lg">
-                <CheckCircle className="h-5 w-5 text-green-600" />
+                <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
               </div>
-              <span className="text-green-800 font-medium">{successMessage}</span>
+              <span className="text-sm sm:text-base text-green-800 font-medium flex-1">{successMessage}</span>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={clearSuccessMessage}
-                className="ml-auto p-1 hover:bg-green-100"
+                className="p-1 hover:bg-green-100 flex-shrink-0"
               >
                 <X className="h-4 w-4" />
               </Button>
             </div>
           )}
 
+          {/* Error Message */}
           {createError && (
-            <div className="mb-6 p-4 bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 rounded-xl flex items-center gap-3 shadow-md">
+            <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 rounded-xl flex items-center gap-3 shadow-md">
               <div className="p-1 bg-red-100 rounded-lg">
-                <AlertCircle className="h-5 w-5 text-red-600" />
+                <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-red-600" />
               </div>
-              <span className="text-red-800 font-medium">{createError}</span>
+              <span className="text-sm sm:text-base text-red-800 font-medium flex-1">{createError}</span>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={clearCreateError}
-                className="ml-auto p-1 hover:bg-red-100"
+                className="p-1 hover:bg-red-100 flex-shrink-0"
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -283,25 +287,26 @@ export function CreateProductForm({
           )}
 
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 sm:space-y-8">
+              {/* Title and Price Row */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <FormField
                   control={form.control}
                   name="title"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-700 font-semibold">
+                      <FormLabel className="text-sm sm:text-base text-gray-700 font-semibold">
                         Tiêu đề sản phẩm <span className="text-red-500">*</span>
                       </FormLabel>
                       <FormControl>
                         <Input 
                           placeholder="Nhập tiêu đề sản phẩm" 
                           disabled={isLoading}
-                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                          className="text-sm sm:text-base border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                           {...field} 
                         />
                       </FormControl>
-                      <FormMessage className="text-red-600">{getFieldError('title')}</FormMessage>
+                      <FormMessage className="text-sm text-red-600">{getFieldError('title')}</FormMessage>
                     </FormItem>
                   )}
                 />
@@ -311,7 +316,7 @@ export function CreateProductForm({
                   name="price"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-700 font-semibold">
+                      <FormLabel className="text-sm sm:text-base text-gray-700 font-semibold">
                         Giá (VND) <span className="text-red-500">*</span>
                       </FormLabel>
                       <FormControl>
@@ -319,7 +324,7 @@ export function CreateProductForm({
                           type="text" 
                           placeholder="0" 
                           disabled={isLoading}
-                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                          className="text-sm sm:text-base border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                           value={field.value ? field.value.toLocaleString('vi-VN') : ''}
                           onChange={(e) => {
                             const numericValue = e.target.value.replace(/[^\d]/g, '');
@@ -327,18 +332,19 @@ export function CreateProductForm({
                           }}
                         />
                       </FormControl>
-                      <FormMessage className="text-red-600">{getFieldError('price')}</FormMessage>
+                      <FormMessage className="text-sm text-red-600">{getFieldError('price')}</FormMessage>
                     </FormItem>
                   )}
                 />
               </div>
 
+              {/* Description */}
               <FormField
                 control={form.control}
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-gray-700 font-semibold">
+                    <FormLabel className="text-sm sm:text-base text-gray-700 font-semibold">
                       Mô tả sản phẩm <span className="text-red-500">*</span>
                     </FormLabel>
                     <FormControl>
@@ -347,24 +353,25 @@ export function CreateProductForm({
                         onChange={field.onChange}
                         placeholder="Mô tả chi tiết sản phẩm của bạn..."
                         disabled={isLoading}
-                        minHeight="150px"
+                        minHeight="120px"
                       />
                     </FormControl>
-                    <FormDescription className="text-gray-600">
+                    <FormDescription className="text-xs sm:text-sm text-gray-600">
                       Mô tả chi tiết sản phẩm của bạn với định dạng văn bản phong phú
                     </FormDescription>
-                    <FormMessage className="text-red-600">{getFieldError('description')}</FormMessage>
+                    <FormMessage className="text-sm text-red-600">{getFieldError('description')}</FormMessage>
                   </FormItem>
                 )}
               />
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Category, Condition, Status Row */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 <FormField
                   control={form.control}
                   name="category"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-700 font-semibold">
+                      <FormLabel className="text-sm sm:text-base text-gray-700 font-semibold">
                         Danh mục <span className="text-red-500">*</span>
                       </FormLabel>
                       <Select 
@@ -373,7 +380,7 @@ export function CreateProductForm({
                         disabled={isLoading}
                       >
                         <FormControl>
-                          <SelectTrigger className="border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                          <SelectTrigger className="text-sm sm:text-base border-gray-300 focus:border-blue-500 focus:ring-blue-500">
                             <SelectValue placeholder="Chọn danh mục" />
                           </SelectTrigger>
                         </FormControl>
@@ -385,7 +392,7 @@ export function CreateProductForm({
                           ))}
                         </SelectContent>
                       </Select>
-                      <FormMessage className="text-red-600">{getFieldError('category')}</FormMessage>
+                      <FormMessage className="text-sm text-red-600">{getFieldError('category')}</FormMessage>
                     </FormItem>
                   )}
                 />
@@ -395,7 +402,7 @@ export function CreateProductForm({
                   name="condition"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-700 font-semibold">
+                      <FormLabel className="text-sm sm:text-base text-gray-700 font-semibold">
                         Điều kiện <span className="text-red-500">*</span>
                       </FormLabel>
                       <Select 
@@ -404,7 +411,7 @@ export function CreateProductForm({
                         disabled={isLoading}
                       >
                         <FormControl>
-                          <SelectTrigger className="border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                          <SelectTrigger className="text-sm sm:text-base border-gray-300 focus:border-blue-500 focus:ring-blue-500">
                             <SelectValue placeholder="Chọn điều kiện" />
                           </SelectTrigger>
                         </FormControl>
@@ -416,7 +423,7 @@ export function CreateProductForm({
                           ))}
                         </SelectContent>
                       </Select>
-                      <FormMessage className="text-red-600">{getFieldError('condition')}</FormMessage>
+                      <FormMessage className="text-sm text-red-600">{getFieldError('condition')}</FormMessage>
                     </FormItem>
                   )}
                 />
@@ -425,8 +432,8 @@ export function CreateProductForm({
                   control={form.control}
                   name="status"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-gray-700 font-semibold">
+                    <FormItem className="sm:col-span-2 lg:col-span-1">
+                      <FormLabel className="text-sm sm:text-base text-gray-700 font-semibold">
                         Trạng thái <span className="text-red-500">*</span>
                       </FormLabel>
                       <Select 
@@ -435,7 +442,7 @@ export function CreateProductForm({
                         disabled={isLoading}
                       >
                         <FormControl>
-                          <SelectTrigger className="border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                          <SelectTrigger className="text-sm sm:text-base border-gray-300 focus:border-blue-500 focus:ring-blue-500">
                             <SelectValue placeholder="Chọn trạng thái" />
                           </SelectTrigger>
                         </FormControl>
@@ -449,30 +456,31 @@ export function CreateProductForm({
                           ))}
                         </SelectContent>
                       </Select>
-                      <FormMessage className="text-red-600">{getFieldError('status')}</FormMessage>
+                      <FormMessage className="text-sm text-red-600">{getFieldError('status')}</FormMessage>
                     </FormItem>
                   )}
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Seller and Location Row */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <FormField
                   control={form.control}
                   name="seller"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-700 font-semibold">
+                      <FormLabel className="text-sm sm:text-base text-gray-700 font-semibold">
                         Người bán <span className="text-red-500">*</span>
                       </FormLabel>
                       <FormControl>
                         <Input 
                           placeholder="Tên của bạn" 
                           disabled={isLoading}
-                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                          className="text-sm sm:text-base border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                           {...field} 
                         />
                       </FormControl>
-                      <FormMessage className="text-red-600">{getFieldError('seller')}</FormMessage>
+                      <FormMessage className="text-sm text-red-600">{getFieldError('seller')}</FormMessage>
                     </FormItem>
                   )}
                 />
@@ -482,29 +490,30 @@ export function CreateProductForm({
                   name="location"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-700 font-semibold">
+                      <FormLabel className="text-sm sm:text-base text-gray-700 font-semibold">
                         Vị trí <span className="text-red-500">*</span>
                       </FormLabel>
                       <FormControl>
                         <Input 
                           placeholder="Thành phố, Quốc gia" 
                           disabled={isLoading}
-                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                          className="text-sm sm:text-base border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                           {...field} 
                         />
                       </FormControl>
-                      <FormMessage className="text-red-600">{getFieldError('location')}</FormMessage>
+                      <FormMessage className="text-sm text-red-600">{getFieldError('location')}</FormMessage>
                     </FormItem>
                   )}
                 />
               </div>
 
+              {/* Images */}
               <FormField
                 control={form.control}
                 name="images"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-gray-700 font-semibold">
+                    <FormLabel className="text-sm sm:text-base text-gray-700 font-semibold">
                       Ảnh sản phẩm <span className="text-red-500">*</span>
                     </FormLabel>
                     <FormControl>
@@ -517,7 +526,7 @@ export function CreateProductForm({
                         error={getFieldError('images')}
                       />
                     </FormControl>
-                    <FormDescription className="text-gray-600">
+                    <FormDescription className="text-xs sm:text-sm text-gray-600">
                       Tải lên tối đa 5 ảnh (PNG, JPG, JPEG tối đa 5MB mỗi ảnh)
                     </FormDescription>
                     <FormMessage />
@@ -525,11 +534,13 @@ export function CreateProductForm({
                 )}
               />
 
-              <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">
+              {/* Submit Button */}
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4 sm:pt-6 border-t border-gray-200">
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="flex-1 sm:flex-none bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg"
+                  className="w-full sm:w-auto sm:flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg text-sm sm:text-base"
+                  size="default"
                 >
                   {isLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                   {isLoading ? 'Đang tạo sản phẩm...' : 'Tạo sản phẩm'}

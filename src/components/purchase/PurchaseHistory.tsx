@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { usePurchaseStore } from '@/store/purchaseStore';
 import { useAuthStore } from '@/store/authStore';
@@ -49,6 +49,21 @@ export default function PurchaseHistory() {
   const [showFilters, setShowFilters] = useState(false);
   const [isAuthInitialized, setIsAuthInitialized] = useState(false);
 
+  const loadPurchases = useCallback(async (params = {}) => {
+    if (!token) return;
+    
+    try {
+      await fetchPurchases(token, params);
+    } catch (error) {
+      toast({
+        title: "Lỗi tải dữ liệu",
+        description: "Không thể tải lịch sử mua hàng. Vui lòng thử lại.",
+        variant: "destructive",
+      });
+      console.log(error);
+    }
+  }, [token, fetchPurchases, toast]);
+
   // Initialize auth on component mount
   useEffect(() => {
     initializeAuth();
@@ -65,29 +80,14 @@ export default function PurchaseHistory() {
     }
 
     loadPurchases();
-  }, [isAuthenticated, token, isAuthInitialized]);
+  }, [isAuthenticated, token, isAuthInitialized, loadPurchases, router]);
 
   // Clear error when component unmounts
   useEffect(() => {
     return () => {
       clearError();
     };
-  }, []);
-
-  const loadPurchases = async (params = {}) => {
-    if (!token) return;
-    
-    try {
-      await fetchPurchases(token, params);
-    } catch (error) {
-      toast({
-        title: "Lỗi tải dữ liệu",
-        description: "Không thể tải lịch sử mua hàng. Vui lòng thử lại.",
-        variant: "destructive",
-      });
-      console.log(error);
-    }
-  };
+  }, [clearError]);
 
   const handlePageChange = (newPage: number) => {
     setFilters({ page: newPage });
@@ -175,38 +175,40 @@ export default function PurchaseHistory() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
+    <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-6xl">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="p-2 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full">
-            <ShoppingBag className="h-6 w-6 text-white" />
+      <div className="mb-6 sm:mb-8">
+        <div className="flex items-center gap-2 sm:gap-3 mb-2">
+          <div className="p-1.5 sm:p-2 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full">
+            <ShoppingBag className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-800">Lịch sử mua hàng</h1>
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 break-words">Lịch sử mua hàng</h1>
         </div>
-        <p className="text-gray-600">Quản lý và theo dõi các đơn hàng đã mua</p>
+        <p className="text-sm sm:text-base text-gray-600">Quản lý và theo dõi các đơn hàng đã mua</p>
       </div>
 
       {/* Filters and Search */}
-      <Card className="mb-6 border-0 shadow-md">
-        <CardContent className="">
-          <div className="flex flex-col lg:flex-row gap-4">
+      <Card className="mb-4 sm:mb-6 border-0 shadow-md">
+        <CardContent className="p-3 sm:p-6">
+          <div className="flex flex-col lg:flex-row gap-3 sm:gap-4">
             {/* Filter Controls */}
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <Button
                 variant="outline"
+                size="sm"
                 onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 text-xs sm:text-sm"
               >
-                <Filter className="h-4 w-4" />
+                <Filter className="h-3 w-3 sm:h-4 sm:w-4" />
                 Bộ lọc
               </Button>
               <Button
                 variant="outline"
+                size="sm"
                 onClick={handleClearFilters}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 text-xs sm:text-sm"
               >
-                <RefreshCw className="h-4 w-4" />
+                <RefreshCw className="h-3 w-3 sm:h-4 sm:w-4" />
                 Xóa bộ lọc
               </Button>
             </div>
@@ -214,7 +216,7 @@ export default function PurchaseHistory() {
 
           {/* Advanced Filters */}
           {showFilters && (
-            <div className="mt-4 pt-4 border-t grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
 
               <Select onValueChange={(value) => handleFilterChange('category', value)}>
                 <SelectTrigger>
@@ -286,16 +288,20 @@ export default function PurchaseHistory() {
       {/* Purchase List */}
       {!isLoading && purchases.length === 0 && (
         <Card className="border-0 shadow-md">
-          <CardContent className="pt-8 pb-8">
+          <CardContent className="pt-6 pb-6 sm:pt-8 sm:pb-8">
             <div className="text-center">
-              <ShoppingBag className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-600 mb-2">
+              <ShoppingBag className="h-12 w-12 sm:h-16 sm:w-16 text-gray-300 mx-auto mb-3 sm:mb-4" />
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-600 mb-2">
                 Chưa có đơn hàng nào
               </h3>
-              <p className="text-gray-500 mb-6">
+              <p className="text-sm sm:text-base text-gray-500 mb-4 sm:mb-6 px-4">
                 Bạn chưa thực hiện giao dịch mua hàng nào
               </p>
-              <Button onClick={() => router.push('/products')}>
+              <Button 
+                size="sm"
+                onClick={() => router.push('/products')}
+                className="text-sm"
+              >
                 Khám phá sản phẩm
               </Button>
             </div>
@@ -304,7 +310,7 @@ export default function PurchaseHistory() {
       )}
 
       {!isLoading && purchases.length > 0 && (
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {purchases.map((purchase) => (
             <PurchaseCard
               key={purchase.orderId}
@@ -320,23 +326,24 @@ export default function PurchaseHistory() {
 
       {/* Pagination */}
       {pagination && pagination.totalPages > 1 && (
-        <Card className="mt-8 border-0 shadow-md">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div className="text-sm text-gray-600">
+        <Card className="mt-6 sm:mt-8 border-0 shadow-md">
+          <CardContent className="pt-4 sm:pt-6">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="text-xs sm:text-sm text-gray-600 text-center sm:text-left">
                 Hiển thị {((pagination.currentPage - 1) * pagination.itemsPerPage) + 1} - {' '}
                 {Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)} trong tổng số {pagination.totalItems} đơn hàng
               </div>
               
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 sm:gap-2">
                 <Button
                   variant="outline"
+                  size="sm"
                   onClick={() => handlePageChange(pagination.currentPage - 1)}
                   disabled={!pagination.hasPrevPage}
-                  className="flex items-center gap-1"
+                  className="flex items-center gap-1 text-xs sm:text-sm"
                 >
-                  <ChevronLeft className="h-4 w-4" />
-                  Trước
+                  <ChevronLeft className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <span className="hidden xs:inline">Trước</span>
                 </Button>
                 
                 <div className="flex items-center gap-1">
@@ -351,8 +358,9 @@ export default function PurchaseHistory() {
                         <Button
                           key={page}
                           variant={page === pagination.currentPage ? "default" : "outline"}
+                          size="sm"
                           onClick={() => handlePageChange(page)}
-                          className="w-10 h-10"
+                          className="w-8 h-8 sm:w-10 sm:h-10 text-xs sm:text-sm"
                         >
                           {page}
                         </Button>
@@ -361,7 +369,7 @@ export default function PurchaseHistory() {
                       page === pagination.currentPage - 2 ||
                       page === pagination.currentPage + 2
                     ) {
-                      return <span key={page} className="px-2">...</span>;
+                      return <span key={page} className="px-1 sm:px-2 text-xs sm:text-sm">...</span>;
                     }
                     return null;
                   })}
@@ -369,12 +377,13 @@ export default function PurchaseHistory() {
                 
                 <Button
                   variant="outline"
+                  size="sm"
                   onClick={() => handlePageChange(pagination.currentPage + 1)}
                   disabled={!pagination.hasNextPage}
-                  className="flex items-center gap-1"
+                  className="flex items-center gap-1 text-xs sm:text-sm"
                 >
-                  Sau
-                  <ChevronRight className="h-4 w-4" />
+                  <span className="hidden xs:inline">Sau</span>
+                  <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
                 </Button>
               </div>
             </div>
@@ -395,31 +404,47 @@ interface PurchaseCardProps {
 }
 
 function PurchaseCard({ purchase, onViewProduct, onViewSeller, onConfirmReceipt, isConfirming }: PurchaseCardProps) {
+  // Add null safety check
+  if (!purchase || !purchase.product) {
+    return (
+      <Card className="border-0 shadow-lg">
+        <CardContent className="pt-6">
+          <div className="text-center text-gray-500">
+            <AlertCircle className="h-8 w-8 mx-auto mb-2" />
+            <p>Thông tin sản phẩm không có sẵn</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const product = purchase.product;
+
   return (
     <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-      <CardHeader className="pb-4">
-        <div className="flex justify-between items-start">
+      <CardHeader className="pb-3 sm:pb-4">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 sm:gap-0">
           <div className="space-y-1">
-            <CardTitle className="text-lg font-semibold text-gray-800">
+            <CardTitle className="text-base sm:text-lg font-semibold text-gray-800 break-words">
               Đơn hàng #{purchase.orderId}
             </CardTitle>
-            <div className="flex items-center gap-2 text-sm text-gray-500">
-              <Clock className="h-4 w-4" />
-              {formatDate.dateTime(purchase.purchaseDate)}
+            <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500">
+              <Clock className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+              <span className="break-words">{formatDate.dateTime(purchase.purchaseDate)}</span>
             </div>
           </div>
-          <div className="flex gap-2">
-            <Badge className="bg-green-100 text-green-800 hover:bg-green-200 hover:text-green-900">
+          <div className="flex flex-wrap gap-2">
+            <Badge className="bg-green-100 text-green-800 hover:bg-green-200 hover:text-green-900 text-xs sm:text-sm">
               {formatPrice(purchase.amount)}
             </Badge>
             <Badge
-                className={`${
-                    purchase.paymentMethod === 'vnpay'
-                    ? 'bg-blue-100 text-blue-800 hover:bg-blue-200 hover:text-blue-900'
-                    : 'bg-pink-100 text-pink-800 hover:bg-pink-200 hover:text-pink-900'
-                }`}
+              className={`text-xs sm:text-sm ${
+                purchase.paymentMethod === 'vnpay'
+                  ? 'bg-blue-100 text-blue-800 hover:bg-blue-200 hover:text-blue-900'
+                  : 'bg-pink-100 text-pink-800 hover:bg-pink-200 hover:text-pink-900'
+              }`}
             >
-            {purchase.paymentMethod === 'cash'
+              {purchase.paymentMethod === 'cash'
                 ? 'Thanh toán khi nhận hàng'
                 : purchase.paymentMethod.toUpperCase()}
             </Badge>
@@ -427,140 +452,179 @@ function PurchaseCard({ purchase, onViewProduct, onViewSeller, onConfirmReceipt,
         </div>
       </CardHeader>
       
-      <CardContent>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Product Image */}
-          <div className="lg:col-span-1">
-            <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
-              {purchase.product.images && purchase.product.images.length > 0 ? (
-                <img
-                  src={purchase.product.images[0]}
-                  alt={purchase.product.title}
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <Package className="h-12 w-12 text-gray-400" />
-                </div>
-              )}
+      <CardContent className="pt-0">
+        <div className="flex flex-col space-y-4">
+          {/* Product Image and Title - Mobile Layout */}
+          <div className="flex gap-3 sm:gap-4">
+            {/* Product Image */}
+            <div className="flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32">
+              <div className="w-full h-full rounded-lg overflow-hidden bg-gray-100">
+                {product.images && product.images.length > 0 ? (
+                  <img
+                    src={product.images[0]}
+                    alt={product.title || 'Sản phẩm'}
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <Package className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400" />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Product Title and Basic Info */}
+            <div className="flex-1 min-w-0">
+              <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-800 mb-1 sm:mb-2 line-clamp-2 leading-tight">
+                {product.title || 'Không có tiêu đề'}
+              </h3>
+              <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 mb-2 sm:mb-3 leading-relaxed">
+                {product.description || 'Không có mô tả'}
+              </p>
+              <div className="flex flex-wrap gap-1 sm:gap-2">
+                {product.condition && (
+                  <Badge className={`text-xs ${getConditionColor(product.condition)}`}>
+                    {product.condition}
+                  </Badge>
+                )}
+                {product.status && (
+                  <Badge className={`text-xs ${getStatusColor(product.status)}`}>
+                    {product.status}
+                  </Badge>
+                )}
+                {product.category && (
+                  <Badge variant="outline" className="text-xs">
+                    {product.category}
+                  </Badge>
+                )}
+              </div>
             </div>
           </div>
 
           {/* Product Details */}
-          <div className="lg:col-span-2 space-y-4">
-            <div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                {purchase.product.title}
-              </h3>
-              <p className="text-gray-600 line-clamp-2">
-                {purchase.product.description}
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs sm:text-sm">
               <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-gray-400" />
-                  <span className="text-gray-600">Địa điểm:</span>
-                  <span className="font-medium">{purchase.product.location}</span>
+                <div className="flex items-start gap-2">
+                  <MapPin className="h-3 w-3 sm:h-4 sm:w-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <span className="text-gray-600">Địa điểm:</span>
+                    <span className="font-medium ml-1 break-words">{product.location || 'Không xác định'}</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <User className="h-4 w-4 text-gray-400" />
-                  <span className="text-gray-600">Người bán:</span>
-                  <span className="font-medium">{purchase.product.seller.name}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CreditCard className="h-4 w-4 text-gray-400" />
-                  <span className="text-gray-600">Mã giao dịch:</span>
-                  <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
-                    {purchase.transactionId}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  {purchase.receivedSuccessfully ? (
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                  ) : (
-                    <XCircle className="h-4 w-4 text-red-500" />
-                  )}
-                  <span className="text-gray-600">Trạng thái nhận hàng:</span>
-                  <span className={`font-medium ${purchase.receivedSuccessfully ? 'text-green-600' : 'text-red-600'}`}>
-                    {purchase.receivedSuccessfully ? 'Đã nhận được hàng' : 'Chưa nhận được hàng'}
-                  </span>
-                </div>
-                {purchase.receivedSuccessfully && purchase.receivedConfirmedAt && (
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-gray-400" />
-                    <span className="text-gray-600">Ngày xác nhận:</span>
-                    <span className="font-medium text-green-600">
-                      {formatDate.deadline(purchase.receivedConfirmedAt)}
+                <div className="flex items-start gap-2">
+                  <User className="h-3 w-3 sm:h-4 sm:w-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <span className="text-gray-600">Người bán:</span>
+                    <span className="font-medium ml-1 break-words">
+                      {product.seller?.name || 'Không xác định'}
                     </span>
                   </div>
-                )}
-                {!purchase.receivedSuccessfully && (
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-gray-400" />
-                    <span className="text-gray-600">Hạn nhận hàng:</span>
-                    <span className="font-medium text-orange-600">
-                      {formatDate.deadline(purchase.receivedSuccessfullyDeadline)}
-                    </span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CreditCard className="h-3 w-3 sm:h-4 sm:w-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <span className="text-gray-600">Mã giao dịch:</span>
+                    <div className="mt-1">
+                      <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded break-all">
+                        {purchase.transactionId}
+                      </span>
+                    </div>
                   </div>
-                )}
+                </div>
               </div>
               
               <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-gray-400" />
-                  <span className="text-gray-600">Địa chỉ giao hàng:</span>
+                <div className="flex items-start gap-2">
+                  {purchase.receivedSuccessfully ? (
+                    <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                  ) : (
+                    <XCircle className="h-3 w-3 sm:h-4 sm:w-4 text-red-500 mt-0.5 flex-shrink-0" />
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <span className="text-gray-600">Trạng thái:</span>
+                    <div className={`font-medium mt-1 ${purchase.receivedSuccessfully ? 'text-green-600' : 'text-red-600'}`}>
+                      {purchase.receivedSuccessfully ? 'Đã nhận được hàng' : 'Chưa nhận được hàng'}
+                    </div>
+                  </div>
                 </div>
-                <p className="text-sm bg-gray-50 p-2 rounded border">
-                  {purchase.shippingAddress}
-                </p>
+                {purchase.receivedSuccessfully && purchase.receivedConfirmedAt && (
+                  <div className="flex items-start gap-2">
+                    <Calendar className="h-3 w-3 sm:h-4 sm:w-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                    <div className="min-w-0 flex-1">
+                      <span className="text-gray-600">Ngày xác nhận:</span>
+                      <div className="font-medium text-green-600 mt-1">
+                        {formatDate.deadline(purchase.receivedConfirmedAt)}
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {!purchase.receivedSuccessfully && purchase.receivedSuccessfullyDeadline && (
+                  <div className="flex items-start gap-2">
+                    <Calendar className="h-3 w-3 sm:h-4 sm:w-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                    <div className="min-w-0 flex-1">
+                      <span className="text-gray-600">Hạn nhận hàng:</span>
+                      <div className="font-medium text-orange-600 mt-1">
+                        {formatDate.deadline(purchase.receivedSuccessfullyDeadline)}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-2">
-              <Badge className={getConditionColor(purchase.product.condition)}>
-                {purchase.product.condition}
-              </Badge>
-              <Badge className={getStatusColor(purchase.product.status)}>
-                {purchase.product.status}
-              </Badge>
-              <Badge variant="outline">
-                {purchase.product.category}
-              </Badge>
-            </div>
+            {/* Shipping Address */}
+            {purchase.shippingAddress && (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-3 w-3 sm:h-4 sm:w-4 text-gray-400 flex-shrink-0" />
+                  <span className="text-xs sm:text-sm text-gray-600">Địa chỉ giao hàng:</span>
+                </div>
+                <p className="text-xs sm:text-sm bg-gray-50 p-2 sm:p-3 rounded border break-words leading-relaxed">
+                  {purchase.shippingAddress}
+                </p>
+              </div>
+            )}
 
-            <div className="flex flex-wrap gap-3 pt-2">
-              <Button 
-                variant="outline" 
-                onClick={() => onViewProduct(purchase.product._id)}
-                className="flex items-center gap-2"
-              >
-                <Eye className="h-4 w-4" />
-                Xem sản phẩm
-              </Button>
-              <Button 
-                variant="outline" 
-                onClick={() => onViewSeller(purchase.product.seller._id)}
-                className="flex items-center gap-2"
-              >
-                <User className="h-4 w-4" />
-                Xem người bán
-              </Button>
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-2">
+              {product._id && (
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => onViewProduct(product._id)}
+                  className="flex items-center gap-2 text-xs sm:text-sm"
+                >
+                  <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
+                  Xem sản phẩm
+                </Button>
+              )}
+              {product.seller?._id && (
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => onViewSeller(product.seller._id)}
+                  className="flex items-center gap-2 text-xs sm:text-sm"
+                >
+                  <User className="h-3 w-3 sm:h-4 sm:w-4" />
+                  Xem người bán
+                </Button>
+              )}
               {!purchase.receivedSuccessfully && (
                 <Button 
+                  size="sm"
                   onClick={() => onConfirmReceipt(purchase.orderId)}
                   disabled={isConfirming}
-                  className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white"
+                  className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white text-xs sm:text-sm"
                 >
                   {isConfirming ? (
                     <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-white"></div>
                       Đang xác nhận...
                     </>
                   ) : (
                     <>
-                      <CheckCircle className="h-4 w-4" />
+                      <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
                       Xác nhận nhận hàng
                     </>
                   )}

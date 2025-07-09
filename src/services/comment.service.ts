@@ -305,7 +305,6 @@ export class CommentService {
             const currentCommentIds = new Set(comments.map(c => c._id));
             for (const previousId of previousCommentIds) {
               if (!currentCommentIds.has(previousId)) {
-                console.log(`Comment deleted: ${previousId}`);
                 onCommentDelete(previousId);
               }
             }

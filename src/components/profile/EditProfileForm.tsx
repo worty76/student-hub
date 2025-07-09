@@ -14,6 +14,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { FileUpload } from '@/components/ui/file-upload';
 import { AlertCircle, Save, User, Mail, MapPin, Upload, FileText } from 'lucide-react';
+import Link from 'next/link';
 
 interface EditProfileFormProps {
   className?: string;
@@ -24,7 +25,6 @@ interface EditProfileFormProps {
 export const EditProfileForm: React.FC<EditProfileFormProps> = ({ 
   className, 
   onSuccess, 
-  onCancel 
 }) => {
   const { token, isAuthenticated } = useAuthStore();
   const { 
@@ -162,22 +162,22 @@ export const EditProfileForm: React.FC<EditProfileFormProps> = ({
     }
   };
 
-  const handleCancel = () => {
-    if (profile) {
-      const mappedRole = profile.role === 'seller' ? 'user' : (profile.role || 'user');
-      form.reset({
-        name: profile.name || '',
-        email: profile.email || '',
-        bio: profile.bio || '',
-        avatar: profile.avatar || '',
-        location: profile.location || '',
-        role: mappedRole as 'user' | 'admin',
-      });
-    }
-    clearUpdateError();
-    clearValidationErrors();
-    onCancel?.();
-  };
+  // const handleCancel = () => {
+  //   if (profile) {
+  //     const mappedRole = profile.role === 'seller' ? 'user' : (profile.role || 'user');
+  //     form.reset({
+  //       name: profile.name || '',
+  //       email: profile.email || '',
+  //       bio: profile.bio || '',
+  //       avatar: profile.avatar || '',
+  //       location: profile.location || '',
+  //       role: mappedRole as 'user' | 'admin',
+  //     });
+  //   }
+  //   clearUpdateError();
+  //   clearValidationErrors();
+  //   onCancel?.();
+  // };
 
   if (!isAuthenticated) {
     return (
@@ -402,14 +402,10 @@ export const EditProfileForm: React.FC<EditProfileFormProps> = ({
                 )}
               </Button>
               
-              <Button 
-                type="button" 
-                variant="outline" 
-                onClick={handleCancel}
-                disabled={isUpdating}
-                className="px-8 border-gray-300 dark:border-gray-600 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 dark:hover:from-gray-800 dark:hover:to-gray-700 transition-all duration-200"
-              >
-                Bỏ qua
+              <Button variant="outline" size="lg">
+                <Link href={`/users/${profile?._id}`}>
+                  Trang cá nhân
+                </Link>
               </Button>
             </div>
           </form>

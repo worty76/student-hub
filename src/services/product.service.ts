@@ -483,9 +483,6 @@ export class ProductService {
 
       const queryString = queryParams.toString();
       const url = `${API_BASE_URL}/products${queryString ? `?${queryString}` : ''}`;
-      
-      console.log('Fetching products with URL:', url);
-      console.log('Query parameters:', Object.fromEntries(queryParams.entries()));
 
       const response = await fetch(url, {
         method: 'GET',
@@ -502,7 +499,6 @@ export class ProductService {
       }
 
       const data = await response.json();
-      console.log('Products API response:', data);
       
       // Handle different API response formats
       if (data.products && Array.isArray(data.products)) {

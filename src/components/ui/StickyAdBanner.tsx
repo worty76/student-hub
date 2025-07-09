@@ -152,7 +152,7 @@ export function StickyAdBanner() {
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 100, opacity: 0 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
-        className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 shadow-2xl w-11/12 md:w-4/5 lg:w-3/4 xl:w-2/3 max-w-5xl rounded-xl overflow-hidden"
+        className="fixed bottom-4 left-4 right-4 sm:bottom-6 sm:left-1/2 sm:-translate-x-1/2 sm:right-auto z-50 shadow-2xl sm:w-4/5 lg:w-3/4 xl:w-2/3 max-w-5xl rounded-xl overflow-hidden"
         style={{ zIndex: 9999 }}
       >
         <div className={`${ad.backgroundColor} relative overflow-hidden rounded-xl`}>
@@ -168,17 +168,17 @@ export function StickyAdBanner() {
           >
             {!isMinimized ? (
               // Full Banner
-              <div className="px-4 py-4 md:px-8 md:py-6">
-                <div className="flex items-center justify-between max-w-7xl mx-auto">
-                  <div className="flex items-center space-x-4 flex-1 min-w-0">
-                    {/* Product Image */}
+              <div className="px-3 py-3 sm:px-4 sm:py-4 md:px-8 md:py-6">
+                <div className="flex items-center justify-between max-w-7xl mx-auto gap-2 sm:gap-4">
+                  <div className="flex items-center gap-2 sm:gap-3 md:gap-4 flex-1 min-w-0">
+                    {/* Product Image - Hide on very small screens */}
                     {ad.image && (
                       <motion.div
                         key={`${ad.id}-image`}
                         initial={{ scale: 0, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ duration: 0.5, delay: 0.1 }}
-                        className="flex-shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-xl overflow-hidden bg-white/10 backdrop-blur-sm"
+                        className="hidden xs:block flex-shrink-0 w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-xl overflow-hidden bg-white/10 backdrop-blur-sm"
                       >
                         <Image
                           src={ad.image}
@@ -197,19 +197,29 @@ export function StickyAdBanner() {
                       initial={{ scale: 0, rotate: -180 }}
                       animate={{ scale: 1, rotate: 0 }}
                       transition={{ duration: 0.5, delay: 0.2 }}
-                      className={`p-3 rounded-full bg-white/20 ${ad.textColor} flex-shrink-0`}
+                      className={`p-2 sm:p-3 rounded-full bg-white/20 ${ad.textColor} flex-shrink-0`}
                     >
-                      {ad.icon}
+                      <div className="w-4 h-4 sm:w-5 sm:h-5">
+                        {ad.icon}
+                      </div>
                     </motion.div>
 
                     {/* Content */}
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-0 pr-1 sm:pr-2">
                       <motion.h3
                         key={`${ad.id}-title`}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.4, delay: 0.3 }}
-                        className={`font-bold text-base md:text-lg ${ad.textColor} line-clamp-1`}
+                        className={`font-bold text-sm sm:text-base md:text-lg ${ad.textColor} leading-tight`}
+                        style={{
+                          display: '-webkit-box',
+                          WebkitLineClamp: 1,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden',
+                          wordBreak: 'break-word',
+                          hyphens: 'auto'
+                        }}
                       >
                         {ad.title}
                       </motion.h3>
@@ -218,48 +228,58 @@ export function StickyAdBanner() {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.4, delay: 0.4 }}
-                        className={`text-sm md:text-base ${ad.textColor.replace('text-', 'text-').replace('-', '-200')} line-clamp-2 text-white/90`}
+                        className={`text-xs sm:text-sm md:text-base text-white/90 leading-relaxed hidden sm:block`}
+                        style={{
+                          display: '-webkit-box',
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden',
+                          wordBreak: 'break-word',
+                          hyphens: 'auto'
+                        }}
                       >
                         {ad.description}
                       </motion.p>
                     </div>
-
-                    {/* CTA Button */}
-                    <motion.div
-                      key={`${ad.id}-cta`}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.4, delay: 0.4 }}
-                      className="flex-shrink-0"
-                    >
-                      {ad.isExternal ? (
-                        <a
-                          href={ad.ctaLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={handleAdClick}
-                          className="inline-flex items-center gap-2 bg-white text-gray-900 px-4 py-2.5 md:px-5 md:py-3 rounded-full font-semibold text-sm md:text-base hover:bg-gray-100 transition-all duration-300 hover:scale-105 shadow-lg"
-                        >
-                          {ad.ctaText}
-                          <ExternalLink className="h-4 w-4 md:h-5 md:w-5" />
-                        </a>
-                      ) : (
-                        <Link href={ad.ctaLink}>
-                          <button
-                            onClick={handleAdClick}
-                            className="inline-flex items-center gap-2 bg-white text-gray-900 px-4 py-2.5 md:px-5 md:py-3 rounded-full font-semibold text-sm md:text-base hover:bg-gray-100 transition-all duration-300 hover:scale-105 shadow-lg"
-                          >
-                            {ad.ctaText}
-                          </button>
-                        </Link>
-                      )}
-                    </motion.div>
                   </div>
 
-                  {/* Controls */}
-                  <div className="flex items-center space-x-3 ml-5">
+                  {/* CTA Button */}
+                  <motion.div
+                    key={`${ad.id}-cta`}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.4, delay: 0.4 }}
+                    className="flex-shrink-0"
+                  >
+                    {ad.isExternal ? (
+                      <a
+                        href={ad.ctaLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={handleAdClick}
+                        className="inline-flex items-center gap-1 sm:gap-2 bg-white text-gray-900 px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2.5 lg:px-5 lg:py-3 rounded-full font-semibold text-xs sm:text-sm md:text-base hover:bg-gray-100 transition-all duration-300 hover:scale-105 shadow-lg whitespace-nowrap"
+                      >
+                        <span className="hidden xs:inline">{ad.ctaText}</span>
+                        <span className="xs:hidden">Mua</span>
+                        <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />
+                      </a>
+                    ) : (
+                      <Link href={ad.ctaLink}>
+                        <button
+                          onClick={handleAdClick}
+                          className="inline-flex items-center gap-1 sm:gap-2 bg-white text-gray-900 px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2.5 lg:px-5 lg:py-3 rounded-full font-semibold text-xs sm:text-sm md:text-base hover:bg-gray-100 transition-all duration-300 hover:scale-105 shadow-lg whitespace-nowrap"
+                        >
+                          <span className="hidden xs:inline">{ad.ctaText}</span>
+                          <span className="xs:hidden">Mua</span>
+                        </button>
+                      </Link>
+                    )}
+                  </motion.div>
+
+                  {/* Controls - Hide on mobile */}
+                  <div className="hidden md:flex items-center space-x-3">
                     {/* Progress Indicators */}
-                    <div className="hidden md:flex space-x-1.5">
+                    <div className="flex space-x-1.5">
                       {stickyAds.map((_, index) => (
                         <button
                           key={index}
@@ -278,41 +298,36 @@ export function StickyAdBanner() {
                       ))}
                     </div>
 
-                    {/* Minimize Button */}
-                    {/* <button
-                      onClick={handleMinimize}
-                      className={`p-2 rounded-full ${ad.textColor.replace('text-', 'text-').replace('-', '-300')} hover:bg-white/20 transition-all duration-300`}
-                      aria-label="Thu nhỏ banner"
-                    >
-                      <motion.div
-                        animate={{ rotate: isMinimized ? 180 : 0 }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
-                        </svg>
-                      </motion.div>
-                    </button> */}
-
                     {/* Close Button */}
-                    {/* <button
+                    <button
                       onClick={handleClose}
                       className={`p-2.5 rounded-full bg-white/30 ${ad.textColor} hover:bg-white/40 transition-all duration-300 shadow-md hover:shadow-lg`}
                       aria-label="Đóng banner quảng cáo"
                     >
                       <X className="w-5 h-5" />
-                    </button> */}
+                    </button>
+                  </div>
+
+                  {/* Mobile Close Button */}
+                  <div className="md:hidden">
+                    <button
+                      onClick={handleClose}
+                      className={`p-1.5 sm:p-2 rounded-full bg-white/30 ${ad.textColor} hover:bg-white/40 transition-all duration-300 shadow-md`}
+                      aria-label="Đóng banner quảng cáo"
+                    >
+                      <X className="w-4 h-4 sm:w-5 sm:h-5" />
+                    </button>
                   </div>
                 </div>
               </div>
             ) : (
               // Minimized Banner
-              <div className="px-4 py-3">
+              <div className="px-3 py-2 sm:px-4 sm:py-3">
                 <div className="flex items-center justify-between max-w-7xl mx-auto">
-                  <div className="flex items-center space-x-3">
+                  <div className="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
                     {/* Small Product Image */}
                     {ad.image && (
-                      <div className="flex-shrink-0 w-8 h-8 rounded-lg overflow-hidden bg-white/10">
+                      <div className="flex-shrink-0 w-6 h-6 sm:w-8 sm:h-8 rounded-lg overflow-hidden bg-white/10">
                         <Image
                           src={ad.image}
                           alt={ad.title}
@@ -323,28 +338,30 @@ export function StickyAdBanner() {
                         />
                       </div>
                     )}
-                    <div className={`p-1.5 rounded-full bg-white/20 ${ad.textColor}`}>
-                      {ad.icon}
+                    <div className={`p-1 sm:p-1.5 rounded-full bg-white/20 ${ad.textColor} flex-shrink-0`}>
+                      <div className="w-3 h-3 sm:w-4 sm:h-4">
+                        {ad.icon}
+                      </div>
                     </div>
-                    <span className={`text-sm font-medium ${ad.textColor} truncate`}>
+                    <span className={`text-xs sm:text-sm font-medium ${ad.textColor} truncate`}>
                       {ad.title}
                     </span>
                   </div>
                   
-                  <div className="flex items-center space-x-3">
+                  <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
                     <button
                       onClick={handleMinimize}
-                      className={`p-1.5 rounded-full ${ad.textColor.replace('text-', 'text-').replace('-', '-300')} hover:bg-white/20 transition-all duration-300`}
+                      className={`p-1 sm:p-1.5 rounded-full ${ad.textColor.replace('text-', 'text-').replace('-', '-300')} hover:bg-white/20 transition-all duration-300`}
                     >
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
                       </svg>
                     </button>
                     <button
                       onClick={handleClose}
-                      className={`p-2 rounded-full bg-white/30 ${ad.textColor} hover:bg-white/40 transition-all duration-300 shadow-md`}
+                      className={`p-1.5 sm:p-2 rounded-full bg-white/30 ${ad.textColor} hover:bg-white/40 transition-all duration-300 shadow-md`}
                     >
-                      <X className="w-4 h-4" />
+                      <X className="w-3 h-3 sm:w-4 sm:h-4" />
                     </button>
                   </div>
                 </div>
@@ -353,7 +370,7 @@ export function StickyAdBanner() {
           </motion.div>
 
           {/* Progress Bar */}
-          <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
+          <div className="absolute bottom-0 left-0 right-0 h-0.5 sm:h-1 bg-white/20">
             <motion.div 
               key={`progress-${currentAd}`}
               className="h-full bg-white"
