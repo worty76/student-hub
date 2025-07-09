@@ -174,7 +174,6 @@ export const PRODUCT_STATUS = [
   { value: 'pending', label: 'Đang chờ' }
 ] as const;
 
-// Helper functions to get Vietnamese labels
 export const getCategoryLabel = (value: string): string => {
   const category = PRODUCT_CATEGORIES.find(cat => cat.value === value);
   return category ? category.label : value;

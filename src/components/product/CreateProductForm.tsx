@@ -188,10 +188,6 @@ export function CreateProductForm({
         
         onSuccess?.(response.product._id);
       } else {
-        console.log('❌ Product creation failed');
-        console.log('❌ Error message:', response.message);
-        console.log('❌ Validation errors:', response.errors);
-        
         toast({
           title: 'Lỗi',
           description: response.message || 'Không thể tạo sản phẩm',

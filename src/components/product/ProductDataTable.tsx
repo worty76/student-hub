@@ -78,6 +78,7 @@ export function ProductDataTable({
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [globalFilter, setGlobalFilter] = useState('');
 
+
   // Vietnamese column labels for visibility dropdown
   const columnLabels: Record<string, string> = {
     'images': 'Ảnh',
