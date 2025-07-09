@@ -116,7 +116,6 @@ export default function ReportProductButton({
         description: description.trim()
       };
       
-      console.log('Sending report data:', reportData);
 
       const response = await ProductService.reportProduct(productId, token, reportData);
 

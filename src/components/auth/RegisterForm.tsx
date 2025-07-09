@@ -51,10 +51,6 @@ export default function RegisterForm() {
         role: 'user' as const,
       });
       
-      console.log('Registration successful!');
-      console.log('Full response:', response);
-      console.log('Token:', response.token);
-      console.log('User data:', response.user);
       
       localStorage.setItem('token', response.token);
       localStorage.setItem('user', JSON.stringify(response.user));

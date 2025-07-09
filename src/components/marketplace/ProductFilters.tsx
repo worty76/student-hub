@@ -33,10 +33,6 @@ export function ProductFilters({ onFiltersChange, currentParams, isLoading = fal
   };
 
   const handleFilterChange = (key: keyof ProductsQueryParams, value: string | number | undefined) => {
-    // Add console log to debug filter changes
-    console.log(`Filter changed: ${key} = ${value}`);
-    
-    // If the key is status, category, or condition, properly format the value
     if ((key === 'status' || key === 'category' || key === 'condition') && value === 'all') {
       onFiltersChange({ [key]: undefined });
       return;
@@ -70,7 +66,6 @@ export function ProductFilters({ onFiltersChange, currentParams, isLoading = fal
   };
 
   const clearAllFilters = () => {
-    console.log('Clearing all filters');
     setSearchTerm('');
     setPriceMin('');
     setPriceMax('');
@@ -215,7 +210,6 @@ export function ProductFilters({ onFiltersChange, currentParams, isLoading = fal
               <Select
                 value={currentParams.category || 'all'}
                 onValueChange={(value) => {
-                  console.log('Changing category to:', value);
                   handleFilterChange('category', value === 'all' ? undefined : value);
                 }}
                 disabled={isLoading}
@@ -243,7 +237,6 @@ export function ProductFilters({ onFiltersChange, currentParams, isLoading = fal
               <Select
                 value={currentParams.condition || 'all'}
                 onValueChange={(value) => {
-                  console.log('Changing condition to:', value);
                   handleFilterChange('condition', value === 'all' ? undefined : value);
                 }}
                 disabled={isLoading}
@@ -300,7 +293,6 @@ export function ProductFilters({ onFiltersChange, currentParams, isLoading = fal
                 <Select
                   value={currentParams.sortBy || 'createdAt'}
                   onValueChange={(value) => {
-                    console.log('Changing sort field to:', value);
                     handleFilterChange('sortBy', value as 'price' | 'createdAt' | 'views' | 'favorites');
                   }}
                   disabled={isLoading}
@@ -319,7 +311,6 @@ export function ProductFilters({ onFiltersChange, currentParams, isLoading = fal
                 <Select
                   value={currentParams.sortOrder || 'desc'}
                   onValueChange={(value) => {
-                    console.log('Changing sort order to:', value);
                     handleFilterChange('sortOrder', value as 'asc' | 'desc');
                   }}
                   disabled={isLoading}

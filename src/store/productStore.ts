@@ -350,6 +350,7 @@ export const useProductStore = create<ProductStore>()(
           userProductsError: null
         });
       },
+      
     }),
     {
       name: 'product-storage',

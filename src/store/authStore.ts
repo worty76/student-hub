@@ -25,6 +25,11 @@ export const useAuthStore = create<AuthStore>()(
       login: async (credentials: LoginCredentials) => {
         set({ isLoading: true, error: null });
         try {
+          // Clear any existing authentication state before login
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          localStorage.removeItem('auth-storage');
+          
           const response = await AuthService.login(credentials);
           
           // Set token in localStorage for compatibility with other services
@@ -43,6 +48,8 @@ export const useAuthStore = create<AuthStore>()(
           // Clear localStorage on login failure
           localStorage.removeItem('token');
           localStorage.removeItem('user');
+          localStorage.removeItem('auth-storage');
+          localStorage.removeItem('user-profile-storage');
           
           const errorMessage = error instanceof Error 
             ? error.message 
@@ -62,6 +69,12 @@ export const useAuthStore = create<AuthStore>()(
       register: async (credentials: RegisterCredentials) => {
         set({ isLoading: true, error: null });
         try {
+          // Clear any existing authentication state before registration
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          localStorage.removeItem('auth-storage');
+          localStorage.removeItem('user-profile-storage');
+          
           const registerData = {
             email: credentials.email,
             password: credentials.password,
@@ -87,6 +100,8 @@ export const useAuthStore = create<AuthStore>()(
           // Clear localStorage on register failure
           localStorage.removeItem('token');
           localStorage.removeItem('user');
+          localStorage.removeItem('auth-storage');
+          localStorage.removeItem('user-profile-storage');
           
           set({ 
             error: error instanceof Error ? error.message : 'Đăng ký thất bại', 
@@ -99,7 +114,7 @@ export const useAuthStore = create<AuthStore>()(
         }
       },
 
-      logout: async () => {
+            logout: async () => {
         set({ isLoading: true, error: null });
         try {
           // Call logout API
@@ -108,6 +123,20 @@ export const useAuthStore = create<AuthStore>()(
           // Clear localStorage
           localStorage.removeItem('token');
           localStorage.removeItem('user');
+          
+          // Clear Zustand persist storage
+          localStorage.removeItem('auth-storage');
+          
+          // Clear user profile storage (this was the missing piece!)
+          localStorage.removeItem('user-profile-storage');
+          
+          // Also clear the userStore programmatically
+          try {
+            const { useUserStore } = await import('@/store/userStore');
+            useUserStore.getState().clearProfile();
+          } catch (error) {
+            console.warn('Could not clear user store:', error);
+          }
           
           // Clear any auth cookies if they exist
           if (typeof document !== 'undefined') {
@@ -126,6 +155,7 @@ export const useAuthStore = create<AuthStore>()(
             error: null, 
             isLoading: false,
           });
+      
           
           return result; // Return API response for UI feedback
         } catch (error) {
@@ -135,6 +165,20 @@ export const useAuthStore = create<AuthStore>()(
           // Still clear auth data even if API call fails
           localStorage.removeItem('token');
           localStorage.removeItem('user');
+          
+          // Clear Zustand persist storage even on error
+          localStorage.removeItem('auth-storage');
+          
+          // Clear user profile storage even on error
+          localStorage.removeItem('user-profile-storage');
+          
+          // Also clear the userStore programmatically even on error
+          try {
+            const { useUserStore } = await import('@/store/userStore');
+            useUserStore.getState().clearProfile();
+          } catch (error) {
+            console.warn('Could not clear user store on error:', error);
+          }
           
           set({ 
             user: null, 
@@ -173,8 +217,11 @@ export const useAuthStore = create<AuthStore>()(
             localStorage.setItem('user', JSON.stringify(user));
             set({ isAuthenticated: true });
           } else {
+            console.log('Auth check: Clearing inconsistent state');
             localStorage.removeItem('token');
             localStorage.removeItem('user');
+            localStorage.removeItem('auth-storage');
+            localStorage.removeItem('user-profile-storage');
             set({ 
               isAuthenticated: false,
               user: null,
@@ -204,39 +251,37 @@ export const useAuthStore = create<AuthStore>()(
         const { user: storeUser, token: storeToken } = get();
         const storedToken = localStorage.getItem('token');
         const storedUserStr = localStorage.getItem('user');
+        const authStorage = localStorage.getItem('auth-storage');
+        const userProfileStorage = localStorage.getItem('user-profile-storage');
         
+        console.log(authStorage, userProfileStorage);
+
         try {
           const storedUser = storedUserStr ? JSON.parse(storedUserStr) : null;
           
-          // If we have data in localStorage but not in store, update store
           if (storedToken && storedUser && (!storeUser || !storeToken)) {
-            console.log('Initializing auth from localStorage');
             set({
               user: storedUser,
               token: storedToken,
               isAuthenticated: true
             });
           }
-          // If we have data in store but not in localStorage, update localStorage
           else if (storeUser && storeToken && (!storedToken || !storedUser)) {
-            console.log('Syncing auth to localStorage');
             localStorage.setItem('token', storeToken);
             localStorage.setItem('user', JSON.stringify(storeUser));
             set({ isAuthenticated: true });
           }
-          // If both have data, ensure they match
           else if (storeUser && storeToken && storedToken && storedUser) {
             set({ isAuthenticated: true });
           }
-          // If neither has data, ensure clean state
           else if (!storeUser && !storeToken && !storedToken && !storedUser) {
             set({ isAuthenticated: false });
           }
-          // Handle inconsistent state by clearing everything
           else {
-            console.log('Clearing inconsistent auth state');
             localStorage.removeItem('token');
             localStorage.removeItem('user');
+            localStorage.removeItem('auth-storage');
+            localStorage.removeItem('user-profile-storage');
             set({
               user: null,
               token: null,
@@ -245,9 +290,10 @@ export const useAuthStore = create<AuthStore>()(
           }
         } catch (error) {
           console.error('Error initializing auth:', error);
-          // Clear everything on error
           localStorage.removeItem('token');
           localStorage.removeItem('user');
+          localStorage.removeItem('auth-storage');
+          localStorage.removeItem('user-profile-storage');
           set({
             user: null,
             token: null,

@@ -88,18 +88,13 @@ export const EditProfileForm: React.FC<EditProfileFormProps> = ({
       // Convert File to data URL if avatar is a File
       let avatarData = data.avatar;
       
-      // Debug avatar data
-      console.log("Avatar data type:", typeof data.avatar, data.avatar instanceof File);
-      
       if (data.avatar instanceof File) {
-        console.log("Avatar file:", data.avatar.name, data.avatar.type, data.avatar.size);
         
         try {
           avatarData = await new Promise<string>((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = (e) => {
               const result = e.target?.result as string || '';
-              console.log("FileReader success, data length:", result.length);
               resolve(result);
             };
             reader.onerror = (error) => {
@@ -119,13 +114,7 @@ export const EditProfileForm: React.FC<EditProfileFormProps> = ({
         }
       }
 
-      console.log("Final avatar data type:", typeof avatarData);
       
-      // Only send the first 100 characters of avatar data to console to avoid flooding
-      if (typeof avatarData === 'string' && avatarData.length > 100) {
-        console.log("Avatar data preview:", avatarData.substring(0, 100) + "...");
-      }
-
       const profileData = {
         ...data,
         avatar: avatarData as string
