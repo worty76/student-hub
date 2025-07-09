@@ -208,7 +208,6 @@ export class AdminService {
       }
 
       const data = await response.json();
-      console.log('Admin Products API response:', data);
       
       return data;
     } catch (error) {
@@ -362,7 +361,6 @@ export class AdminService {
       }
 
       const data = await response.json();
-      console.log('Admin Pending Products API response:', data);
       
       return data;
     } catch (error) {

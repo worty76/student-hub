@@ -29,15 +29,6 @@ export const DeleteCommentButton: React.FC<DeleteCommentButtonProps> = ({
   const currentUserId = user?._id || (user as {id?: string})?.id || (user as {userId?: string})?.userId;
   const isOwner = currentUserId && currentUserId === userId;
 
-  // Debug logging (remove in production)
-  console.log('DeleteCommentButton Debug:', {
-    commentId,
-    userId: userId,
-    currentUserId: currentUserId,
-    user: user,
-    isOwner: isOwner
-  });
-
   const sizeClasses = {
     sm: 'h-6 w-6 text-xs',
     md: 'h-8 w-8 text-sm',

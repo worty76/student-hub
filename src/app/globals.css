@@ -148,6 +148,19 @@
 }
 
 @layer utilities {
+  /* Custom responsive utilities for extra small screens */
+  @media (min-width: 475px) {
+    .xs\:block {
+      display: block;
+    }
+    .xs\:hidden {
+      display: none;
+    }
+    .xs\:inline {
+      display: inline;
+    }
+  }
+
   .line-clamp-1 {
     overflow: hidden;
     display: -webkit-box;
