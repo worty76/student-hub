@@ -49,6 +49,7 @@ export default function PurchaseHistory() {
   const [showFilters, setShowFilters] = useState(false);
   const [isAuthInitialized, setIsAuthInitialized] = useState(false);
 
+
   const loadPurchases = useCallback(async (params = {}) => {
     if (!token) return;
     
@@ -418,6 +419,13 @@ function PurchaseCard({ purchase, onViewProduct, onViewSeller, onConfirmReceipt,
     );
   }
 
+    // Utility function to strip HTML tags from text
+  const stripHtmlTags = (html: string): string => {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    return doc.body.textContent || "";
+  };
+
+
   const product = purchase.product;
 
   return (
@@ -479,7 +487,7 @@ function PurchaseCard({ purchase, onViewProduct, onViewSeller, onConfirmReceipt,
                 {product.title || 'Không có tiêu đề'}
               </h3>
               <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 mb-2 sm:mb-3 leading-relaxed">
-                {product.description || 'Không có mô tả'}
+                {stripHtmlTags(product.description) || 'Không có mô tả'}
               </p>
               <div className="flex flex-wrap gap-1 sm:gap-2">
                 {product.condition && (
