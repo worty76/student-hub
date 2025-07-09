@@ -9,14 +9,16 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
+
 import { 
-  ShoppingBag, 
-  MapPin, 
-  CreditCard, 
-  User, 
-  Package, 
-  Eye, 
-  ChevronLeft, 
+
+  ShoppingBag,
+  MapPin,
+  CreditCard,
+  User,
+  Package,
+  Eye,
+  ChevronLeft,
   ChevronRight,
   Filter,
   RefreshCw,
@@ -24,10 +26,12 @@ import {
   Clock,
   CheckCircle,
   XCircle,
-  Calendar
+  Calendar,
+  Edit,
 } from 'lucide-react';
 import { formatPrice, formatDate, getConditionColor, getStatusColor } from '@/lib/utils';
 import { PurchaseHistoryItem } from '@/services/payment.service';
+import EditPurchaseDialog from "./EditPurchaseDialog";
 
 export default function PurchaseHistory() {
   const router = useRouter();
@@ -48,6 +52,8 @@ export default function PurchaseHistory() {
 
   const [showFilters, setShowFilters] = useState(false);
   const [isAuthInitialized, setIsAuthInitialized] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState<string>("");
 
 
   const loadPurchases = useCallback(async (params = {}) => {
@@ -137,7 +143,14 @@ export default function PurchaseHistory() {
     }
   };
 
+    const handleEditPurchase = (orderId: string) => {
+    setSelectedOrderId(orderId);
+    setEditDialogOpen(true);
+  };
 
+  const handleEditSuccess = () => {
+    loadPurchases(); // Reload purchases after successful edit
+  };
 
   // Show loading while auth is initializing
   if (!isAuthInitialized) {
@@ -218,6 +231,20 @@ export default function PurchaseHistory() {
           {/* Advanced Filters */}
           {showFilters && (
             <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
+
+              <Select
+                onValueChange={(value) => handleFilterChange("status", value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Trạng thái" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="completed">Đã hoàn thành</SelectItem>
+                  <SelectItem value="pending">Đang chờ</SelectItem>
+                  <SelectItem value="failed">Đã hủy</SelectItem>
+                  <SelectItem value="all">Tất cả</SelectItem>
+                </SelectContent>
+              </Select>
 
               <Select onValueChange={(value) => handleFilterChange('category', value)}>
                 <SelectTrigger>
@@ -319,6 +346,7 @@ export default function PurchaseHistory() {
               onViewProduct={handleViewProduct}
               onViewSeller={handleViewSeller}
               onConfirmReceipt={handleConfirmReceipt}
+              onEditPurchase={handleEditPurchase}
               isConfirming={confirmingReceipt === purchase.orderId}
             />
           ))}
@@ -391,6 +419,13 @@ export default function PurchaseHistory() {
           </CardContent>
         </Card>
       )}
+
+      <EditPurchaseDialog
+        isOpen={editDialogOpen}
+        onClose={() => setEditDialogOpen(false)}
+        orderId={selectedOrderId}
+        onSuccess={handleEditSuccess}
+      />
     </div>
   );
 }
@@ -401,10 +436,13 @@ interface PurchaseCardProps {
   onViewProduct: (productId: string) => void;
   onViewSeller: (sellerId: string) => void;
   onConfirmReceipt: (orderId: string) => void;
+  onEditPurchase: (orderId: string) => void;
   isConfirming: boolean;
 }
 
-function PurchaseCard({ purchase, onViewProduct, onViewSeller, onConfirmReceipt, isConfirming }: PurchaseCardProps) {
+function PurchaseCard({ purchase, onViewProduct, onViewSeller, onConfirmReceipt, onEditPurchase, isConfirming }: PurchaseCardProps) {
+  const isCanceled = purchase.paymentStatus === "failed";
+
   // Add null safety check
   if (!purchase || !purchase.product) {
     return (
@@ -419,22 +457,27 @@ function PurchaseCard({ purchase, onViewProduct, onViewSeller, onConfirmReceipt,
     );
   }
 
-    // Utility function to strip HTML tags from text
   const stripHtmlTags = (html: string): string => {
     const doc = new DOMParser().parseFromString(html, 'text/html');
     return doc.body.textContent || "";
   };
 
-
   const product = purchase.product;
 
   return (
-    <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+    <Card className={`border-0 shadow-lg hover:shadow-xl transition-all duration-300 ${
+        isCanceled ? "opacity-75 bg-gray-50" : ""
+      }`}>
       <CardHeader className="pb-3 sm:pb-4">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 sm:gap-0">
           <div className="space-y-1">
-            <CardTitle className="text-base sm:text-lg font-semibold text-gray-800 break-words">
+            <CardTitle className={`text-lg font-semibold ${
+                isCanceled ? "text-gray-600" : "text-gray-800"
+              }`}>
               Đơn hàng #{purchase.orderId}
+              {isCanceled && (
+                <span className="text-red-600 ml-2">(Đã hủy)</span>
+              )}
             </CardTitle>
             <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500">
               <Clock className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
@@ -456,6 +499,11 @@ function PurchaseCard({ purchase, onViewProduct, onViewSeller, onConfirmReceipt,
                 ? 'Thanh toán khi nhận hàng'
                 : purchase.paymentMethod.toUpperCase()}
             </Badge>
+            {purchase.paymentStatus === "failed" && (
+              <Badge className="bg-red-100 text-red-800 hover:bg-red-200 hover:text-red-900">
+                ĐÃ HỦY
+              </Badge>
+            )}
           </div>
         </div>
       </CardHeader>
@@ -618,7 +666,7 @@ function PurchaseCard({ purchase, onViewProduct, onViewSeller, onConfirmReceipt,
                   Xem người bán
                 </Button>
               )}
-              {!purchase.receivedSuccessfully && (
+              {!purchase.receivedSuccessfully && !isCanceled && (
                 <Button 
                   size="sm"
                   onClick={() => onConfirmReceipt(purchase.orderId)}
@@ -635,6 +683,26 @@ function PurchaseCard({ purchase, onViewProduct, onViewSeller, onConfirmReceipt,
                       <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
                       Xác nhận nhận hàng
                     </>
+                  )}
+                  {!isCanceled && (
+                  <Button
+                      variant="outline"
+                      onClick={() => onEditPurchase(purchase.orderId)}
+                      className="flex items-center gap-2"
+                    >
+                      <Edit className="h-4 w-4" />
+                      Chỉnh sửa
+                    </Button>
+                  )}
+                  {isCanceled && (
+                    <Button
+                      variant="outline"
+                      disabled
+                      className="flex items-center gap-2 text-gray-400"
+                    >
+                      <XCircle className="h-4 w-4" />
+                      Đơn hàng đã hủy
+                    </Button>
                   )}
                 </Button>
               )}
