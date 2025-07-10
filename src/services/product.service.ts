@@ -502,25 +502,54 @@ export class ProductService {
       
       // Handle different API response formats
       if (data.products && Array.isArray(data.products)) {
+        let products = data.products;
+        
+        // Client-side search filtering if search term exists
+        if (params.search && params.search.trim()) {
+          const searchTerm = params.search.trim().toLowerCase();
+          products = products.filter((product: Product) => {
+            const titleMatch = product.title?.toLowerCase().includes(searchTerm);
+            const descriptionMatch = product.description?.toLowerCase().includes(searchTerm);
+            const categoryMatch = product.category?.toLowerCase().includes(searchTerm);
+            const locationMatch = product.location?.toLowerCase().includes(searchTerm);
+            
+            return titleMatch || descriptionMatch || categoryMatch || locationMatch;
+          });
+        }
+        
         // If API returns proper pagination format
         return {
-          products: data.products,
+          products: products,
           pagination: data.pagination || {
-            total: data.products.length,
+            total: products.length,
             page: params.page || 1,
             limit: params.limit || 10,
-            pages: Math.ceil((data.products.length) / (params.limit || 10))
+            pages: Math.ceil(products.length / (params.limit || 10))
           }
         };
       } else if (Array.isArray(data)) {
+        let products = data;
+        
+        // Client-side search filtering if search term exists
+        if (params.search && params.search.trim()) {
+          const searchTerm = params.search.trim().toLowerCase();
+          products = products.filter((product: Product) => {
+            const titleMatch = product.title?.toLowerCase().includes(searchTerm);
+            const descriptionMatch = product.description?.toLowerCase().includes(searchTerm);
+            const categoryMatch = product.category?.toLowerCase().includes(searchTerm);
+            const locationMatch = product.location?.toLowerCase().includes(searchTerm);
+            
+            return titleMatch || descriptionMatch || categoryMatch || locationMatch;
+          });
+        }
+        
         // If API returns just an array of products, create pagination info
-        const products = data;
         const total = products.length;
         const limit = params.limit || 10;
         const page = params.page || 1;
         const pages = Math.ceil(total / limit);
         
-        // Manual pagination if API doesn't support it
+        // Manual pagination after filtering
         const paginatedProducts = products.slice((page - 1) * limit, page * limit);
         
         return {

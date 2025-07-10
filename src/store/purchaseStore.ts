@@ -37,11 +37,10 @@ const initialState = {
 export const usePurchaseStore = create<PurchaseStore>((set, get) => ({
   ...initialState,
 
-  fetchPurchases: async (token: string, params?: PurchaseHistoryParams) => {
+   fetchPurchases: async (token: string, params?: PurchaseHistoryParams) => {
     set({ isLoading: true, error: null });
     
     try {
-      // Merge current filters with new params
       const currentFilters = get().filters;
       const finalParams = { ...currentFilters, ...params };
       
@@ -126,7 +125,6 @@ export const usePurchaseStore = create<PurchaseStore>((set, get) => ({
     const currentFilters = get().filters;
     const updatedFilters = { ...currentFilters, ...newFilters };
     
-    // Reset to page 1 when filters change (except when specifically changing page)
     if (!('page' in newFilters)) {
       updatedFilters.page = 1;
     }
