@@ -29,7 +29,8 @@ export function ProductFilters({ onFiltersChange, currentParams, isLoading = fal
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onFiltersChange({ search: searchTerm.trim() || undefined });
+    const searchParam = searchTerm.trim() || undefined;
+    onFiltersChange({ search: searchParam });
   };
 
   const handleFilterChange = (key: keyof ProductsQueryParams, value: string | number | undefined) => {

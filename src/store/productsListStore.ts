@@ -208,16 +208,11 @@ export const useProductsListStore = create<ProductsListStore>((set, get) => ({
   },
 
   updateFilters: (params: Partial<ProductsQueryParams>) => {
-    // Log the filter changes for debugging
-    console.log('Filter update:', params);
-    
     const currentParams = get().currentParams;
     const newParams = { ...currentParams, ...params };
     
     // Always reset to page 1 when filters change
     newParams.page = 1;
-    
-    console.log('New filter params:', newParams);
     
     // Clean up filters to avoid sending empty values
     Object.keys(newParams).forEach(key => {
