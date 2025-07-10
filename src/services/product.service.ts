@@ -459,32 +459,110 @@ export class ProductService {
     }
   }
 
-  private static normalizeVietnameseText(text: string): string {
-    if (!text) return '';
-    
-    const normalized = text
-      .normalize('NFD')
-      .toLowerCase()
-      .trim();
-    
-    return normalized.replace(/\s+/g, ' ');
-  }
-
-  static async getProductsWithPagination(params: ProductsQueryParams = {}): Promise<ProductsResponse> {
+  static async searchProducts(query: string, params: Omit<ProductsQueryParams, 'search'> = {}): Promise<ProductsResponse> {
     try {
+      // Build query string from params (excluding search since it's in the URL)
       const queryParams = new URLSearchParams();
       
       if (params.page) queryParams.set('page', params.page.toString());
       if (params.limit) queryParams.set('limit', params.limit.toString());
-      
       if (params.category) queryParams.set('category', params.category);
       if (params.condition) queryParams.set('condition', params.condition);
       if (params.status) queryParams.set('status', params.status);
       if (params.minPrice !== undefined) queryParams.set('minPrice', params.minPrice.toString());
       if (params.maxPrice !== undefined) queryParams.set('maxPrice', params.maxPrice.toString());
       if (params.location) queryParams.set('location', params.location);
-      if (params.search) queryParams.set('search', params.search);
+      if (params.sortBy) queryParams.set('sort', params.sortBy);
+      if (params.sortOrder) queryParams.set('order', params.sortOrder);
+
+      const queryString = queryParams.toString();
+      const encodedQuery = encodeURIComponent(query);
+      const url = `${API_BASE_URL}/products/search/${encodedQuery}${queryString ? `?${queryString}` : ''}`;
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          // Return empty result for no matches instead of throwing error
+          return {
+            products: [],
+            pagination: {
+              total: 0,
+              page: params.page || 1,
+              limit: params.limit || 12,
+              pages: 0
+            }
+          };
+        }
+        throw new Error(`Lỗi khi tìm kiếm sản phẩm: ${response.statusText}`);
+      }
+
+      const data = await response.json();
       
+      // Handle different API response formats
+      if (data.products && Array.isArray(data.products)) {
+        return {
+          products: data.products,
+          pagination: data.pagination || {
+            total: data.products.length,
+            page: params.page || 1,
+            limit: params.limit || 12,
+            pages: Math.ceil(data.products.length / (params.limit || 12))
+          }
+        };
+      } else if (Array.isArray(data)) {
+        const products = data;
+        const total = products.length;
+        const limit = params.limit || 12;
+        const page = params.page || 1;
+        const pages = Math.ceil(total / limit);
+        
+        // Manual pagination if API doesn't support it
+        const paginatedProducts = products.slice((page - 1) * limit, page * limit);
+        
+        return {
+          products: paginatedProducts,
+          pagination: {
+            total,
+            page,
+            limit,
+            pages
+          }
+        };
+      } else {
+        throw new Error('Invalid response format');
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Lỗi khi tìm kiếm sản phẩm');
+    }
+  }
+
+  static async getProductsWithPagination(params: ProductsQueryParams = {}): Promise<ProductsResponse> {
+    try {
+      // If there's a search query, use the search endpoint instead
+      if (params.search && params.search.trim()) {
+        const { search, ...otherParams } = params;
+        return this.searchProducts(search, otherParams);
+      }
+
+      const queryParams = new URLSearchParams();
+      
+      if (params.page) queryParams.set('page', params.page.toString());
+      if (params.limit) queryParams.set('limit', params.limit.toString());
+      if (params.category) queryParams.set('category', params.category);
+      if (params.condition) queryParams.set('condition', params.condition);
+      if (params.status) queryParams.set('status', params.status);
+      if (params.minPrice !== undefined) queryParams.set('minPrice', params.minPrice.toString());
+      if (params.maxPrice !== undefined) queryParams.set('maxPrice', params.maxPrice.toString());
+      if (params.location) queryParams.set('location', params.location);
       if (params.sortBy) queryParams.set('sort', params.sortBy);
       if (params.sortOrder) queryParams.set('order', params.sortOrder);
 
@@ -508,56 +586,17 @@ export class ProductService {
       const data = await response.json();
       
       if (data.products && Array.isArray(data.products)) {
-        let products = data.products;
-        
-        if (params.search && params.search.trim()) {
-          const searchTerm = this.normalizeVietnameseText(params.search);
-          
-          products = products.filter((product: Product) => {
-            const title = this.normalizeVietnameseText(product.title || '');
-            const description = this.normalizeVietnameseText(product.description || '');
-            const category = this.normalizeVietnameseText(product.category || '');
-            const location = this.normalizeVietnameseText(product.location || '');
-            
-            const titleMatch = title.includes(searchTerm);
-            const descriptionMatch = description.includes(searchTerm);
-            const categoryMatch = category.includes(searchTerm);
-            const locationMatch = location.includes(searchTerm);
-            
-            return titleMatch || descriptionMatch || categoryMatch || locationMatch;
-          });
-        }
-        
         return {
-          products: products,
+          products: data.products,
           pagination: data.pagination || {
-            total: products.length,
+            total: data.products.length,
             page: params.page || 1,
             limit: params.limit || 10,
-            pages: Math.ceil(products.length / (params.limit || 10))
+            pages: Math.ceil(data.products.length / (params.limit || 10))
           }
         };
       } else if (Array.isArray(data)) {
-        let products = data;
-        
-        if (params.search && params.search.trim()) {
-          const searchTerm = this.normalizeVietnameseText(params.search);
-          
-          products = products.filter((product: Product) => {
-            const title = this.normalizeVietnameseText(product.title || '');
-            const description = this.normalizeVietnameseText(product.description || '');
-            const category = this.normalizeVietnameseText(product.category || '');
-            const location = this.normalizeVietnameseText(product.location || '');
-            
-            const titleMatch = title.includes(searchTerm);
-            const descriptionMatch = description.includes(searchTerm);
-            const categoryMatch = category.includes(searchTerm);
-            const locationMatch = location.includes(searchTerm);
-            
-            return titleMatch || descriptionMatch || categoryMatch || locationMatch;
-          });
-        }
-        
+        const products = data;
         const total = products.length;
         const limit = params.limit || 10;
         const page = params.page || 1;
@@ -597,4 +636,5 @@ export const productService = {
   buyProduct: ProductService.buyProduct,
   reportProduct: ProductService.reportProduct,
   getProductsWithPagination: ProductService.getProductsWithPagination,
+  searchProducts: ProductService.searchProducts,
 }; 
