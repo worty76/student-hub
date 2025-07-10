@@ -129,11 +129,11 @@ function MonthlyRevenueChart() {
         <ChartContainer
           config={{
             revenue: {
-              label: "Doanh thu",
+              label: " Doanh thu",
               color: "hsl(var(--chart-1))",
             },
             transactions: {
-              label: "Giao dịch",
+              label: " Giao dịch",
               color: "hsl(var(--chart-2))",
             },
           }}
@@ -171,7 +171,7 @@ function MonthlyRevenueChart() {
                 content={<ChartTooltipContent />}
                 formatter={(value, name) => [
                   name === 'revenue' ? formatChartValue(Number(value), 'currency') : value,
-                  name === 'revenue' ? 'Doanh thu' : 'Giao dịch'
+                  name === 'revenue' ? ' Doanh thu' : ' Giao dịch'
                 ]}
                 contentStyle={{
                   backgroundColor: 'white',
@@ -188,7 +188,7 @@ function MonthlyRevenueChart() {
                 dataKey="revenue" 
                 stroke="var(--color-revenue)" 
                 strokeWidth={chartConfig.strokeWidth}
-                name="Doanh thu"
+                name=" Doanh thu"
                 dot={{ 
                   fill: 'var(--color-revenue)', 
                   strokeWidth: 2, 
@@ -213,6 +213,7 @@ function MonthlyRevenueChart() {
 function PaymentMethodRevenueChart() {
   const { statistics } = useProfitStore();
   const chartConfig = useResponsiveChart({ baseHeight: 300 });
+
 
   if (!statistics?.profitsByPaymentMethod) {
     return (
@@ -245,7 +246,7 @@ function PaymentMethodRevenueChart() {
         <ChartContainer
           config={{
             revenue: {
-              label: "Doanh thu",
+              label: " Doanh thu",
               color: "hsl(var(--chart-1))",
             },
           }}
@@ -282,7 +283,7 @@ function PaymentMethodRevenueChart() {
                 content={<ChartTooltipContent />}
                 formatter={(value) => [
                   formatChartValue(Number(value), 'currency'),
-                  'Doanh thu'
+                  ' Doanh thu'
                 ]}
                 contentStyle={{
                   backgroundColor: 'white',
@@ -507,7 +508,7 @@ export function AdminProfitStatistics() {
           />
           <MetricCard
             title="Tỷ lệ hoa hồng trung bình"
-            value={`${(statistics.averageCommissionRate * 100).toFixed(2)}%`}
+            value={`10%`}
             icon={<CreditCard className="w-full h-full" />}
             color="bg-orange-500"
           />

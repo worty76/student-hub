@@ -459,16 +459,24 @@ export class ProductService {
     }
   }
 
+  private static normalizeVietnameseText(text: string): string {
+    if (!text) return '';
+    
+    const normalized = text
+      .normalize('NFD')
+      .toLowerCase()
+      .trim();
+    
+    return normalized.replace(/\s+/g, ' ');
+  }
+
   static async getProductsWithPagination(params: ProductsQueryParams = {}): Promise<ProductsResponse> {
     try {
-      // Build query string from params
       const queryParams = new URLSearchParams();
       
-      // Pagination parameters
       if (params.page) queryParams.set('page', params.page.toString());
       if (params.limit) queryParams.set('limit', params.limit.toString());
       
-      // Filter parameters
       if (params.category) queryParams.set('category', params.category);
       if (params.condition) queryParams.set('condition', params.condition);
       if (params.status) queryParams.set('status', params.status);
@@ -477,7 +485,6 @@ export class ProductService {
       if (params.location) queryParams.set('location', params.location);
       if (params.search) queryParams.set('search', params.search);
       
-      // Map sortBy to sort and sortOrder to order according to API documentation
       if (params.sortBy) queryParams.set('sort', params.sortBy);
       if (params.sortOrder) queryParams.set('order', params.sortOrder);
 
@@ -500,24 +507,27 @@ export class ProductService {
 
       const data = await response.json();
       
-      // Handle different API response formats
       if (data.products && Array.isArray(data.products)) {
         let products = data.products;
         
-        // Client-side search filtering if search term exists
         if (params.search && params.search.trim()) {
-          const searchTerm = params.search.trim().toLowerCase();
+          const searchTerm = this.normalizeVietnameseText(params.search);
+          
           products = products.filter((product: Product) => {
-            const titleMatch = product.title?.toLowerCase().includes(searchTerm);
-            const descriptionMatch = product.description?.toLowerCase().includes(searchTerm);
-            const categoryMatch = product.category?.toLowerCase().includes(searchTerm);
-            const locationMatch = product.location?.toLowerCase().includes(searchTerm);
+            const title = this.normalizeVietnameseText(product.title || '');
+            const description = this.normalizeVietnameseText(product.description || '');
+            const category = this.normalizeVietnameseText(product.category || '');
+            const location = this.normalizeVietnameseText(product.location || '');
+            
+            const titleMatch = title.includes(searchTerm);
+            const descriptionMatch = description.includes(searchTerm);
+            const categoryMatch = category.includes(searchTerm);
+            const locationMatch = location.includes(searchTerm);
             
             return titleMatch || descriptionMatch || categoryMatch || locationMatch;
           });
         }
         
-        // If API returns proper pagination format
         return {
           products: products,
           pagination: data.pagination || {
@@ -530,26 +540,29 @@ export class ProductService {
       } else if (Array.isArray(data)) {
         let products = data;
         
-        // Client-side search filtering if search term exists
         if (params.search && params.search.trim()) {
-          const searchTerm = params.search.trim().toLowerCase();
+          const searchTerm = this.normalizeVietnameseText(params.search);
+          
           products = products.filter((product: Product) => {
-            const titleMatch = product.title?.toLowerCase().includes(searchTerm);
-            const descriptionMatch = product.description?.toLowerCase().includes(searchTerm);
-            const categoryMatch = product.category?.toLowerCase().includes(searchTerm);
-            const locationMatch = product.location?.toLowerCase().includes(searchTerm);
+            const title = this.normalizeVietnameseText(product.title || '');
+            const description = this.normalizeVietnameseText(product.description || '');
+            const category = this.normalizeVietnameseText(product.category || '');
+            const location = this.normalizeVietnameseText(product.location || '');
+            
+            const titleMatch = title.includes(searchTerm);
+            const descriptionMatch = description.includes(searchTerm);
+            const categoryMatch = category.includes(searchTerm);
+            const locationMatch = location.includes(searchTerm);
             
             return titleMatch || descriptionMatch || categoryMatch || locationMatch;
           });
         }
         
-        // If API returns just an array of products, create pagination info
         const total = products.length;
         const limit = params.limit || 10;
         const page = params.page || 1;
         const pages = Math.ceil(total / limit);
         
-        // Manual pagination after filtering
         const paginatedProducts = products.slice((page - 1) * limit, page * limit);
         
         return {
