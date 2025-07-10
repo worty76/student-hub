@@ -20,7 +20,6 @@ export function ProductFilters({ onFiltersChange, currentParams, isLoading = fal
   const [priceMin, setPriceMin] = useState<string>(currentParams.minPrice?.toString() || '');
   const [priceMax, setPriceMax] = useState<string>(currentParams.maxPrice?.toString() || '');
 
-  // Update search term when currentParams changes
   useEffect(() => {
     setSearchTerm(currentParams.search || '');
     setPriceMin(currentParams.minPrice?.toString() || '');
@@ -39,20 +38,17 @@ export function ProductFilters({ onFiltersChange, currentParams, isLoading = fal
       return;
     }
     
-    // For price filters, ensure we're passing numbers
     if (key === 'minPrice' || key === 'maxPrice') {
       const numValue = value ? Number(value) : undefined;
       onFiltersChange({ [key]: numValue });
       return;
     }
     
-    // For other string filters like location, ensure we pass undefined if empty
     if (typeof value === 'string' && value.trim() === '') {
       onFiltersChange({ [key]: undefined });
       return;
     }
     
-    // Otherwise apply the filter normally
     onFiltersChange({ [key]: value });
   };
 
@@ -99,7 +95,6 @@ export function ProductFilters({ onFiltersChange, currentParams, isLoading = fal
 
   return (
     <Card className={`${className} bg-gradient-to-br from-white to-blue-50 border-2 border-blue-200 shadow-md overflow-hidden`}>
-      {/* Filter Header - Always Visible */}
       <div 
         className="flex items-center justify-between cursor-pointer lg:cursor-default ps-4"
         onClick={() => setIsExpanded(!isExpanded)}
@@ -132,7 +127,6 @@ export function ProductFilters({ onFiltersChange, currentParams, isLoading = fal
         </Button>
       </div>
 
-      {/* Always show search on mobile, even when collapsed */}
       <div className="px-4 pb-4 lg:hidden">
         <form onSubmit={handleSearchSubmit} className="space-y-2">
           <div className="relative">
@@ -174,7 +168,6 @@ export function ProductFilters({ onFiltersChange, currentParams, isLoading = fal
       {/* Collapsible Filter Content */}
       <div className={`overflow-hidden transition-all duration-300 ${isExpanded ? 'max-h-[5000px]' : 'max-h-0 lg:max-h-[5000px]'}`}>
         <CardContent className="space-y-4 p-4 pt-0 lg:pt-4">
-          {/* Desktop Search */}
           <div className="bg-gradient-to-r from-gray-50 to-blue-50 p-4 rounded-xl border border-blue-200 hidden lg:block">
             <form onSubmit={handleSearchSubmit} className="space-y-3">
               <div className="relative">
@@ -184,7 +177,7 @@ export function ProductFilters({ onFiltersChange, currentParams, isLoading = fal
                   placeholder="Tìm kiếm sản phẩm..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-11 border-blue-300 focus:border-blue-500 focus:ring-blue-500 bg-white/80 backdrop-blur-sm"
+                  className="pl-4 border-blue-300 focus:border-blue-500 focus:ring-blue-500 bg-white/80 backdrop-blur-sm"
                   disabled={isLoading}
                 />
               </div>
@@ -200,9 +193,7 @@ export function ProductFilters({ onFiltersChange, currentParams, isLoading = fal
             </form>
           </div>
 
-          {/* Filter Groups - Responsive Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3">
-            {/* Category */}
             <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-3 rounded-xl border border-purple-200">
               <label className="text-sm font-bold text-purple-800 mb-2 flex items-center gap-2">
                 <Tag className="h-4 w-4" />
